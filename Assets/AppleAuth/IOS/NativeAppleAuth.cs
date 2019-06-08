@@ -13,6 +13,22 @@ namespace AppleAuth.IOS
             this._payloadDeserializer = payloadDeserializer;
         }
         
+        public void LoginWithAppleId(
+            Action<string> successCallback,
+            Action<IAppleError> errorCallback)
+        {
+            var requestId = NativeMessageHandler.AddMessageCallback(payload =>
+            {
+                var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
+                if (response.Error != null)
+                    errorCallback(response.Error);
+                else
+                    successCallback(payload);
+            });
+            
+            PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId);
+        }
+        
         public void GetCredentialState(
             string userId,
             Action<CredentialState> successCallback,
@@ -34,6 +50,9 @@ namespace AppleAuth.IOS
         {
             [DllImport("__Internal")]
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
+
+            [DllImport("__Internal")]
+            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId);
         }
     }
 }
