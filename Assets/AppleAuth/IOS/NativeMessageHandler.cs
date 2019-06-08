@@ -7,42 +7,47 @@ namespace AppleAuth.IOS
 {
     internal static class NativeMessageHandler
     {
-        private delegate void MessageHandlerInternalDelegate(uint requestId, string messagePayload);
+        private delegate void NativeMessageHandlerDelegate(uint requestId, string messagePayload);
 
-        private static readonly Dictionary<uint, Action<string>> CallbackIndex = new Dictionary<uint, Action<string>>();
+        private static readonly Dictionary<uint, Action<string>> CallbackDictionary = new Dictionary<uint, Action<string>>();
         private static uint _callbackId = 1;
+        private static bool _initialized = false;
 
-        public static void Initialize()
+        public static uint AddMessageCallback(Action<string> messageCallback)
         {
-            PInvoke.SetupMessageHandlerInternalCallback(MessageHandlerInternalCallback);
-        }
+            if (!_initialized)
+            {
+                PInvoke.AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerCallback);
+                _initialized = true;
+            }
 
-        public static uint AddMessageCallback(Action<string> callback)
-        {
+            if (messageCallback == null)
+                throw new Exception("Can't add a null Message Callback.");
+            
             var usedCallbackId = _callbackId;
-            if (CallbackIndex.ContainsKey(usedCallbackId))
-                throw new Exception("A Message index with same id already exists");
-
-            CallbackIndex.Add(usedCallbackId, callback);
             _callbackId += 1;
+            if (CallbackDictionary.ContainsKey(usedCallbackId))
+                throw new Exception("A Message Callback with the same ID " + usedCallbackId + " already exists.");
+
+            CallbackDictionary.Add(usedCallbackId, messageCallback);
             return usedCallbackId;
         }
 
-        [MonoPInvokeCallback(typeof(MessageHandlerInternalDelegate))]
-        private static void MessageHandlerInternalCallback(uint requestId, string messagePayload)
+        [MonoPInvokeCallback(typeof(NativeMessageHandlerDelegate))]
+        private static void NativeMessageHandlerCallback(uint requestId, string messagePayload)
         {
             Action<string> callback;
-            if (!CallbackIndex.TryGetValue(requestId, out callback))
-                throw new Exception("Unhandled message with id " + requestId);
+            if (!CallbackDictionary.TryGetValue(requestId, out callback))
+                throw new Exception("A Message Callback with ID " + requestId + " couldn't be found");
 
             callback.Invoke(messagePayload);
-            CallbackIndex.Remove(requestId);
+            CallbackDictionary.Remove(requestId);
         }
         
         private static class PInvoke
         {
             [DllImport("__Internal")]
-            public static extern void SetupMessageHandlerInternalCallback(MessageHandlerInternalDelegate internalCallback);
+            public static extern void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback);
         }
     }
 }
