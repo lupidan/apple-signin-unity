@@ -49,22 +49,23 @@ static dispatch_once_t defaultManagerInitialization;
     if (!error)
         return nil;
     
-    return @{
-        @"_code" : @([error code]),
-        @"_domain" : [error domain],
-        @"_localizedDescription" : [error localizedDescription],
-        @"_localizedRecoveryOptions" : [error localizedRecoveryOptions],
-        @"_localizedRecoverySuggestion" : [error localizedRecoverySuggestion],
-        @"_localizedFailureReason" : [error localizedFailureReason],
-        @"_userInfo" : [error userInfo],
-    };
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [result setValue:@([error code]) forKey:@"_code"];
+    [result setValue:[error domain] forKey:@"_domain"];
+    [result setValue:[error localizedDescription] forKey:@"_localizedDescription"];
+    [result setValue:[error localizedRecoveryOptions] forKey:@"_localizedRecoveryOptions"];
+    [result setValue:[error localizedRecoverySuggestion] forKey:@"_localizedRecoverySuggestion"];
+    [result setValue:[error localizedFailureReason] forKey:@"_localizedFailureReason"];
+    [result setValue:[error userInfo] forKey:@"_userInfo"];
+    
+    return [result copy];
 }
 
-- (void) getCredentialState:(NSString *)userId withRequestId:(uint)requestId
+- (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
 {
     ASAuthorizationAppleIDProvider *provider = [[ASAuthorizationAppleIDProvider alloc] init];
     [provider getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
-        NSDictionary *result = [[NSDictionary alloc] init];
+        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
         if (error)
         {
             [result setValue:@NO forKey:@"_success"];
@@ -77,7 +78,7 @@ static dispatch_once_t defaultManagerInitialization;
             [result setValue:@(credentialState) forKey:@"_credentialState"];
         }
         
-        [self sendNativeMessage:result withRequestId:requestId];
+        [self sendNativeMessage:[result copy] withRequestId:requestId];
     }];
 }
 
@@ -90,3 +91,8 @@ static dispatch_once_t defaultManagerInitialization;
 }
 
 @end
+
+void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
+{
+    [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
+}
