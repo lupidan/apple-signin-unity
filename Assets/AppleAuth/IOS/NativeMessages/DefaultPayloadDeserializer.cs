@@ -9,5 +9,10 @@ namespace AppleAuth.IOS.NativeMessages
         {
             return JsonUtility.FromJson<DefaultCredentialStateResponse>(payload);
         }
+
+        public ILoginWithAppleIdResponse DeserializeLoginWithAppleIdResponse(string payload)
+        {
+            return JsonUtility.FromJson<DefaultLoginWithAppleIdResponse>(payload);
+        }
     }
 }
