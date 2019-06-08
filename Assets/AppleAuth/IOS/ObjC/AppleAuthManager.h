@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (id) sharedManager;
 
-- (void) getCredentialState:(NSString *)userId withRequestId:(uint)requestId;
+- (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 
 @end
 

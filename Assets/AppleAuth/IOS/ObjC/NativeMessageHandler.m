@@ -22,39 +22,76 @@
 //  SOFTWARE.
 //
 
+#import <AuthenticationServices/AuthenticationServices.h>
+#import "AppleAuthManager.h"
 #import "NativeMessageHandler.h"
 
-typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payload);
+static AppleAuthManager *_defaultManager = nil;
+static dispatch_once_t defaultManagerInitialization;
 
-static NativeMessageHandler *_defaultHandler = nil;
-static dispatch_once_t defaultHandlerInitialization;
-
-@interface NativeMessageHandler ()
-@property (nonatomic, assign) NativeMessageHandlerDelegate mainCallback;
+@interface AppleAuthManager ()
++ (NSDictionary *) dictionaryForNSError:(NSError *)error;
 @end
 
-@implementation NativeMessageHandler
+@implementation AppleAuthManager
 
-+ (id) defaultHandler
++ (id) sharedManager
 {
-    dispatch_once(&defaultHandlerInitialization, ^{
-        _defaultHandler = [[NativeMessageHandler alloc] init];
+    dispatch_once(&defaultManagerInitialization, ^{
+        _defaultManager = [[AppleAuthManager alloc] init];
     });
     
-    return _defaultHandler;
+    return _defaultManager;
 }
 
-- (void) sendNativeMessage:(NSString *)payload forRequestWithId:(uint)requestId
++ (NSDictionary *) dictionaryForNSError:(NSError *)error
 {
-    if ([self mainCallback] == NULL)
-        return;
+    if (!error)
+        return nil;
     
-    [self mainCallback](requestId, [payload UTF8String]);
+    return @{
+        @"_code" : @([error code]),
+        @"_domain" : [error domain],
+        @"_localizedDescription" : [error localizedDescription],
+        @"_localizedRecoveryOptions" : [error localizedRecoveryOptions],
+        @"_localizedRecoverySuggestion" : [error localizedRecoverySuggestion],
+        @"_localizedFailureReason" : [error localizedFailureReason],
+        @"_userInfo" : [error userInfo],
+    };
+}
+
+- (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
+{
+    ASAuthorizationAppleIDProvider *provider = [[ASAuthorizationAppleIDProvider alloc] init];
+    [provider getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
+        NSDictionary *result = [[NSDictionary alloc] init];
+        if (error)
+        {
+            [result setValue:@NO forKey:@"_success"];
+            [result setValue:@(-1) forKey:@"_credentialState"];
+            [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
+        }
+        else
+        {
+            [result setValue:@YES forKey:@"_success"];
+            [result setValue:@(credentialState) forKey:@"_credentialState"];
+        }
+        
+        [self sendNativeMessage:result withRequestId:requestId];
+    }];
+}
+
+- (void) sendNativeMessage:(NSDictionary *)toSerialize withRequestId:(uint)requestId
+{
+    NSError *error = nil;
+    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:toSerialize options:0 error:&error];
+    NSString *payloadString = error ? [NSString stringWithFormat:@"Serialization error %@", [error localizedDescription]] : [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
+    [[NativeMessageHandler defaultHandler] sendNativeMessage:payloadString forRequestWithId:requestId];
 }
 
 @end
 
-void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback)
+static void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 {
-    [[NativeMessageHandler defaultHandler] setMainCallback:callback];
+    [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
 }
