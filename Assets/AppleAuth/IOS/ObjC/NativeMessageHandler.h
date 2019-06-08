@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NativeMessageHandler : NSObject
 
-+ (id) defaultHandler;
++ (instancetype) defaultHandler;
 
 - (void) sendNativeMessage:(NSString *)payload forRequestWithId:(uint)requestId;
 

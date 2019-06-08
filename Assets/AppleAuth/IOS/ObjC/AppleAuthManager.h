@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AppleAuthManager : NSObject
 
-+ (id) sharedManager;
++ (instancetype) sharedManager;
 
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 

@@ -29,13 +29,15 @@
 static AppleAuthManager *_defaultManager = nil;
 static dispatch_once_t defaultManagerInitialization;
 
-@interface AppleAuthManager ()
+@interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
+@property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
+@property (nonatomic, strong) NSMutableDictionary<NSValue *, NSNumber *> *authorizationsInProgress;
 + (NSDictionary *) dictionaryForNSError:(NSError *)error;
 @end
 
 @implementation AppleAuthManager
 
-+ (id) sharedManager
++ (instancetype) sharedManager
 {
     dispatch_once(&defaultManagerInitialization, ^{
         _defaultManager = [[AppleAuthManager alloc] init];
@@ -61,10 +63,34 @@ static dispatch_once_t defaultManagerInitialization;
     return [result copy];
 }
 
+- (instancetype) init
+{
+    self = [super init];
+    if (self)
+    {
+        _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
+        _authorizationsInProgress = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+- (void) loginWithAppleId:(uint)requestId
+{
+    ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
+    [request setRequestedScopes:@[ASAuthorizationScopeEmail, ASAuthorizationScopeFullName]];
+    
+    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
+    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
+    [[self authorizationsInProgress] setObject:@(requestId) forKey:authControllerAsKey];
+    
+    [authorizationController setDelegate:self];
+    [authorizationController setPresentationContextProvider:self];
+    [authorizationController performRequests];
+}
+
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
 {
-    ASAuthorizationAppleIDProvider *provider = [[ASAuthorizationAppleIDProvider alloc] init];
-    [provider getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
+    [[self appleIdProvider] getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
         NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
         if (error)
         {
@@ -90,9 +116,45 @@ static dispatch_once_t defaultManagerInitialization;
     [[NativeMessageHandler defaultHandler] sendNativeMessage:payloadString forRequestWithId:requestId];
 }
 
+- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
+{
+    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
+    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey]
+    if (requestIdNumber)
+    {
+        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+        [result setValue:@NO forKey:@"_success"];
+        [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
+        [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
+    }
+}
+
+- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
+{
+    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
+    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
+    if (requestIdNumber)
+    {
+        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+        [result setValue:@NO forKey:@"_success"];
+        [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
+        [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
+    }
+}
+
+- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
+{
+    return [[[UIApplication sharedApplication] delegate] window];
+}
+
 @end
 
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 {
     [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
+}
+
+void AppleAuth_IOS_LoginWithAppleId(uint requestId)
+{
+    [[AppleAuthManager sharedManager] loginWithAppleId:requestId];
 }

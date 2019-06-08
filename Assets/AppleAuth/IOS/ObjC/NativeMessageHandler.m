@@ -35,7 +35,7 @@ static dispatch_once_t defaultHandlerInitialization;
 
 @implementation NativeMessageHandler
 
-+ (id) defaultHandler
++ (instancetype) defaultHandler
 {
     dispatch_once(&defaultHandlerInitialization, ^{
         _defaultHandler = [[NativeMessageHandler alloc] init];
