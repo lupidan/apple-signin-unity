@@ -2,12 +2,11 @@ using AppleAuth.IOS.Enums;
 
 namespace AppleAuth.IOS.Interfaces
 {
-    public interface IAppleIDCredential
+    public interface IAppleIDCredential : ICredential
     {
         byte[] IdentityToken { get; }
         byte[] AuthorizationCode { get; }
         string State { get; }
-        string User { get; }
         string[] AuthorizedScopes { get; }
         IPersonName FullName { get; }
         string Email { get; }

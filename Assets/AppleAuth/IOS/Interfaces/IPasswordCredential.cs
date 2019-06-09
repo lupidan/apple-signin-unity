@@ -1,8 +1,7 @@
 namespace AppleAuth.IOS.Interfaces
 {
-    public interface IPasswordCredential
+    public interface IPasswordCredential : ICredential
     {
-        string User { get; }
         string Password { get; }
     }
 }

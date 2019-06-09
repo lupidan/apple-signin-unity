@@ -15,7 +15,7 @@ namespace AppleAuth.IOS
         }
         
         public void LoginSilently(
-            Action<IAppleIDCredential> successCallback,
+            Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
             var requestId = NativeMessageHandler.AddMessageCallback(payload =>
@@ -23,6 +23,8 @@ namespace AppleAuth.IOS
                 var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
                 if (response.Error != null)
                     errorCallback(response.Error);
+                else if (response.PasswordCredential != null)
+                    successCallback(response.PasswordCredential);
                 else
                     successCallback(response.AppleIDCredential);
             });
@@ -31,7 +33,7 @@ namespace AppleAuth.IOS
         }
         
         public void LoginWithAppleId(
-            Action<IAppleIDCredential> successCallback,
+            Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
             var requestId = NativeMessageHandler.AddMessageCallback(payload =>
