@@ -14,8 +14,8 @@ namespace AppleAuth.IOS
             this._payloadDeserializer = payloadDeserializer;
         }
         
-        public void LoginWithAppleId(
-            Action<string> successCallback,
+        public void LoginSilently(
+            Action<IAppleIDCredential> successCallback,
             Action<IAppleError> errorCallback)
         {
             var requestId = NativeMessageHandler.AddMessageCallback(payload =>
@@ -24,7 +24,23 @@ namespace AppleAuth.IOS
                 if (response.Error != null)
                     errorCallback(response.Error);
                 else
-                    successCallback(payload);
+                    successCallback(response.AppleIDCredential);
+            });
+            
+            PInvoke.AppleAuth_IOS_LoginSilently(requestId);
+        }
+        
+        public void LoginWithAppleId(
+            Action<IAppleIDCredential> successCallback,
+            Action<IAppleError> errorCallback)
+        {
+            var requestId = NativeMessageHandler.AddMessageCallback(payload =>
+            {
+                var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
+                if (response.Error != null)
+                    errorCallback(response.Error);
+                else
+                    successCallback(response.AppleIDCredential);
             });
             
             PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId);
@@ -54,6 +70,9 @@ namespace AppleAuth.IOS
 
             [DllImport("__Internal")]
             public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId);
+            
+            [DllImport("__Internal")]
+            public static extern void AppleAuth_IOS_LoginSilently(uint requestId);
         }
     }
 }
