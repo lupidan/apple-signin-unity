@@ -8,8 +8,10 @@ namespace AppleAuth.IOS.NativeMessages
     {
         public bool _success;
         public DefaultAppleError _error;
+        public DefaultAppleIDCredential _appleIdCredential;
         
         public bool Success { get { return this._success; } }
         public IAppleError Error { get { return this._error; } }
+        public IAppleIDCredential AppleIDCredentials { get { return this._appleIdCredential; } }
     }
 }
