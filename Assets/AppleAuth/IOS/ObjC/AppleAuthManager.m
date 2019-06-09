@@ -119,12 +119,11 @@ static dispatch_once_t defaultManagerInitialization;
 - (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
-    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey]
+    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
     if (requestIdNumber)
     {
         NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-        [result setValue:@NO forKey:@"_success"];
-        [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
+        [result setValue:@YES forKey:@"_success"];
         [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
     }
 }
