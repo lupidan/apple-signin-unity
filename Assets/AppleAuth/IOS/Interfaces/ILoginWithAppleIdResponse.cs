@@ -4,6 +4,7 @@ namespace AppleAuth.IOS.Interfaces
     {
         bool Success { get; }
         IAppleError Error { get; }
-        IAppleIDCredential AppleIDCredentials { get; }
+        IAppleIDCredential AppleIDCredential { get; }
+        IPasswordCredential PasswordCredential { get; }
     }
 }
