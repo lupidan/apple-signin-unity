@@ -180,6 +180,7 @@ static dispatch_once_t defaultManagerInitialization;
         }
 
         [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
+        [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
 }
 
@@ -192,7 +193,9 @@ static dispatch_once_t defaultManagerInitialization;
         NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
         [result setValue:@NO forKey:@"_success"];
         [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
+                
         [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
+        [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
 }
 
