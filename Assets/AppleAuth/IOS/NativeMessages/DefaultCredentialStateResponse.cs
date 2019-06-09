@@ -1,4 +1,5 @@
 using System;
+using AppleAuth.IOS.Enums;
 using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS.NativeMessages

@@ -1,4 +1,4 @@
-namespace AppleAuth
+namespace AppleAuth.IOS.Enums
 {
     public enum CredentialState
     {

@@ -1,3 +1,5 @@
+using AppleAuth.IOS.Enums;
+
 namespace AppleAuth.IOS.Interfaces
 {
     public interface ICredentialStateResponse

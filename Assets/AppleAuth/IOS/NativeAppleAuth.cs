@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using AppleAuth.IOS.Enums;
 using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS
