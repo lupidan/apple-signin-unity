@@ -59,7 +59,50 @@ static dispatch_once_t defaultManagerInitialization;
     [result setValue:[error localizedRecoverySuggestion] forKey:@"_localizedRecoverySuggestion"];
     [result setValue:[error localizedFailureReason] forKey:@"_localizedFailureReason"];
     [result setValue:[error userInfo] forKey:@"_userInfo"];
+    return [result copy];
+}
+
++ (NSDictionary *)dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)appleIDCredential
+{
+    if (!appleIDCredential)
+        return nil;
     
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [result setValue:[[appleIDCredential identityToken] base64EncodedStringWithOptions:0] forKey:@"_identityToken"];
+    [result setValue:[[appleIDCredential authorizationCode] base64EncodedStringWithOptions:0] forKey:@"_authorizationCode"];
+    [result setValue:[appleIDCredential state] forKey:@"_state"];
+    [result setValue:[appleIDCredential user] forKey:@"_user"];
+    [result setValue:[appleIDCredential authorizedScopes] forKey:@"_authorizedScopes"];
+    [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]] forKey:@"_fullName"];
+    [result setValue:[appleIDCredential email] forKey:@"_email"];
+    [result setValue:@([appleIDCredential realUserStatus]) forKey:@"_realUserStatus"];
+    return [result copy];
+}
+
++ (NSDictionary *)dictionaryForNSPersonNameComponents:(NSPersonNameComponents *)nameComponents
+{
+    if (!nameComponents)
+        return nil;
+    
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [result setValue:[nameComponents namePrefix] forKey:@"_namePrefix"];
+    [result setValue:[nameComponents givenName] forKey:@"_givenName"];
+    [result setValue:[nameComponents middleName] forKey:@"_middleName"];
+    [result setValue:[nameComponents familyName] forKey:@"_familyName"];
+    [result setValue:[nameComponents nameSuffix] forKey:@"_nameSuffix"];
+    [result setValue:[nameComponents nickname] forKey:@"_nickname"];
+    [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]] forKey:@"_phoneticRepresentation"];
+    return [result copy];
+}
+
++ (NSDictionary *)dictionaryForASPasswordCredential:(ASPasswordCredential *)passwordCredential
+{
+    if (!passwordCredential)
+        return nil;
+    
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [result setValue:[passwordCredential user] forKey:@"_user"];
+    [result setValue:[passwordCredential password] forKey:@"_password"];
     return [result copy];
 }
 
@@ -77,7 +120,7 @@ static dispatch_once_t defaultManagerInitialization;
 - (void) loginWithAppleId:(uint)requestId
 {
     ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
-    [request setRequestedScopes:@[ASAuthorizationScopeEmail, ASAuthorizationScopeFullName]];
+    [request setRequestedScopes:@[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail]];
     
     ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
@@ -124,6 +167,18 @@ static dispatch_once_t defaultManagerInitialization;
     {
         NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
         [result setValue:@YES forKey:@"_success"];
+        
+        if ([[authorization credential] isKindOfClass:[ASAuthorizationAppleIDCredential class]])
+        {
+            NSDictionary *appleIdCredentialsDictionary = [AppleAuthManager dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)[authorization credential]];
+            [result setValue:appleIdCredentialsDictionary forKey:@"_appleIdCredential"];
+        }
+        else if ([[authorization credential] isKindOfClass:[ASPasswordCredential class]])
+        {
+            NSDictionary *passwordCredentialDictionary = [AppleAuthManager dictionaryForASPasswordCredential:(ASPasswordCredential *)[authorization credential]];
+            [result setValue:passwordCredentialDictionary forKey:@"_passwordCredential"];
+        }
+
         [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
     }
 }
