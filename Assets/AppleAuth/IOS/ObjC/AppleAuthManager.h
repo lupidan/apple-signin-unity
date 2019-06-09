@@ -26,10 +26,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 @interface AppleAuthManager : NSObject
 
 + (instancetype) sharedManager;
 
+- (void) loginSilently:(uint)requestId;
+- (void) loginWithAppleId:(uint)requestId;
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 
 @end

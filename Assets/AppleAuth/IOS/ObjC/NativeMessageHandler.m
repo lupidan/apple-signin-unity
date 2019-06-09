@@ -26,9 +26,6 @@
 
 typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payload);
 
-static NativeMessageHandler *_defaultHandler = nil;
-static dispatch_once_t defaultHandlerInitialization;
-
 @interface NativeMessageHandler ()
 @property (nonatomic, assign) NativeMessageHandlerDelegate mainCallback;
 @end
@@ -37,6 +34,9 @@ static dispatch_once_t defaultHandlerInitialization;
 
 + (instancetype) defaultHandler
 {
+    static NativeMessageHandler *_defaultHandler = nil;
+    static dispatch_once_t defaultHandlerInitialization;
+    
     dispatch_once(&defaultHandlerInitialization, ^{
         _defaultHandler = [[NativeMessageHandler alloc] init];
     });

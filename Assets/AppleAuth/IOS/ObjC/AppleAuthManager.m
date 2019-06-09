@@ -26,11 +26,9 @@
 #import "AppleAuthManager.h"
 #import "NativeMessageHandler.h"
 
-static AppleAuthManager *_defaultManager = nil;
-static dispatch_once_t defaultManagerInitialization;
-
 @interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
+@property (nonatomic, strong) ASAuthorizationPasswordProvider *passwordProvider;
 @property (nonatomic, strong) NSMutableDictionary<NSValue *, NSNumber *> *authorizationsInProgress;
 + (NSDictionary *) dictionaryForNSError:(NSError *)error;
 @end
@@ -39,6 +37,9 @@ static dispatch_once_t defaultManagerInitialization;
 
 + (instancetype) sharedManager
 {
+    static AppleAuthManager *_defaultManager = nil;
+    static dispatch_once_t defaultManagerInitialization;
+    
     dispatch_once(&defaultManagerInitialization, ^{
         _defaultManager = [[AppleAuthManager alloc] init];
     });
@@ -62,7 +63,7 @@ static dispatch_once_t defaultManagerInitialization;
     return [result copy];
 }
 
-+ (NSDictionary *)dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)appleIDCredential
++ (NSDictionary *) dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)appleIDCredential
 {
     if (!appleIDCredential)
         return nil;
@@ -79,7 +80,7 @@ static dispatch_once_t defaultManagerInitialization;
     return [result copy];
 }
 
-+ (NSDictionary *)dictionaryForNSPersonNameComponents:(NSPersonNameComponents *)nameComponents
++ (NSDictionary *) dictionaryForNSPersonNameComponents:(NSPersonNameComponents *)nameComponents
 {
     if (!nameComponents)
         return nil;
@@ -95,7 +96,7 @@ static dispatch_once_t defaultManagerInitialization;
     return [result copy];
 }
 
-+ (NSDictionary *)dictionaryForASPasswordCredential:(ASPasswordCredential *)passwordCredential
++ (NSDictionary *) dictionaryForASPasswordCredential:(ASPasswordCredential *)passwordCredential
 {
     if (!passwordCredential)
         return nil;
@@ -112,9 +113,19 @@ static dispatch_once_t defaultManagerInitialization;
     if (self)
     {
         _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
+        _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
         _authorizationsInProgress = [NSMutableDictionary dictionary];
     }
     return self;
+}
+
+- (void) loginSilently:(uint)requestId
+{
+    ASAuthorizationAppleIDRequest *appleIDSilentRequest = [[self appleIdProvider] createRequest];
+    ASAuthorizationPasswordRequest *passwordSilentRequest = [[self passwordProvider] createRequest];
+    
+    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDSilentRequest, passwordSilentRequest]];
+    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
 }
 
 - (void) loginWithAppleId:(uint)requestId
@@ -123,6 +134,11 @@ static dispatch_once_t defaultManagerInitialization;
     [request setRequestedScopes:@[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail]];
     
     ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
+    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+}
+
+- (void) performAuthorizationRequestsForController:(ASAuthorizationController *)authorizationController withRequestId:(uint)requestId
+{
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
     [[self authorizationsInProgress] setObject:@(requestId) forKey:authControllerAsKey];
     
@@ -159,7 +175,7 @@ static dispatch_once_t defaultManagerInitialization;
     [[NativeMessageHandler defaultHandler] sendNativeMessage:payloadString forRequestWithId:requestId];
 }
 
-- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
+- (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
@@ -184,7 +200,7 @@ static dispatch_once_t defaultManagerInitialization;
     }
 }
 
-- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
+- (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
@@ -193,13 +209,13 @@ static dispatch_once_t defaultManagerInitialization;
         NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
         [result setValue:@NO forKey:@"_success"];
         [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
-                
+        
         [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
         [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
 }
 
-- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
+- (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
 {
     return [[[UIApplication sharedApplication] delegate] window];
 }
@@ -214,4 +230,9 @@ void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 void AppleAuth_IOS_LoginWithAppleId(uint requestId)
 {
     [[AppleAuthManager sharedManager] loginWithAppleId:requestId];
+}
+
+void AppleAuth_IOS_LoginSilently(uint requestId)
+{
+    [[AppleAuthManager sharedManager] loginSilently:requestId];
 }
