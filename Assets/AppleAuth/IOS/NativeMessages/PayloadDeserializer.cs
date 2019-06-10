@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AppleAuth.IOS.NativeMessages
 {
-    public class DefaultPayloadDeserializer : IPayloadDeserializer
+    public class PayloadDeserializer : IPayloadDeserializer
     {
         public ICredentialStateResponse DeserializeCredentialStateResponse(string payload)
         {

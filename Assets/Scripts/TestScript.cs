@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TestScript : MonoBehaviour
 {
-    private NativeAppleAuth _nativeAppleAuth = new NativeAppleAuth(new DefaultPayloadDeserializer());
+    private NativeAppleAuth _nativeAppleAuth = new NativeAppleAuth(new PayloadDeserializer());
 
     private void OnEnable()
     {
