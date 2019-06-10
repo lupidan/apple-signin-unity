@@ -199,8 +199,10 @@
     [result setValue:[appleIDCredential email] forKey:@"_email"];
     [result setValue:@([appleIDCredential realUserStatus]) forKey:@"_realUserStatus"];
     
-    [result setValue:@YES forKey:@"_hasFullName"];
-    [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]] forKey:@"_fullName"];
+    NSDictionary *fullNameDictionary = [AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]];
+    [result setValue:@(fullNameDictionary != nil) forKey:@"_hasFullName"];
+    [result setValue:fullNameDictionary forKey:@"_fullName"];
+    
     return [result copy];
 }
 
@@ -217,8 +219,10 @@
     [result setValue:[nameComponents nameSuffix] forKey:@"_nameSuffix"];
     [result setValue:[nameComponents nickname] forKey:@"_nickname"];
     
-    [result setValue:@([nameComponents phoneticRepresentation] != nil) forKey:@"_hasPhoneticRepresentation"];
-    [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]] forKey:@"_phoneticRepresentation"];
+    NSDictionary *phoneticRepresentationDictionary = [AppleAuthManager dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]];
+    [result setValue:@(phoneticRepresentationDictionary != nil) forKey:@"_hasPhoneticRepresentation"];
+    [result setValue:phoneticRepresentationDictionary forKey:@"_phoneticRepresentation"];
+    
     return [result copy];
 }
 
