@@ -30,7 +30,6 @@
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
 @property (nonatomic, strong) ASAuthorizationPasswordProvider *passwordProvider;
 @property (nonatomic, strong) NSMutableDictionary<NSValue *, NSNumber *> *authorizationsInProgress;
-+ (NSDictionary *) dictionaryForNSError:(NSError *)error;
 @end
 
 @implementation AppleAuthManager
@@ -47,6 +46,130 @@
     return _defaultManager;
 }
 
+- (instancetype) init
+{
+    self = [super init];
+    if (self)
+    {
+        _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
+        _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
+        _authorizationsInProgress = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+#pragma mark - Public methods
+
+- (void) loginSilently:(uint)requestId
+{
+    ASAuthorizationAppleIDRequest *appleIDSilentRequest = [[self appleIdProvider] createRequest];
+    ASAuthorizationPasswordRequest *passwordSilentRequest = [[self passwordProvider] createRequest];
+    
+    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDSilentRequest, passwordSilentRequest]];
+    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+}
+
+- (void) loginWithAppleId:(uint)requestId
+{
+    ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
+    [request setRequestedScopes:@[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail]];
+    
+    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
+    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+}
+
+
+- (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
+{
+    [[self appleIdProvider] getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
+        NSNumber *credentialStateNumber = nil;
+        NSDictionary *errorDictionary = nil;
+        
+        if (error)
+            errorDictionary = [AppleAuthManager dictionaryForNSError:error];
+        else
+            credentialStateNumber = @(credentialState);
+        
+        NSDictionary *responseDictionary = [AppleAuthManager credentialResponseDictionaryForCredentialState:credentialStateNumber
+                                                                                            errorDictionary:errorDictionary];
+        
+        [self sendNativeMessage:responseDictionary withRequestId:requestId];
+    }];
+}
+
+#pragma mark - Private methods
+
+- (void) performAuthorizationRequestsForController:(ASAuthorizationController *)authorizationController withRequestId:(uint)requestId
+{
+    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
+    [[self authorizationsInProgress] setObject:@(requestId) forKey:authControllerAsKey];
+    
+    [authorizationController setDelegate:self];
+    [authorizationController setPresentationContextProvider:self];
+    [authorizationController performRequests];
+}
+
+- (void) sendNativeMessage:(NSDictionary *)toSerialize withRequestId:(uint)requestId
+{
+    NSError *error = nil;
+    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:toSerialize options:0 error:&error];
+    NSString *payloadString = error ? [NSString stringWithFormat:@"Serialization error %@", [error localizedDescription]] : [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
+    [[NativeMessageHandler defaultHandler] sendNativeMessage:payloadString forRequestWithId:requestId];
+}
+
+#pragma mark - ASAuthorizationControllerDelegate protocol implementation
+
+- (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
+{
+    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
+    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
+    if (requestIdNumber)
+    {
+        NSDictionary *appleIdCredentialDictionary = nil;
+        NSDictionary *passwordCredentialDictionary = nil;
+        if ([[authorization credential] isKindOfClass:[ASAuthorizationAppleIDCredential class]])
+        {
+            appleIdCredentialDictionary = [AppleAuthManager dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)[authorization credential]];
+        }
+        else if ([[authorization credential] isKindOfClass:[ASPasswordCredential class]])
+        {
+            passwordCredentialDictionary = [AppleAuthManager dictionaryForASPasswordCredential:(ASPasswordCredential *)[authorization credential]];
+        }
+
+        NSDictionary *responseDictionary = [AppleAuthManager loginResponseDictionaryForAppleIdCredentialDictionary:appleIdCredentialDictionary
+                                                                                      passwordCredentialDictionary:passwordCredentialDictionary
+                                                                                                   errorDictionary:nil];
+        
+        [self sendNativeMessage:responseDictionary withRequestId:[requestIdNumber unsignedIntValue]];
+        [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
+    }
+}
+
+- (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
+{
+    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
+    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
+    if (requestIdNumber)
+    {
+        NSDictionary *errorDictionary = [AppleAuthManager dictionaryForNSError:error];
+        NSDictionary *responseDictionary = [AppleAuthManager loginResponseDictionaryForAppleIdCredentialDictionary:nil
+                                                                                      passwordCredentialDictionary:nil
+                                                                                                   errorDictionary:errorDictionary];
+        
+        [self sendNativeMessage:responseDictionary withRequestId:[requestIdNumber unsignedIntValue]];
+        [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
+    }
+}
+
+#pragma mark - ASAuthorizationControllerPresentationContextProviding protocol implementation
+
+- (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
+{
+    return [[[UIApplication sharedApplication] delegate] window];
+}
+
+#pragma mark - Dictionary Generation Static Methods
+
 + (NSDictionary *) dictionaryForNSError:(NSError *)error
 {
     if (!error)
@@ -59,7 +182,6 @@
     [result setValue:[error localizedRecoveryOptions] forKey:@"_localizedRecoveryOptions"];
     [result setValue:[error localizedRecoverySuggestion] forKey:@"_localizedRecoverySuggestion"];
     [result setValue:[error localizedFailureReason] forKey:@"_localizedFailureReason"];
-    [result setValue:[error userInfo] forKey:@"_userInfo"];
     return [result copy];
 }
 
@@ -74,9 +196,11 @@
     [result setValue:[appleIDCredential state] forKey:@"_state"];
     [result setValue:[appleIDCredential user] forKey:@"_user"];
     [result setValue:[appleIDCredential authorizedScopes] forKey:@"_authorizedScopes"];
-    [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]] forKey:@"_fullName"];
     [result setValue:[appleIDCredential email] forKey:@"_email"];
     [result setValue:@([appleIDCredential realUserStatus]) forKey:@"_realUserStatus"];
+    
+    [result setValue:@YES forKey:@"_hasFullName"];
+    [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]] forKey:@"_fullName"];
     return [result copy];
 }
 
@@ -107,117 +231,37 @@
     return [result copy];
 }
 
-- (instancetype) init
++ (NSDictionary *) credentialResponseDictionaryForCredentialState:(NSNumber *)credentialStateNumber
+                                                        errorDictionary:(NSDictionary *)errorDictionary
 {
-    self = [super init];
-    if (self)
-    {
-        _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
-        _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
-        _authorizationsInProgress = [NSMutableDictionary dictionary];
-    }
-    return self;
-}
-
-- (void) loginSilently:(uint)requestId
-{
-    ASAuthorizationAppleIDRequest *appleIDSilentRequest = [[self appleIdProvider] createRequest];
-    ASAuthorizationPasswordRequest *passwordSilentRequest = [[self passwordProvider] createRequest];
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
     
-    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDSilentRequest, passwordSilentRequest]];
-    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
-}
-
-- (void) loginWithAppleId:(uint)requestId
-{
-    ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
-    [request setRequestedScopes:@[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail]];
+    [result setValue:(errorDictionary ? @NO : @YES) forKey:@"_success"];
+    [result setValue:(credentialStateNumber ? @YES : @NO) forKey:@"_hasCredentialState"];
+    [result setValue:(errorDictionary ? @YES : @NO) forKey:@"_hasError"];
     
-    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
-    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
-}
-
-- (void) performAuthorizationRequestsForController:(ASAuthorizationController *)authorizationController withRequestId:(uint)requestId
-{
-    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
-    [[self authorizationsInProgress] setObject:@(requestId) forKey:authControllerAsKey];
+    [result setValue:credentialStateNumber forKey:@"_credentialState"];
+    [result setValue:errorDictionary forKey:@"_error"];
     
-    [authorizationController setDelegate:self];
-    [authorizationController setPresentationContextProvider:self];
-    [authorizationController performRequests];
+    return [result copy];
 }
 
-- (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
++ (NSDictionary *) loginResponseDictionaryForAppleIdCredentialDictionary:(NSDictionary *)appleIdCredentialDictionary
+                                                  passwordCredentialDictionary:(NSDictionary *)passwordCredentialDictionary
+                                                               errorDictionary:(NSDictionary *)errorDictionary
 {
-    [[self appleIdProvider] getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
-        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-        if (error)
-        {
-            [result setValue:@NO forKey:@"_success"];
-            [result setValue:@(-1) forKey:@"_credentialState"];
-            [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
-        }
-        else
-        {
-            [result setValue:@YES forKey:@"_success"];
-            [result setValue:@(credentialState) forKey:@"_credentialState"];
-        }
-        
-        [self sendNativeMessage:[result copy] withRequestId:requestId];
-    }];
-}
-
-- (void) sendNativeMessage:(NSDictionary *)toSerialize withRequestId:(uint)requestId
-{
-    NSError *error = nil;
-    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:toSerialize options:0 error:&error];
-    NSString *payloadString = error ? [NSString stringWithFormat:@"Serialization error %@", [error localizedDescription]] : [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
-    [[NativeMessageHandler defaultHandler] sendNativeMessage:payloadString forRequestWithId:requestId];
-}
-
-- (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
-{
-    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
-    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
-    if (requestIdNumber)
-    {
-        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-        [result setValue:@YES forKey:@"_success"];
-        
-        if ([[authorization credential] isKindOfClass:[ASAuthorizationAppleIDCredential class]])
-        {
-            NSDictionary *appleIdCredentialsDictionary = [AppleAuthManager dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)[authorization credential]];
-            [result setValue:appleIdCredentialsDictionary forKey:@"_appleIdCredential"];
-        }
-        else if ([[authorization credential] isKindOfClass:[ASPasswordCredential class]])
-        {
-            NSDictionary *passwordCredentialDictionary = [AppleAuthManager dictionaryForASPasswordCredential:(ASPasswordCredential *)[authorization credential]];
-            [result setValue:passwordCredentialDictionary forKey:@"_passwordCredential"];
-        }
-
-        [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
-        [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
-    }
-}
-
-- (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
-{
-    NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
-    NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
-    if (requestIdNumber)
-    {
-        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-        [result setValue:@NO forKey:@"_success"];
-        [result setValue:[AppleAuthManager dictionaryForNSError:error] forKey:@"_error"];
-        
-        [self sendNativeMessage:[result copy] withRequestId:[requestIdNumber unsignedIntValue]];
-        [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
-    }
-}
-
-- (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
-{
-    return [[[UIApplication sharedApplication] delegate] window];
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    
+    [result setValue:(errorDictionary ? @NO : @YES) forKey:@"_success"];
+    [result setValue:(errorDictionary ? @YES : @NO) forKey:@"_hasError"];
+    [result setValue:(appleIdCredentialDictionary ? @YES : @NO) forKey:@"_hasAppleIdCredential"];
+    [result setValue:(passwordCredentialDictionary ? @YES : @NO) forKey:@"_hasPasswordCredential"];
+    
+    [result setValue:appleIdCredentialDictionary forKey:@"_appleIdCredential"];
+    [result setValue:passwordCredentialDictionary forKey:@"_passwordCredential"];
+    [result setValue:errorDictionary forKey:@"_error"];
+    
+    return [result copy];
 }
 
 @end
