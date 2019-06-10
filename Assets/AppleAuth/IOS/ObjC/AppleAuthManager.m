@@ -253,9 +253,9 @@
     NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
     
     [result setValue:(errorDictionary ? @NO : @YES) forKey:@"_success"];
-    [result setValue:(errorDictionary ? @YES : @NO) forKey:@"_hasError"];
     [result setValue:(appleIdCredentialDictionary ? @YES : @NO) forKey:@"_hasAppleIdCredential"];
     [result setValue:(passwordCredentialDictionary ? @YES : @NO) forKey:@"_hasPasswordCredential"];
+    [result setValue:(errorDictionary ? @YES : @NO) forKey:@"_hasError"];
     
     [result setValue:appleIdCredentialDictionary forKey:@"_appleIdCredential"];
     [result setValue:passwordCredentialDictionary forKey:@"_passwordCredential"];
