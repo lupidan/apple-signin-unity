@@ -6,13 +6,13 @@ using UnityEngine;
 namespace AppleAuth.IOS.NativeMessages
 {
     [Serializable]
-    public class DefaultCredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
+    public class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
     {
         public bool _success;
         public bool _hasCredentialState;
         public bool _hasError;
         public CredentialState _credentialState;
-        public DefaultAppleError _error;
+        public AppleError _error;
 
         public bool Success { get { return this._success; } }
         public CredentialState CredentialState { get { return this._credentialState; } }

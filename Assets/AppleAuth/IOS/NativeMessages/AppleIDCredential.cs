@@ -6,7 +6,7 @@ using UnityEngine;
 namespace AppleAuth.IOS.NativeMessages
 {
     [Serializable]
-    public class DefaultAppleIDCredential : IAppleIDCredential, ISerializationCallbackReceiver
+    public class AppleIDCredential : IAppleIDCredential, ISerializationCallbackReceiver
     {
         public string _identityToken;
         public string _authorizationCode;
@@ -14,7 +14,7 @@ namespace AppleAuth.IOS.NativeMessages
         public string _user;
         public string[] _authorizedScopes;
         public bool _hasFullName;
-        public DefaultPersonName _fullName;
+        public FullPersonName _fullName;
         public string _email;
         public RealUserStatus _realUserStatus;
         

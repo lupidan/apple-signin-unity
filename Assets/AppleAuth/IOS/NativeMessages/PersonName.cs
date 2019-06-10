@@ -2,7 +2,7 @@ using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS.NativeMessages
 {
-    public class DefaultPersonNameBase : IPersonName
+    public class PersonName : IPersonName
     {
         public string _namePrefix;
         public string _givenName;

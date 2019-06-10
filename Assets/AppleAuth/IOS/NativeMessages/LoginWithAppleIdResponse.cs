@@ -5,15 +5,15 @@ using UnityEngine;
 namespace AppleAuth.IOS.NativeMessages
 {
     [Serializable]
-    public class DefaultLoginWithAppleIdResponse : ILoginWithAppleIdResponse, ISerializationCallbackReceiver
+    public class LoginWithAppleIdResponse : ILoginWithAppleIdResponse, ISerializationCallbackReceiver
     {
         public bool _success;
         public bool _hasAppleIdCredential;
         public bool _hasPasswordCredential;
         public bool _hasError;
-        public DefaultAppleIDCredential _appleIdCredential;
-        public DefaultPasswordCredential _passwordCredential;
-        public DefaultAppleError _error;
+        public AppleIDCredential _appleIdCredential;
+        public PasswordCredential _passwordCredential;
+        public AppleError _error;
 
         public bool Success { get { return this._success; } }
         public IAppleError Error { get { return this._error; } }

@@ -4,7 +4,7 @@ using AppleAuth.IOS.Interfaces;
 namespace AppleAuth.IOS.NativeMessages
 {
     [Serializable]
-    public class DefaultAppleError : IAppleError
+    public class AppleError : IAppleError
     {
         public int _code;
         public string _domain;

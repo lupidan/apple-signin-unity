@@ -5,10 +5,10 @@ using UnityEngine;
 namespace AppleAuth.IOS.NativeMessages
 {
     [Serializable]
-    public class DefaultPersonName : DefaultPersonNameBase, IPersonName, ISerializationCallbackReceiver
+    public class FullPersonName : PersonName, IPersonName, ISerializationCallbackReceiver
     {
         public bool _hasPhoneticRepresentation;
-        public DefaultPersonNameBase _phoneticRepresentation;
+        public PersonName _phoneticRepresentation;
 
         public new IPersonName PhoneticRepresentation { get { return _phoneticRepresentation; } }
         

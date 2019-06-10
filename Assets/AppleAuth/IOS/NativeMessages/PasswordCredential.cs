@@ -4,7 +4,7 @@ using AppleAuth.IOS.Interfaces;
 namespace AppleAuth.IOS.NativeMessages
 {
     [Serializable]
-    public class DefaultPasswordCredential : IPasswordCredential
+    public class PasswordCredential : IPasswordCredential
     {
         public string _user;
         public string _password;
