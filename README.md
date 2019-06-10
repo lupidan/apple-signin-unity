@@ -26,16 +26,15 @@ As long as you implement the IPayloadDeserializer interface, you can pass that i
 ## Current progress
 
 ### iOS Native 
-[X] GameObject-less messaging system based on strings.
-[X] Get Credential state for a specific User-Id.
-[X] Sign in with Apple.
-[X] Silent Login to support iTunes Keychains (to be properly tested).
-[ ] Programatically add new AuthenticationServices.framework and Entitlements entry when building for iOS.
-[ ] NSPersonNameComponents formatting for all different styles.
-[ ] NSError codes mapping into Unity.
-[ ] Customize Sign in With Apple call from Unity. (request email and/or full name)
-[ ] Support to schedule all callbacks in user-configured loops (ex. in an MonoBehaviour's Update loop).
-[ ] 
+- ☒ GameObject-less messaging system based on strings.
+- ☒ Get Credential state for a specific User-Id.
+- ☒ Sign in with Apple.
+- ☒ Silent Login to support iTunes Keychains (to be properly tested).
+- ☐ Programatically add new AuthenticationServices.framework and Entitlements entry when building for iOS.
+- ☐ NSPersonNameComponents formatting for all different styles.
+- ☐ NSError codes mapping into Unity.
+- ☐ Customize Sign in With Apple call from Unity. (request email and/or full name)
+- ☐ Support to schedule all callbacks in user-configured loops (ex. in an MonoBehaviour's Update loop).
 
 ### Rest API
-[ ] TBD
+- ☐ TBD
