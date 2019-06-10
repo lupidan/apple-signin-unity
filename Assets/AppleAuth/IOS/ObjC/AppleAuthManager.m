@@ -216,6 +216,8 @@
     [result setValue:[nameComponents familyName] forKey:@"_familyName"];
     [result setValue:[nameComponents nameSuffix] forKey:@"_nameSuffix"];
     [result setValue:[nameComponents nickname] forKey:@"_nickname"];
+    
+    [result setValue:@([nameComponents phoneticRepresentation] != nil) forKey:@"_hasPhoneticRepresentation"];
     [result setValue:[AppleAuthManager dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]] forKey:@"_phoneticRepresentation"];
     return [result copy];
 }
@@ -236,9 +238,9 @@
 {
     NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
     
-    [result setValue:(errorDictionary ? @NO : @YES) forKey:@"_success"];
-    [result setValue:(credentialStateNumber ? @YES : @NO) forKey:@"_hasCredentialState"];
-    [result setValue:(errorDictionary ? @YES : @NO) forKey:@"_hasError"];
+    [result setValue:@(errorDictionary == nil) forKey:@"_success"];
+    [result setValue:@(credentialStateNumber != nil) forKey:@"_hasCredentialState"];
+    [result setValue:@(errorDictionary != nil) forKey:@"_hasError"];
     
     [result setValue:credentialStateNumber forKey:@"_credentialState"];
     [result setValue:errorDictionary forKey:@"_error"];
@@ -252,10 +254,10 @@
 {
     NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
     
-    [result setValue:(errorDictionary ? @NO : @YES) forKey:@"_success"];
-    [result setValue:(appleIdCredentialDictionary ? @YES : @NO) forKey:@"_hasAppleIdCredential"];
-    [result setValue:(passwordCredentialDictionary ? @YES : @NO) forKey:@"_hasPasswordCredential"];
-    [result setValue:(errorDictionary ? @YES : @NO) forKey:@"_hasError"];
+    [result setValue:@(errorDictionary == nil) forKey:@"_success"];
+    [result setValue:@(appleIdCredentialDictionary != nil) forKey:@"_hasAppleIdCredential"];
+    [result setValue:@(passwordCredentialDictionary != nil) forKey:@"_hasPasswordCredential"];
+    [result setValue:@(errorDictionary != nil) forKey:@"_hasError"];
     
     [result setValue:appleIdCredentialDictionary forKey:@"_appleIdCredential"];
     [result setValue:passwordCredentialDictionary forKey:@"_passwordCredential"];
