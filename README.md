@@ -35,7 +35,7 @@ As long as you implement the IPayloadDeserializer interface, you can pass that i
 - ☒ Get Credential state for a specific User-Id.
 - ☒ Sign in with Apple.
 - ☒ Silent Login to support iTunes Keychains (to be properly tested).
-- ☐ Programatically add new AuthenticationServices.framework and Entitlements entry when building for iOS.
+- ☒ Programatically add new AuthenticationServices.framework and Entitlements entry when building for iOS.
 - ☐ NSPersonNameComponents formatting for all different styles.
 - ☐ NSError codes mapping into Unity.
 - ☐ Customize Sign in With Apple call from Unity. (request email and/or full name)
