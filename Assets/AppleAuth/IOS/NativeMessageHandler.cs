@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AOT;
+using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS
 {
@@ -9,11 +10,11 @@ namespace AppleAuth.IOS
     {
         private delegate void NativeMessageHandlerDelegate(uint requestId, string messagePayload);
 
-        private static readonly Dictionary<uint, Action<string>> CallbackDictionary = new Dictionary<uint, Action<string>>();
+        private static readonly Dictionary<uint, MessageCallbackEntry> CallbackDictionary = new Dictionary<uint, MessageCallbackEntry>();
         private static uint _callbackId = 1;
         private static bool _initialized = false;
 
-        public static uint AddMessageCallback(Action<string> messageCallback)
+        internal static uint AddMessageCallback(IMessageHandlerScheduler scheduler, Action<string> messageCallback)
         {
             if (!_initialized)
             {
@@ -29,19 +30,32 @@ namespace AppleAuth.IOS
             if (CallbackDictionary.ContainsKey(usedCallbackId))
                 throw new Exception("A Message Callback with the same ID " + usedCallbackId + " already exists.");
 
-            CallbackDictionary.Add(usedCallbackId, messageCallback);
+            var callbackEntry = new MessageCallbackEntry(messageCallback, scheduler);
+            CallbackDictionary.Add(usedCallbackId, callbackEntry);
             return usedCallbackId;
         }
 
         [MonoPInvokeCallback(typeof(NativeMessageHandlerDelegate))]
         private static void NativeMessageHandlerCallback(uint requestId, string messagePayload)
         {
-            Action<string> callback;
-            if (!CallbackDictionary.TryGetValue(requestId, out callback))
+            MessageCallbackEntry callbackEntry;
+            if (!CallbackDictionary.TryGetValue(requestId, out callbackEntry))
                 throw new Exception("A Message Callback with ID " + requestId + " couldn't be found");
 
-            callback.Invoke(messagePayload);
+            callbackEntry.Scheduler.Schedule(() => callbackEntry.MessageCallback.Invoke(messagePayload));
             CallbackDictionary.Remove(requestId);
+        }
+        
+        private class MessageCallbackEntry
+        {
+            public readonly Action<string> MessageCallback;
+            public readonly IMessageHandlerScheduler Scheduler;
+
+            public MessageCallbackEntry(Action<string> messageCallback, IMessageHandlerScheduler scheduler)
+            {
+                this.MessageCallback = messageCallback;
+                this.Scheduler = scheduler;
+            }
         }
         
         private static class PInvoke
