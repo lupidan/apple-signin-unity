@@ -39,6 +39,7 @@ namespace AppleAuth.IOS
         }
         
         public void LoginWithAppleId(
+            LoginOptions loginOptions,
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
@@ -54,7 +55,7 @@ namespace AppleAuth.IOS
                         successCallback(response.AppleIDCredential);
                 });
             
-            PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId);
+            PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions);
         }
         
         public void GetCredentialState(
@@ -83,7 +84,7 @@ namespace AppleAuth.IOS
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
 
             [DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId);
+            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions);
             
             [DllImport("__Internal")]
             public static extern void AppleAuth_IOS_LoginSilently(uint requestId);
