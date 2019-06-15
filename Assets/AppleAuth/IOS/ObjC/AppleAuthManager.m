@@ -69,10 +69,18 @@
     [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
 }
 
-- (void) loginWithAppleId:(uint)requestId
+- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options
 {
     ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
-    [request setRequestedScopes:@[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail]];
+    NSMutableArray *scopes = [NSMutableArray array];
+    
+    if (options & AppleAuthManagerIncludeName)
+        [scopes addObject:ASAuthorizationScopeFullName];
+        
+    if (options & AppleAuthManagerIncludeEmail)
+        [scopes addObject:ASAuthorizationScopeEmail];
+        
+    [request setRequestedScopes:[scopes copy]];
     
     ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
     [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
@@ -277,9 +285,9 @@ void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
     [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
 }
 
-void AppleAuth_IOS_LoginWithAppleId(uint requestId)
+void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
 {
-    [[AppleAuthManager sharedManager] loginWithAppleId:requestId];
+    [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options];
 }
 
 void AppleAuth_IOS_LoginSilently(uint requestId)
