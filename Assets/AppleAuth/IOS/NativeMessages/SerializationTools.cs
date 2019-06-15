@@ -10,7 +10,7 @@ namespace AppleAuth.IOS.NativeMessages
 
         internal static void FixSerializationForArray<T>(ref T[] originalArray)
         {
-            if (originalArray.Length == 0)
+            if (originalArray != null && originalArray.Length == 0)
                 originalArray = null;
         }
 
