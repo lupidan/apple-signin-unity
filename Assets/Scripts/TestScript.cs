@@ -45,7 +45,7 @@ public class TestScript : MonoBehaviour
     {
         if (error == null)
             return null;
-        
+
         var sb = new StringBuilder("");
         sb.AppendLine($"Code {error.Code}");
         sb.AppendLine($"Domain: {error.Domain}");
@@ -73,9 +73,9 @@ public class TestScript : MonoBehaviour
             
             if (appleIDCredential.FullName != null)
             {
-                sb.AppendLine($"Full Name: START");
+                sb.AppendLine("Full Name: START");
                 sb.AppendLine($"{DescribePersonName(appleIDCredential.FullName)}");
-                sb.AppendLine($"Full Name: END");
+                sb.AppendLine("Full Name: END");
             }
 
             return sb.ToString();
@@ -106,9 +106,9 @@ public class TestScript : MonoBehaviour
         
         if (personName.PhoneticRepresentation != null)
         {
-            sb.AppendLine($"PhoneticRepresentation START");
+            sb.AppendLine("PhoneticRepresentation START");
             sb.AppendLine($"{DescribePersonName(personName.PhoneticRepresentation)}");
-            sb.AppendLine($"PhoneticRepresentation END");
+            sb.AppendLine("PhoneticRepresentation END");
         }
 
         sb.AppendLine(personName.ToLocalizedString(PersonNameFormatterStyle.Long) ?? "No localized name");
