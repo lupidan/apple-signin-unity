@@ -27,15 +27,19 @@ namespace AppleAuth.IOS.NativeMessages
         public string Email { get { return this._email; } }
         public RealUserStatus RealUserStatus { get { return this._realUserStatus; } }
         
-        public void OnBeforeSerialize()
-        {
-            this._fullName = null;
-        }
+        public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
         {
-            if (!this._hasFullName)
-                this._fullName = null;
+            SerializationTools.FixSerializationForString(ref this._identityToken);
+            SerializationTools.FixSerializationForString(ref this._authorizationCode);
+            SerializationTools.FixSerializationForString(ref this._state);
+            SerializationTools.FixSerializationForString(ref this._user);
+            SerializationTools.FixSerializationForString(ref this._email);
+            
+            SerializationTools.FixSerializationForArray(ref this._authorizedScopes);
+            
+            SerializationTools.FixSerializationForObject(ref this._fullName, this._hasFullName);
         }
     }
 }

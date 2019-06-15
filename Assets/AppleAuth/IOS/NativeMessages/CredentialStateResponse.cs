@@ -18,19 +18,12 @@ namespace AppleAuth.IOS.NativeMessages
         public CredentialState CredentialState { get { return this._credentialState; } }
         public IAppleError Error { get { return this._error; } }
         
-        public void OnBeforeSerialize()
-        {
-            this._credentialState = CredentialState.Unknown;
-            this._error = null;
-        }
+        public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
         {
-            if (!this._hasCredentialState)
-                this._credentialState = CredentialState.Unknown;
-
-            if (!this._hasError)
-                this._error = null;
+            SerializationTools.FixSerializationForObject(ref this._credentialState, this._hasCredentialState);
+            SerializationTools.FixSerializationForObject(ref this._error, this._hasError);
         }
     }
 }

@@ -20,23 +20,13 @@ namespace AppleAuth.IOS.NativeMessages
         public IAppleIDCredential AppleIDCredential { get { return this._appleIdCredential; } }
         public IPasswordCredential PasswordCredential { get { return this._passwordCredential; } }
         
-        public void OnBeforeSerialize()
-        {
-            this._error = null;
-            this._appleIdCredential = null;
-            this._passwordCredential = null;
-        }
+        public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize()
         {
-            if (!this._hasError)
-                this._error = null;
-
-            if (!this._hasAppleIdCredential)
-                this._appleIdCredential = null;
-
-            if (!this._hasPasswordCredential)
-                this._passwordCredential = null;
+            SerializationTools.FixSerializationForObject(ref this._error, this._hasError);
+            SerializationTools.FixSerializationForObject(ref this._appleIdCredential, this._hasAppleIdCredential);
+            SerializationTools.FixSerializationForObject(ref this._passwordCredential, this._hasPasswordCredential);
         }
     }
 }
