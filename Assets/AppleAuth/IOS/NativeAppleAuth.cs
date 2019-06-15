@@ -8,22 +8,20 @@ namespace AppleAuth.IOS
     public class NativeAppleAuth
     {
         private readonly IPayloadDeserializer _payloadDeserializer;
-        private readonly IMessageHandlerScheduler _immediateScheduler = new ImmediateMessageHandlerScheduler();
-        private readonly IMessageHandlerScheduler _userConfiguredScheduler;
+        private readonly IMessageHandlerScheduler _scheduler;
 
-        public NativeAppleAuth(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler = null)
+        public NativeAppleAuth(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
         {
             this._payloadDeserializer = payloadDeserializer;
-            this._userConfiguredScheduler = scheduler;
+            this._scheduler = scheduler;
         }
         
         public void LoginSilently(
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
-            var scheduler = this._userConfiguredScheduler ?? this._immediateScheduler;
             var requestId = NativeMessageHandler.AddMessageCallback(
-                scheduler,
+                this._scheduler,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
@@ -43,9 +41,8 @@ namespace AppleAuth.IOS
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
-            var scheduler = this._userConfiguredScheduler ?? this._immediateScheduler;
             var requestId = NativeMessageHandler.AddMessageCallback(
-                scheduler,
+                this._scheduler,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
@@ -63,9 +60,8 @@ namespace AppleAuth.IOS
             Action<CredentialState> successCallback,
             Action<IAppleError> errorCallback)
         {
-            var scheduler = this._userConfiguredScheduler ?? this._immediateScheduler;
             var requestId = NativeMessageHandler.AddMessageCallback(
-                scheduler,
+                this._scheduler,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeCredentialStateResponse(payload);

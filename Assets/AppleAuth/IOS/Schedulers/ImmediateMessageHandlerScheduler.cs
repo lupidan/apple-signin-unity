@@ -12,9 +12,5 @@ namespace AppleAuth.IOS
             
             callback.Invoke();
         }
-
-        public void Update()
-        {
-        }
     }
 }
