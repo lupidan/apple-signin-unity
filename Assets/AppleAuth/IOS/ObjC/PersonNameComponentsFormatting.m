@@ -39,8 +39,7 @@ const char* AppleAuth_IOS_GetPersonNameUsingFormatter(const char *payload, int s
         return NULL;
     
     NSError *error = nil;
-    NSString *payloadString = [NSString stringWithUTF8String:payload];
-    NSData *payloadData = [payloadString dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *payloadData = [NSData dataWithBytes:payload length:strlen(payload)];
     NSDictionary * nameComponentsDictionary = [NSJSONSerialization JSONObjectWithData:payloadData options:0 error:&error];
     if (error)
         return NULL;
