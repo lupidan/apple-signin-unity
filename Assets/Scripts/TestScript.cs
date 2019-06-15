@@ -1,35 +1,47 @@
 ﻿using System.Text;
 using AppleAuth.IOS;
+using AppleAuth.IOS.Enums;
+using AppleAuth.IOS.Extensions;
 using AppleAuth.IOS.Interfaces;
 using AppleAuth.IOS.NativeMessages;
 using UnityEngine;
 
 public class TestScript : MonoBehaviour
 {
-    private NativeAppleAuth _nativeAppleAuth = new NativeAppleAuth(new PayloadDeserializer());
+    private IAppleAuthManager _appleAuthManager = new AppleAuthManager(new PayloadDeserializer(), new ImmediateMessageHandlerScheduler());
 
     private void OnEnable()
     {
-        this._nativeAppleAuth.LoginSilently(
+        this._appleAuthManager.LoginSilently(
             credential => Debug.Log(DescribeCredential(credential)),
-            error => Debug.Log(this.DescribeError(error)));
-        
-        this._nativeAppleAuth.GetCredentialState("ThisUserIsNotReal",
-            credentialState =>
-            {
-                Debug.Log($"Received credential state {credentialState.ToString()}");
-            },
-            error => Debug.Log(this.DescribeError(error)));
+            error => Debug.Log(DescribeError(error)));
+
+        if (PlayerPrefs.HasKey("Apple ID"))
+        {
+            this._appleAuthManager.GetCredentialState(PlayerPrefs.GetString("Apple ID"),
+                credentialState =>
+                {
+                    Debug.Log($"Received credential state {credentialState.ToString()}");
+                },
+                error => Debug.Log(DescribeError(error)));            
+        }
     }
+    
 
     public void OnLoginWithAppleButtonPressed()
     {
-        this._nativeAppleAuth.LoginWithAppleId(
-            credential => Debug.Log(DescribeCredential(credential)),
-            error => Debug.Log(this.DescribeError(error)));
+        this._appleAuthManager.LoginWithAppleId(
+            LoginOptions.IncludeEmail,
+            credential =>
+            {
+                Debug.Log(DescribeCredential(credential));
+                PlayerPrefs.SetString("Apple ID", credential.User);
+                PlayerPrefs.Save();
+            },
+            error => Debug.Log(DescribeError(error)));
     }
 
-    private string DescribeError(IAppleError error)
+    private static string DescribeError(IAppleError error)
     {
         if (error == null)
             return null;
@@ -44,9 +56,8 @@ public class TestScript : MonoBehaviour
         return sb.ToString();
     }
 
-    private string DescribeCredential(ICredential credential)
+    private static string DescribeCredential(ICredential credential)
     {
-        
         var appleIDCredential = credential as IAppleIDCredential;
         var passwordCredential = credential as IPasswordCredential;
         if (appleIDCredential != null)
@@ -80,7 +91,7 @@ public class TestScript : MonoBehaviour
         return null;
     }
 
-    private string DescribePersonName(IPersonName personName)
+    private static string DescribePersonName(IPersonName personName)
     {
         if (personName == null)
             return null;
@@ -99,6 +110,8 @@ public class TestScript : MonoBehaviour
             sb.AppendLine($"{DescribePersonName(personName.PhoneticRepresentation)}");
             sb.AppendLine($"PhoneticRepresentation END");
         }
+
+        sb.AppendLine(personName.ToLocalizedString(PersonNameFormatterStyle.Long) ?? "No localized name");
         
         return sb.ToString();
     }
