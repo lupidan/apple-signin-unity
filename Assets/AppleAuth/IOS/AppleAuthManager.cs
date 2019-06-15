@@ -5,12 +5,12 @@ using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS
 {
-    public class NativeAppleAuth
+    public class AppleAuthManager : IAppleAuthManager
     {
         private readonly IPayloadDeserializer _payloadDeserializer;
         private readonly IMessageHandlerScheduler _scheduler;
 
-        public NativeAppleAuth(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
+        public AppleAuthManager(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
         {
             this._payloadDeserializer = payloadDeserializer;
             this._scheduler = scheduler;
