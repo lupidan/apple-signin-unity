@@ -4,13 +4,18 @@
 
 # Sign in with Apple Unity Plugin
 <p>
-<img src="https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social"/> <img src="https://img.shields.io/github/followers/lupidan.svg?style=social"/>
+<img src="https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social"/>
+<img src="https://img.shields.io/github/followers/lupidan.svg?style=social"/>
+<img src="https://img.shields.io/github/license/lupidan/apple-signin-unity.svg">
 </p>
 
 <p>
 <img src="https://img.shields.io/twitter/follow/lupi_dan.svg?style=social"/>
 </p>
 
+<p>
+<img src="https://img.shields.io/static/v1.svg?label=&message=Donate&color=informational&logo=paypal&style=popout-square"/>
+</p>
 
 <p align="center">
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
