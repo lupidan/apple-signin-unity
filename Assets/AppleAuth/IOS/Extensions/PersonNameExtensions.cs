@@ -5,7 +5,10 @@ namespace AppleAuth.IOS.Extensions
 {
     public static class PersonNameExtensions
     {
-        public static string ToLocalizedString(this IPersonName personName, PersonNameFormatterStyle style, bool usePhoneticRepresentation = false)
+        public static string ToLocalizedString(
+            this IPersonName personName,
+            PersonNameFormatterStyle style = PersonNameFormatterStyle.Default,
+            bool usePhoneticRepresentation = false)
         {
 #if UNITY_IOS && !UNITY_EDITOR
             var jsonString = JsonStringForPersonName(personName);
