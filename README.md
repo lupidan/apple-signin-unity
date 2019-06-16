@@ -3,24 +3,20 @@
 </p>
 
 # Sign in with Apple Unity Plugin
-<p>
-<img src="https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social"/>
-<img src="https://img.shields.io/github/followers/lupidan.svg?style=social"/>
-<img src="https://img.shields.io/github/license/lupidan/apple-signin-unity.svg">
-</p>
+[![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
+[![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
+[![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
 
-<p>
-<img src="https://img.shields.io/twitter/follow/lupi_dan.svg?style=social"/>
-</p>
+[![Twitter](https://img.shields.io/twitter/follow/lupi_dan.svg?style=social)](https://twitter.com/intent/user?screen_name=lupi_dan)
 
-<p>
-<img src="https://img.shields.io/static/v1.svg?label=&message=Donate&color=informational&logo=paypal&style=popout-square"/>
-</p>
+[![Donate](https://img.shields.io/static/v1.svg?label=Donate&message=%20%40lupidan&color=red&logo=paypal&style=popout)](https://paypal.me/lupidan)
 
 <p align="center">
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png" alt="Screenshot2" height="400"/></a>
 </p>
+
+by **Daniel Lupiañez Casares**
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
