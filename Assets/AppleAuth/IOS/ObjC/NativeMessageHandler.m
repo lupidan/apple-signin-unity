@@ -44,12 +44,20 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
     return _defaultHandler;
 }
 
-- (void) sendNativeMessage:(NSString *)payload forRequestWithId:(uint)requestId
+- (void) sendNativeMessageForDictionary:(NSDictionary *)payloadDictionary forRequestId:(uint)requestId
+{
+    NSError *error = nil;
+    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payloadDictionary options:0 error:&error];
+    NSString *payloadString = error ? [NSString stringWithFormat:@"Serialization error %@", [error localizedDescription]] : [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
+    [self sendNativeMessageForString:payloadString forRequestId:requestId];
+}
+
+- (void) sendNativeMessageForString:(NSString *)payloadString forRequestId:(uint)requestId
 {
     if ([self mainCallback] == NULL)
         return;
     
-    [self mainCallback](requestId, [payload UTF8String]);
+    [self mainCallback](requestId, [payloadString UTF8String]);
 }
 
 @end

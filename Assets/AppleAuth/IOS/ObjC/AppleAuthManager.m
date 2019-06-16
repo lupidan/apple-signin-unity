@@ -22,9 +22,14 @@
 //  SOFTWARE.
 //
 
-#import <AuthenticationServices/AuthenticationServices.h>
 #import "AppleAuthManager.h"
 #import "NativeMessageHandler.h"
+#import "AppleAuthSerializer.h"
+
+#pragma mark - iOS 13.0/macOS 13.0 Implementation
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+#import <AuthenticationServices/AuthenticationServices.h>
 
 @interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
@@ -58,7 +63,7 @@
     return self;
 }
 
-#pragma mark - Public methods
+#pragma mark Public methods
 
 - (void) loginSilently:(uint)requestId
 {
@@ -105,7 +110,7 @@
     }];
 }
 
-#pragma mark - Private methods
+#pragma mark Private methods
 
 - (void) performAuthorizationRequestsForController:(ASAuthorizationController *)authorizationController withRequestId:(uint)requestId
 {
@@ -117,15 +122,7 @@
     [authorizationController performRequests];
 }
 
-- (void) sendNativeMessage:(NSDictionary *)toSerialize withRequestId:(uint)requestId
-{
-    NSError *error = nil;
-    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:toSerialize options:0 error:&error];
-    NSString *payloadString = error ? [NSString stringWithFormat:@"Serialization error %@", [error localizedDescription]] : [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
-    [[NativeMessageHandler defaultHandler] sendNativeMessage:payloadString forRequestWithId:requestId];
-}
-
-#pragma mark - ASAuthorizationControllerDelegate protocol implementation
+#pragma mark ASAuthorizationControllerDelegate protocol implementation
 
 - (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
 {
@@ -169,116 +166,21 @@
     }
 }
 
-#pragma mark - ASAuthorizationControllerPresentationContextProviding protocol implementation
+#pragma mark ASAuthorizationControllerPresentationContextProviding protocol implementation
 
 - (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
 {
     return [[[UIApplication sharedApplication] delegate] window];
 }
 
-#pragma mark - Dictionary Generation Static Methods
-
-+ (NSDictionary *) dictionaryForNSError:(NSError *)error
-{
-    if (!error)
-        return nil;
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    [result setValue:@([error code]) forKey:@"_code"];
-    [result setValue:[error domain] forKey:@"_domain"];
-    [result setValue:[error localizedDescription] forKey:@"_localizedDescription"];
-    [result setValue:[error localizedRecoveryOptions] forKey:@"_localizedRecoveryOptions"];
-    [result setValue:[error localizedRecoverySuggestion] forKey:@"_localizedRecoverySuggestion"];
-    [result setValue:[error localizedFailureReason] forKey:@"_localizedFailureReason"];
-    return [result copy];
-}
-
-+ (NSDictionary *) dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)appleIDCredential
-{
-    if (!appleIDCredential)
-        return nil;
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    [result setValue:[[appleIDCredential identityToken] base64EncodedStringWithOptions:0] forKey:@"_identityToken"];
-    [result setValue:[[appleIDCredential authorizationCode] base64EncodedStringWithOptions:0] forKey:@"_authorizationCode"];
-    [result setValue:[appleIDCredential state] forKey:@"_state"];
-    [result setValue:[appleIDCredential user] forKey:@"_user"];
-    [result setValue:[appleIDCredential authorizedScopes] forKey:@"_authorizedScopes"];
-    [result setValue:[appleIDCredential email] forKey:@"_email"];
-    [result setValue:@([appleIDCredential realUserStatus]) forKey:@"_realUserStatus"];
-    
-    NSDictionary *fullNameDictionary = [AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]];
-    [result setValue:@(fullNameDictionary != nil) forKey:@"_hasFullName"];
-    [result setValue:fullNameDictionary forKey:@"_fullName"];
-    
-    return [result copy];
-}
-
-+ (NSDictionary *) dictionaryForNSPersonNameComponents:(NSPersonNameComponents *)nameComponents
-{
-    if (!nameComponents)
-        return nil;
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    [result setValue:[nameComponents namePrefix] forKey:@"_namePrefix"];
-    [result setValue:[nameComponents givenName] forKey:@"_givenName"];
-    [result setValue:[nameComponents middleName] forKey:@"_middleName"];
-    [result setValue:[nameComponents familyName] forKey:@"_familyName"];
-    [result setValue:[nameComponents nameSuffix] forKey:@"_nameSuffix"];
-    [result setValue:[nameComponents nickname] forKey:@"_nickname"];
-    
-    NSDictionary *phoneticRepresentationDictionary = [AppleAuthManager dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]];
-    [result setValue:@(phoneticRepresentationDictionary != nil) forKey:@"_hasPhoneticRepresentation"];
-    [result setValue:phoneticRepresentationDictionary forKey:@"_phoneticRepresentation"];
-    
-    return [result copy];
-}
-
-+ (NSDictionary *) dictionaryForASPasswordCredential:(ASPasswordCredential *)passwordCredential
-{
-    if (!passwordCredential)
-        return nil;
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    [result setValue:[passwordCredential user] forKey:@"_user"];
-    [result setValue:[passwordCredential password] forKey:@"_password"];
-    return [result copy];
-}
-
-+ (NSDictionary *) credentialResponseDictionaryForCredentialState:(NSNumber *)credentialStateNumber
-                                                        errorDictionary:(NSDictionary *)errorDictionary
-{
-    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-    
-    [result setValue:@(errorDictionary == nil) forKey:@"_success"];
-    [result setValue:@(credentialStateNumber != nil) forKey:@"_hasCredentialState"];
-    [result setValue:@(errorDictionary != nil) forKey:@"_hasError"];
-    
-    [result setValue:credentialStateNumber forKey:@"_credentialState"];
-    [result setValue:errorDictionary forKey:@"_error"];
-    
-    return [result copy];
-}
-
-+ (NSDictionary *) loginResponseDictionaryForAppleIdCredentialDictionary:(NSDictionary *)appleIdCredentialDictionary
-                                                  passwordCredentialDictionary:(NSDictionary *)passwordCredentialDictionary
-                                                               errorDictionary:(NSDictionary *)errorDictionary
-{
-    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
-    
-    [result setValue:@(errorDictionary == nil) forKey:@"_success"];
-    [result setValue:@(appleIdCredentialDictionary != nil) forKey:@"_hasAppleIdCredential"];
-    [result setValue:@(passwordCredentialDictionary != nil) forKey:@"_hasPasswordCredential"];
-    [result setValue:@(errorDictionary != nil) forKey:@"_hasError"];
-    
-    [result setValue:appleIdCredentialDictionary forKey:@"_appleIdCredential"];
-    [result setValue:passwordCredentialDictionary forKey:@"_passwordCredential"];
-    [result setValue:errorDictionary forKey:@"_error"];
-    
-    return [result copy];
-}
-
 @end
+
+#pragma mark Native C Calls for working implementation
+
+bool AppleAuth_IOS_IsCurrentPlatformSupported()
+{
+    return true;
+}
 
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 {
@@ -294,3 +196,46 @@ void AppleAuth_IOS_LoginSilently(uint requestId)
 {
     [[AppleAuthManager sharedManager] loginSilently:requestId];
 }
+#else
+
+#pragma mark - Lower iOS/macOS Implementation
+#pragma mark Native C Calls for working implementation
+
+bool AppleAuth_IOS_IsCurrentPlatformSupported()
+{
+    return false;
+}
+
+void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
+{
+    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth" code:-100 userInfo:nil];
+    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
+    NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:nil
+                                                                                           errorDictionary:customErrorDictionary];
+    
+    [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+}
+
+void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
+{
+    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth" code:-100 userInfo:nil];
+    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
+    NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
+                                                                                     passwordCredentialDictionary:nil
+                                                                                                  errorDictionary:customErrorDictionary];
+    
+    [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+}
+
+void AppleAuth_IOS_LoginSilently(uint requestId)
+{
+    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth" code:-100 userInfo:nil];
+    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
+    NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
+                                                                                     passwordCredentialDictionary:nil
+                                                                                                  errorDictionary:customErrorDictionary];
+    
+    [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+}
+
+#endif

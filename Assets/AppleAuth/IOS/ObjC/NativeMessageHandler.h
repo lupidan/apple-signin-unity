@@ -30,7 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype) defaultHandler;
 
-- (void) sendNativeMessage:(NSString *)payload forRequestWithId:(uint)requestId;
+- (void) sendNativeMessageForDictionary:(NSDictionary *)payloadDictionary forRequestId:(uint)requestId;
+- (void) sendNativeMessageForString:(NSString *)payloadString forRequestId:(uint)requestId;
 
 @end
 

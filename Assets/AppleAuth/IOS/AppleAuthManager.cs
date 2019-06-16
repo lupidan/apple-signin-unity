@@ -10,6 +10,8 @@ namespace AppleAuth.IOS
         private readonly IPayloadDeserializer _payloadDeserializer;
         private readonly IMessageHandlerScheduler _scheduler;
 
+        public bool IsCurrentPlatformSupported { get { return PInvoke.AppleAuth_IOS_IsCurrentPlatformSupported(); } }
+
         public AppleAuthManager(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
         {
             this._payloadDeserializer = payloadDeserializer;
@@ -76,6 +78,9 @@ namespace AppleAuth.IOS
         
         private static class PInvoke
         {
+            [DllImport("__Internal")]
+            public static extern bool AppleAuth_IOS_IsCurrentPlatformSupported();
+            
             [DllImport("__Internal")]
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
 

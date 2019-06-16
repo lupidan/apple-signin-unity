@@ -24,31 +24,28 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
+// IOS/TVOS 13.0 | MACOS 10.15
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+#import <AuthenticationServices/AuthenticationServices.h>
+#endif
+
+@interface AppleAuthSerializer : NSObject
+
++ (NSDictionary * _Nullable) dictionaryForNSError:(NSError * _Nullable)error;
+
++ (NSDictionary * _Nullable) dictionaryForNSPersonNameComponents:(NSPersonNameComponents * _Nullable)nameComponents;
+
++ (NSDictionary * _Nullable) credentialResponseDictionaryForCredentialState:(NSNumber * _Nullable)credentialStateNumber
+                                                            errorDictionary:(NSDictionary * _Nullable)errorDictionary;
+
++ (NSDictionary * _Nullable) loginResponseDictionaryForAppleIdCredentialDictionary:(NSDictionary * _Nullable)appleIdCredentialDictionary
+                                                      passwordCredentialDictionary:(NSDictionary * _Nullable)passwordCredentialDictionary
+                                                                   errorDictionary:(NSDictionary * _Nullable)errorDictionary;
 
 // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-
-typedef NS_OPTIONS(int, AppleAuthManagerLoginOptions) {
-    AppleAuthManagerIncludeName = 1 << 0,
-    AppleAuthManagerIncludeEmail = 1 << 1,
-};
-
-@interface AppleAuthManager : NSObject
-
-+ (instancetype) sharedManager;
-
-- (void) loginSilently:(uint)requestId;
-- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options;
-- (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
-
-@end
-
++ (NSDictionary * _Nullable) dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential * _Nullable)appleIDCredential;
++ (NSDictionary * _Nullable) dictionaryForASPasswordCredential:(ASPasswordCredential * _Nullable)passwordCredential;
 #endif
 
-NS_ASSUME_NONNULL_END
-
-bool AppleAuth_IOS_IsCurrentPlatformSupported();
-void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId);
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options);
-void AppleAuth_IOS_LoginSilently(uint requestId);
+@end
