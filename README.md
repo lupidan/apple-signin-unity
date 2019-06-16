@@ -29,23 +29,23 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Setting up the plugin
 ### Installing the package
-1. Download the most recent Unity package <a href="https://github.com/lupidan/apple-signin-unity/releases">here</a>
+1. Download the most recent Unity package <a href="https://github.com/lupidan/apple-signin-unity/releases/download/0.1/AppleSignInUnity_0_1.unitypackage">here</a>
 2. Import the downloaded Unity package in your app. There are two main folders:
 * The `AppleAuth` folder contains the **main plugin**.
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
 
-<p align="center">
+<p>
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png" alt="ImportPlugin" height=200/></a>
 </p>
 
 ### Set up entitlements
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project.
 1. We need to add an entry to the entitlements file to define the accessibility level for the plugin.
-<p align="center">
+<p>
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png" alt="ImportPlugin"/></a>
 </p>
 2. We need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries.
-<p align="center">
+<p>
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png" alt="ImportPlugin" height=100/></a>
 </p>
 
@@ -75,6 +75,8 @@ public static class SignInWithApplePostprocessor
 **NOTE:** The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions and avoid crashes on startup.
 
 **NOTE 2:** The provided extension method uses reflection to integrate with the current tools Unity provides. If it fails on your particular Unity version, feel free to open a ticket specifying the Unity version.
+
+### WIP
 
 ## JSON communication
 This plugin does **NOT** use UnitySendMessage, meaning that there will be no need to instantiate any components in
