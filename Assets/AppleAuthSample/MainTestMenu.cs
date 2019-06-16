@@ -114,7 +114,7 @@ public class MainTestMenu : MonoBehaviour
                 stringBuilder.AppendLine("<b>Authorized Scopes:</b> " + string.Join(", ", appleIdCredential.AuthorizedScopes));
             
             if (appleIdCredential.Email != null)
-                stringBuilder.AppendLine("<b>Email:</b> " + appleIdCredential.User);
+                stringBuilder.AppendLine("<b>Email:</b> " + appleIdCredential.Email);
 
             if (appleIdCredential.FullName != null)
             {
