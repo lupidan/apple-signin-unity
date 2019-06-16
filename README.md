@@ -1,10 +1,12 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/UnityIcon.png" alt="Unity 3D"/>
 </p>
-</div>
 
 # Sign in with Apple Unity Plugin
-This plugin is still WIP
+<p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png" alt="Screenshot2" height="400"/></a>
+</p>
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
