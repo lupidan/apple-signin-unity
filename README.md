@@ -17,6 +17,55 @@ On WWDC19, Apple announced **Sign in with Apple**, and on top of that, they anno
 that used any kind of Third party sign-ins (like *Sign in with Facebook*, or *Sign in with Google*), will have to support
 Sign in with Apple in order to get approved for the App Store, making it **mandatory**.
 
+## Setting up the plugin
+### Installing the package
+1. Download the most recent Unity package <a href="https://github.com/lupidan/apple-signin-unity/releases">here</a>
+2. Import the downloaded Unity package in your app. There are two main folders:
+* The `AppleAuth` folder contains the **main plugin**.
+* The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
+
+<p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png" alt="ImportPlugin"/></a>
+</p>
+
+### Set up entitlements
+To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project.
+1. We need to add an entry to the entitlements file to define the accessibility level for the plugin.
+<p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png" alt="ImportPlugin"/></a>
+</p>
+2. We need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries.
+<p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png" alt="ImportPlugin" height=100/></a>
+</p>
+
+However, this can be cumbersome to do every time a new build is generated. That's why this plugin **provides an extension method** for 
+`ProjectCapabilityManager`, used to add this entitlement programatically. Simply call the method `AddSignInWithApple`.
+
+```csharp
+public static class SignInWithApplePostprocessor
+{
+    [PostProcessBuild(1)]
+    public static void OnPostProcessBuild(BuildTarget target, string path)
+    {
+        if (target != BuildTarget.iOS)
+            return;
+
+        var projectPath = PBXProject.GetPBXProjectPath(path);
+        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+        
+        // Adds required Entitlements entry, and framework programatically
+        manager.AddSignInWithApple();
+        
+        manager.WriteToFile();
+    }
+}
+```
+
+**NOTE:** The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions and avoid crashes on startup.
+
+**NOTE 2:** The provided extension method uses reflection to integrate with the current tools Unity provides. If it fails on your particular Unity version, feel free to open a ticket specifying the Unity version.
+
 ## JSON communication
 This plugin does **NOT** use UnitySendMessage, meaning that there will be no need to instantiate any components in
 GameObject instances. Just create an instance of the [main class] and keep it alive wherever you would like to use/receive
