@@ -81,7 +81,6 @@ public class MainTestMenu : MonoBehaviour
     {
         this._mainButton.enabled = true;
         this._mainButtonLabel.text = "Sign in with Apple";
-        this._credentialDetailsLabel.text = "";
         this._mainButton.onClick.RemoveAllListeners();
         this._mainButton.onClick.AddListener(this.SignInWithApple);
     }
@@ -181,7 +180,7 @@ public class MainTestMenu : MonoBehaviour
     private void SignInSilently()
     {
         this._mainButton.enabled = false;
-        this._mainButtonLabel.text = "Signing in silently...";  
+        this._mainButtonLabel.text = "Signing in silently..."; 
         this._appleAuth.LoginSilently(
             credential =>
             {
