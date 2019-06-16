@@ -208,7 +208,10 @@ bool AppleAuth_IOS_IsCurrentPlatformSupported()
 
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 {
-    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth" code:-100 userInfo:nil];
+    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
+                                               code:-100
+                                           userInfo:@{NSLocalizedDescriptionKey : @"Native AppleAuth is only available from iOS 13.0"}];
+    
     NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
     NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:nil
                                                                                            errorDictionary:customErrorDictionary];
@@ -218,7 +221,10 @@ void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 
 void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
 {
-    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth" code:-100 userInfo:nil];
+    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
+                                               code:-100
+                                           userInfo:@{NSLocalizedDescriptionKey : @"Native AppleAuth is only available from iOS 13.0"}];
+    
     NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
     NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
                                                                                      passwordCredentialDictionary:nil
@@ -229,7 +235,10 @@ void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
 
 void AppleAuth_IOS_LoginSilently(uint requestId)
 {
-    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth" code:-100 userInfo:nil];
+    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
+                                               code:-100
+                                           userInfo:@{NSLocalizedDescriptionKey : @"Native AppleAuth is only available from iOS 13.0"}];
+    
     NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
     NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
                                                                                      passwordCredentialDictionary:nil
