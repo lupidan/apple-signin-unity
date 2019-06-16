@@ -43,8 +43,9 @@ namespace AppleAuth.Editor
             if (project != null)
             {
                 var targetGuid = targetGuidField.GetValue(manager) as string;
-                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.signin", true, AuthenticationServicesFramework, false }) as PBXCapabilityType;
+                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.signin", true, AuthenticationServicesFramework, true }) as PBXCapabilityType;
                 project.AddCapability(targetGuid, capabilityType, entitlementFilePath, false);
+                project.AddFrameworkToProject(targetGuid, AuthenticationServicesFramework, true);
             }
         }
     }
