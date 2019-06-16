@@ -25,7 +25,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png" alt="ImportPlugin"/></a>
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png" alt="ImportPlugin" height=200/></a>
 </p>
 
 ### Set up entitlements
