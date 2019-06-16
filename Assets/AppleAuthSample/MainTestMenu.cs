@@ -15,13 +15,13 @@ public class MainTestMenu : MonoBehaviour
     private OnDemandMessageHandlerScheduler _scheduler;
 
     [SerializeField]
-    private Button _mainButton;
+    private Button _mainButton = null;
     
     [SerializeField]
-    private Text _mainButtonLabel;
+    private Text _mainButtonLabel = null;
     
     [SerializeField]
-    private Text _credentialDetailsLabel;
+    private Text _credentialDetailsLabel = null;
     
     private void Start()
     {

@@ -7,7 +7,10 @@ namespace UnityPackageGeneration.Editor
         [MenuItem("Tools/Generate Apple Auth Unity Package")]
         public static void GenerateUnityPackage()
         {
-            AssetDatabase.ExportPackage("Assets/AppleAuth", "AppleSignInUnity.unitypackage", ExportPackageOptions.Recurse);
+            AssetDatabase.ExportPackage(
+                new [] {"Assets/AppleAuth", "Assets/AppleAuthSample"},
+                "AppleSignInUnity.unitypackage", 
+                ExportPackageOptions.Recurse);
         }
     }
 }
