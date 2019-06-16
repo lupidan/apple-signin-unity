@@ -1,11 +1,11 @@
-using System.IO;
+using AppleAuth.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
 
-namespace AppleAuth.Editor
+namespace Editor
 {
-    public class SignInWithApplePostprocessor
+    public static class SignInWithApplePostprocessor
     {
         private const int CallOrder = 1;
 
