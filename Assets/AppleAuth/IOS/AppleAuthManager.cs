@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 using AppleAuth.IOS.Enums;
 using AppleAuth.IOS.Interfaces;
 
@@ -7,21 +6,36 @@ namespace AppleAuth.IOS
 {
     public class AppleAuthManager : IAppleAuthManager
     {
+#if UNITY_IOS && !UNITY_EDITOR
         private readonly IPayloadDeserializer _payloadDeserializer;
         private readonly IMessageHandlerScheduler _scheduler;
+#endif
 
-        public bool IsCurrentPlatformSupported { get { return PInvoke.AppleAuth_IOS_IsCurrentPlatformSupported(); } }
+        public bool IsCurrentPlatformSupported
+        {
+            get
+            {
+#if UNITY_IOS && !UNITY_EDITOR
+                return PInvoke.AppleAuth_IOS_IsCurrentPlatformSupported();
+#else
+                return false;
+#endif
+            }
+        }
 
         public AppleAuthManager(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
         {
+#if UNITY_IOS && !UNITY_EDITOR
             this._payloadDeserializer = payloadDeserializer;
             this._scheduler = scheduler;
+#endif
         }
         
         public void LoginSilently(
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
+#if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
                 payload =>
@@ -34,8 +48,11 @@ namespace AppleAuth.IOS
                     else
                         successCallback(response.AppleIDCredential);
                 });
-            
+
             PInvoke.AppleAuth_IOS_LoginSilently(requestId);
+#else
+            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
+#endif
         }
         
         public void LoginWithAppleId(
@@ -43,6 +60,7 @@ namespace AppleAuth.IOS
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
+#if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
                 payload =>
@@ -55,6 +73,9 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions);
+#else
+            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
+#endif
         }
         
         public void GetCredentialState(
@@ -62,6 +83,7 @@ namespace AppleAuth.IOS
             Action<CredentialState> successCallback,
             Action<IAppleError> errorCallback)
         {
+#if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
                 payload =>
@@ -74,21 +96,26 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_GetCredentialState(requestId, userId);
+#else
+            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
+#endif
         }
-        
+
+#if UNITY_IOS && !UNITY_EDITOR
         private static class PInvoke
         {
-            [DllImport("__Internal")]
+            [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern bool AppleAuth_IOS_IsCurrentPlatformSupported();
             
-            [DllImport("__Internal")]
+            [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
 
-            [DllImport("__Internal")]
+            [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions);
             
-            [DllImport("__Internal")]
+            [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_LoginSilently(uint requestId);
         }
+#endif
     }
 }

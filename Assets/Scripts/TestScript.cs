@@ -12,6 +12,8 @@ public class TestScript : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("CURRENT PLATFORM IS SUPPORTED "+this._appleAuthManager.IsCurrentPlatformSupported);
+        
         this._appleAuthManager.LoginSilently(
             credential => Debug.Log(DescribeCredential(credential)),
             error => Debug.Log(DescribeError(error)));
