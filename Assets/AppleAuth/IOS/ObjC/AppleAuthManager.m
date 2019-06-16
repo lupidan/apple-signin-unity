@@ -26,8 +26,9 @@
 #import "NativeMessageHandler.h"
 #import "AppleAuthSerializer.h"
 
-#pragma mark - iOS 13.0/macOS 13.0 Implementation
+#pragma mark - AppleAuthManager Implementation
 
+// IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
 #import <AuthenticationServices/AuthenticationServices.h>
 
@@ -99,14 +100,15 @@
         NSDictionary *errorDictionary = nil;
         
         if (error)
-            errorDictionary = [AppleAuthManager dictionaryForNSError:error];
+            errorDictionary = [AppleAuthSerializer dictionaryForNSError:error];
         else
             credentialStateNumber = @(credentialState);
         
-        NSDictionary *responseDictionary = [AppleAuthManager credentialResponseDictionaryForCredentialState:credentialStateNumber
-                                                                                            errorDictionary:errorDictionary];
+        NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:credentialStateNumber
+                                                                                               errorDictionary:errorDictionary];
         
-        [self sendNativeMessage:responseDictionary withRequestId:requestId];
+        [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
+                                                                 forRequestId:requestId];
     }];
 }
 
@@ -134,18 +136,20 @@
         NSDictionary *passwordCredentialDictionary = nil;
         if ([[authorization credential] isKindOfClass:[ASAuthorizationAppleIDCredential class]])
         {
-            appleIdCredentialDictionary = [AppleAuthManager dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)[authorization credential]];
+            appleIdCredentialDictionary = [AppleAuthSerializer dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential *)[authorization credential]];
         }
         else if ([[authorization credential] isKindOfClass:[ASPasswordCredential class]])
         {
-            passwordCredentialDictionary = [AppleAuthManager dictionaryForASPasswordCredential:(ASPasswordCredential *)[authorization credential]];
+            passwordCredentialDictionary = [AppleAuthSerializer dictionaryForASPasswordCredential:(ASPasswordCredential *)[authorization credential]];
         }
 
-        NSDictionary *responseDictionary = [AppleAuthManager loginResponseDictionaryForAppleIdCredentialDictionary:appleIdCredentialDictionary
+        NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:appleIdCredentialDictionary
                                                                                       passwordCredentialDictionary:passwordCredentialDictionary
                                                                                                    errorDictionary:nil];
         
-        [self sendNativeMessage:responseDictionary withRequestId:[requestIdNumber unsignedIntValue]];
+        [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
+                                                                 forRequestId:[requestIdNumber unsignedIntValue]];
+        
         [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
 }
@@ -156,12 +160,14 @@
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
     if (requestIdNumber)
     {
-        NSDictionary *errorDictionary = [AppleAuthManager dictionaryForNSError:error];
-        NSDictionary *responseDictionary = [AppleAuthManager loginResponseDictionaryForAppleIdCredentialDictionary:nil
-                                                                                      passwordCredentialDictionary:nil
-                                                                                                   errorDictionary:errorDictionary];
+        NSDictionary *errorDictionary = [AppleAuthSerializer dictionaryForNSError:error];
+        NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
+                                                                                         passwordCredentialDictionary:nil
+                                                                                                      errorDictionary:errorDictionary];
         
-        [self sendNativeMessage:responseDictionary withRequestId:[requestIdNumber unsignedIntValue]];
+        [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
+                                                                 forRequestId:[requestIdNumber unsignedIntValue]];
+        
         [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
 }
@@ -175,38 +181,62 @@
 
 @end
 
-#pragma mark Native C Calls for working implementation
+#endif
+
+#pragma mark - Native C Calls
 
 bool AppleAuth_IOS_IsCurrentPlatformSupported()
 {
-    return true;
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 {
-    [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
+    // IOS/TVOS 13.0 | MACOS 10.15
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+        [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
+    else
+        AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(requestId);
+#else
+    AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(requestId);
+#endif
 }
 
 void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
 {
-    [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options];
+    // IOS/TVOS 13.0 | MACOS 10.15
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+        [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options];
+    else
+        AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
+#else
+    AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
+#endif
 }
 
 void AppleAuth_IOS_LoginSilently(uint requestId)
 {
-    [[AppleAuthManager sharedManager] loginSilently:requestId];
-}
+    // IOS/TVOS 13.0 | MACOS 10.15
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+        [[AppleAuthManager sharedManager] loginSilently:requestId];
+    else
+        AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
 #else
-
-#pragma mark - Lower iOS/macOS Implementation
-#pragma mark Native C Calls for working implementation
-
-bool AppleAuth_IOS_IsCurrentPlatformSupported()
-{
-    return false;
+    AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
+#endif
 }
 
-void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
+void AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(uint requestId)
 {
     NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
                                                code:-100
@@ -219,7 +249,7 @@ void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
     [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
 }
 
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
+void AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(uint requestId)
 {
     NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
                                                code:-100
@@ -232,19 +262,3 @@ void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
     
     [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
 }
-
-void AppleAuth_IOS_LoginSilently(uint requestId)
-{
-    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
-                                               code:-100
-                                           userInfo:@{NSLocalizedDescriptionKey : @"Native AppleAuth is only available from iOS 13.0"}];
-    
-    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
-    NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
-                                                                                     passwordCredentialDictionary:nil
-                                                                                                  errorDictionary:customErrorDictionary];
-    
-    [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
-}
-
-#endif

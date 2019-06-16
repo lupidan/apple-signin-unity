@@ -32,8 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_OPTIONS(int, AppleAuthManagerLoginOptions) {
     AppleAuthManagerIncludeName = 1 << 0,
     AppleAuthManagerIncludeEmail = 1 << 1,
-};
+} API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0));
 
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 @interface AppleAuthManager : NSObject
 
 + (instancetype) sharedManager;
@@ -46,9 +47,11 @@ typedef NS_OPTIONS(int, AppleAuthManagerLoginOptions) {
 
 #endif
 
-NS_ASSUME_NONNULL_END
-
 bool AppleAuth_IOS_IsCurrentPlatformSupported();
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId);
 void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options);
 void AppleAuth_IOS_LoginSilently(uint requestId);
+void AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(uint requestId);
+void AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(uint requestId);
+
+NS_ASSUME_NONNULL_END

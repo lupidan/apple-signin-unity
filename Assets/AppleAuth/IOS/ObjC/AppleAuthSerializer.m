@@ -111,7 +111,7 @@
     [result setValue:[appleIDCredential email] forKey:@"_email"];
     [result setValue:@([appleIDCredential realUserStatus]) forKey:@"_realUserStatus"];
     
-    NSDictionary *fullNameDictionary = [AppleAuthManager dictionaryForNSPersonNameComponents:[appleIDCredential fullName]];
+    NSDictionary *fullNameDictionary = [AppleAuthSerializer dictionaryForNSPersonNameComponents:[appleIDCredential fullName]];
     [result setValue:@(fullNameDictionary != nil) forKey:@"_hasFullName"];
     [result setValue:fullNameDictionary forKey:@"_fullName"];
     
