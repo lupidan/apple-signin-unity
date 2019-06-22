@@ -28,6 +28,7 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
 
 @interface NativeMessageHandler ()
 @property (nonatomic, assign) NativeMessageHandlerDelegate mainCallback;
+@property (nonatomic, weak) NSOperationQueue *callingOperationQueue;
 @end
 
 @implementation NativeMessageHandler
@@ -57,7 +58,17 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
     if ([self mainCallback] == NULL)
         return;
     
-    [self mainCallback](requestId, [payloadString UTF8String]);
+    if ([self callingOperationQueue])
+    {
+        [[self callingOperationQueue] addOperationWithBlock:^{
+            [self mainCallback](requestId, [payloadString UTF8String]);
+        }];
+    }
+    else
+    {
+        [self mainCallback](requestId, [payloadString UTF8String]);
+    }
+    
 }
 
 @end
@@ -65,4 +76,5 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
 void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback)
 {
     [[NativeMessageHandler defaultHandler] setMainCallback:callback];
+    [[NativeMessageHandler defaultHandler] setCallingOperationQueue: [NSOperationQueue currentQueue]];
 }
