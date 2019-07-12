@@ -2,6 +2,9 @@ namespace AppleAuth.IOS.Interfaces
 {
     public interface ICredential
     {
-        string User { get; }
+		/// <summary>
+		/// An identifier associated with the authenticated user
+		/// </summary>
+		string User { get; }
     }
 }
