@@ -18,7 +18,7 @@ namespace AppleAuth.IOS.Interfaces
         string LocalizedDescription { get; }
 
         /// <summary>
-        /// Provides a set of possible recovery options to present to the user
+        /// An array containing the localized titles of buttons appropriate for displaying in an alert panel.
         /// </summary>
         string[] LocalizedRecoveryOptions { get; }
 
