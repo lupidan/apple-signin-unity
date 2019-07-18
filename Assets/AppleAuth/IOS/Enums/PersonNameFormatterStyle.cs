@@ -26,7 +26,7 @@ namespace AppleAuth.IOS.Enums
         Long = 3,
 
         /// <summary>
-        /// he maximally abbreviated form of a name.
+        /// The maximally abbreviated form of a name.
         /// </summary>
         Abbreviated = 4,
     }
