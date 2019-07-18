@@ -23,7 +23,7 @@ namespace AppleAuth.IOS.Interfaces
         string[] LocalizedRecoveryOptions { get; }
 
         /// <summary>
-        /// "Default implementation provided"
+        /// A string containing the localized recovery suggestion for the error.
         /// </summary>
         string LocalizedRecoverySuggestion { get; }
 
