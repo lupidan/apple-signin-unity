@@ -3,7 +3,7 @@ namespace AppleAuth.IOS.Interfaces
     public interface IAppleError
     {
         /// <summary>
-        /// "Default implementation provided" (errorCode)
+        /// The error code.
         /// </summary>
         int Code { get; }
 
