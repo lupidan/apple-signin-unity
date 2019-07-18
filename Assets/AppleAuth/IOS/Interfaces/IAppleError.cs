@@ -8,7 +8,7 @@ namespace AppleAuth.IOS.Interfaces
         int Code { get; }
 
         /// <summary>
-        /// "Default implementation provided" (errorDomain)
+        /// A string containing the error domain.
         /// </summary>
         string Domain { get; }
 
