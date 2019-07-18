@@ -13,7 +13,7 @@ namespace AppleAuth.IOS.Interfaces
         string Domain { get; }
 
         /// <summary>
-        /// Retrieve the localized description for this error
+        /// A string containing the localized description of the error.
         /// </summary>
         string LocalizedDescription { get; }
 
