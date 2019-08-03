@@ -38,6 +38,7 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
+                true,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
@@ -63,6 +64,7 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
+                true,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
@@ -86,6 +88,7 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
+                true,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeCredentialStateResponse(payload);
