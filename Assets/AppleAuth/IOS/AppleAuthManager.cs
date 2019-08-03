@@ -115,6 +115,9 @@ namespace AppleAuth.IOS
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_LoginSilently(uint requestId);
+            
+            [System.Runtime.InteropServices.DllImport("__Internal")]
+            public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
         }
 #endif
     }
