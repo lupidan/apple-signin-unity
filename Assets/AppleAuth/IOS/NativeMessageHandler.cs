@@ -48,9 +48,10 @@ namespace AppleAuth.IOS
                     CallbackDictionary.Remove(requestId);    
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine("[NativeMessageHandler] Received exception while dealing with callback message with request ID " + requestId);
+                Console.WriteLine("[NativeMessageHandler] Received exception while executing callback for request ID " + requestId);
+                Console.WriteLine("[NativeMessageHandler] Exception: " + exception);
                 Console.WriteLine("[NativeMessageHandler] Detailed payload:\n" + messagePayload);
             }
         }
