@@ -114,7 +114,7 @@ As long as you implement the IPayloadDeserializer interface, you can pass that i
 - ☒ NSError codes mapping into Unity.
 - ☒ Customize Sign in With Apple call from Unity. (request email and/or full name)
 - ☒ Support to schedule all callbacks in user-configured loops (ex. in an MonoBehaviour's Update loop).
-- ☐ Add support for credential revoked notifications
+- ☒ Add support for credential revoked notifications
 
 ### Rest API
 - ☐ TBD
