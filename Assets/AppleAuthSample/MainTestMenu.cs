@@ -27,7 +27,13 @@ public class MainTestMenu : MonoBehaviour
     {
         this._scheduler = new OnDemandMessageHandlerScheduler();
         this._appleAuth = new AppleAuthManager(new PayloadDeserializer(), this._scheduler);
-
+        
+        this._appleAuth.SetCredentialsRevokedCallback(result =>
+        {
+            Debug.Log($"Received revoked callback {result}");
+            PlayerPrefs.DeleteKey(AppleUserIdKey);
+        });
+        
         this.CheckUpCredentials();
     }
 
