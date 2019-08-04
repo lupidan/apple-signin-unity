@@ -9,6 +9,9 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
         private readonly IPayloadDeserializer _payloadDeserializer;
         private readonly IMessageHandlerScheduler _scheduler;
+        
+        private uint _registeredCredentialsRevokedCallbackId;
+        private bool _didRegisterCredentialsRevokedCallback = false;
 #endif
 
         public bool IsCurrentPlatformSupported
@@ -38,6 +41,7 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
+                true,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
@@ -63,6 +67,7 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
+                true,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
@@ -86,6 +91,7 @@ namespace AppleAuth.IOS
 #if UNITY_IOS && !UNITY_EDITOR
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
+                true,
                 payload =>
                 {
                     var response = this._payloadDeserializer.DeserializeCredentialStateResponse(payload);
@@ -96,6 +102,32 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_GetCredentialState(requestId, userId);
+#else
+            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
+#endif
+        }
+        
+        public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
+        {
+#if UNITY_IOS && !UNITY_EDITOR
+            if (this._didRegisterCredentialsRevokedCallback)
+            {
+                NativeMessageHandler.ReplaceMessageCallback(
+                    this._registeredCredentialsRevokedCallbackId,
+                    this._scheduler,
+                    false,
+                    credentialsRevokedCallback);
+            }
+            else
+            {
+                this._registeredCredentialsRevokedCallbackId = NativeMessageHandler.AddMessageCallback(
+                    this._scheduler,
+                    false,
+                    credentialsRevokedCallback);
+                
+                this._didRegisterCredentialsRevokedCallback = true;
+                PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
+            }
 #else
             throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
 #endif
@@ -115,6 +147,9 @@ namespace AppleAuth.IOS
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_LoginSilently(uint requestId);
+            
+            [System.Runtime.InteropServices.DllImport("__Internal")]
+            public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
         }
 #endif
     }

@@ -15,7 +15,7 @@ namespace AppleAuth.IOS
         private static uint _callbackId = 1;
         private static bool _initialized = false;
 
-        internal static uint AddMessageCallback(IMessageHandlerScheduler scheduler, Action<string> messageCallback)
+        internal static uint AddMessageCallback(IMessageHandlerScheduler scheduler, bool isSingleUse, Action<string> messageCallback)
         {
             if (!_initialized)
             {
@@ -31,9 +31,23 @@ namespace AppleAuth.IOS
             if (CallbackDictionary.ContainsKey(usedCallbackId))
                 throw new Exception("A Message Callback with the same ID " + usedCallbackId + " already exists.");
 
-            var callbackEntry = new MessageCallbackEntry(messageCallback, scheduler);
+            var callbackEntry = new MessageCallbackEntry(messageCallback, scheduler, isSingleUse);
             CallbackDictionary.Add(usedCallbackId, callbackEntry);
             return usedCallbackId;
+        }
+        
+        internal static void ReplaceMessageCallback(uint requestId, IMessageHandlerScheduler scheduler, bool isSingleUse, Action<string> newMessageCallback)
+        {
+            if (!CallbackDictionary.ContainsKey(requestId))
+                throw new Exception($"Callback with id {requestId} does not exist and can't be replaced");
+
+            CallbackDictionary.Remove(requestId);
+
+            if (newMessageCallback == null)
+                return;
+            
+            var callbackEntry = new MessageCallbackEntry(newMessageCallback, scheduler, isSingleUse);
+            CallbackDictionary.Add(requestId, callbackEntry);
         }
 
         [MonoPInvokeCallback(typeof(NativeMessageHandlerDelegate))]
@@ -45,7 +59,8 @@ namespace AppleAuth.IOS
                 if (CallbackDictionary.TryGetValue(requestId, out callbackEntry))
                 {
                     callbackEntry.Scheduler.Schedule(() => callbackEntry.MessageCallback.Invoke(messagePayload));
-                    CallbackDictionary.Remove(requestId);    
+                    if (callbackEntry.IsSingleUseCallback)
+                        CallbackDictionary.Remove(requestId);    
                 }
             }
             catch (Exception exception)
@@ -60,11 +75,13 @@ namespace AppleAuth.IOS
         {
             public readonly Action<string> MessageCallback;
             public readonly IMessageHandlerScheduler Scheduler;
+            public readonly bool IsSingleUseCallback;
 
-            public MessageCallbackEntry(Action<string> messageCallback, IMessageHandlerScheduler scheduler)
+            public MessageCallbackEntry(Action<string> messageCallback, IMessageHandlerScheduler scheduler, bool isSingleUseCallback)
             {
                 this.MessageCallback = messageCallback;
                 this.Scheduler = scheduler;
+                this.IsSingleUseCallback = isSingleUseCallback;
             }
         }
         

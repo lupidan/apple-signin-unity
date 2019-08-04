@@ -35,6 +35,7 @@
 @interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
 @property (nonatomic, strong) ASAuthorizationPasswordProvider *passwordProvider;
+@property (nonatomic, strong) NSObject *credentialsRevokedObserver;
 @property (nonatomic, strong) NSMutableDictionary<NSValue *, NSNumber *> *authorizationsInProgress;
 @end
 
@@ -110,6 +111,24 @@
         [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
                                                                  forRequestId:requestId];
     }];
+}
+
+- (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId
+{
+    if ([self credentialsRevokedObserver])
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:[self credentialsRevokedObserver]];
+        [self setCredentialsRevokedObserver:nil];
+    }
+    
+    NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
+                                                                           object:nil
+                                                                            queue:nil
+                                                                       usingBlock:^(NSNotification * _Nonnull note) {
+                                                                           [[NativeMessageHandler defaultHandler] sendNativeMessageForString:@"Credentials Revoked"
+                                                                                                                                forRequestId:requestId];
+                                                                       }];
+    [self setCredentialsRevokedObserver:observer];
 }
 
 #pragma mark Private methods
@@ -233,6 +252,14 @@ void AppleAuth_IOS_LoginSilently(uint requestId)
         AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
 #else
     AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
+#endif
+}
+
+void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint requestId)
+{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+        [[AppleAuthManager sharedManager] registerCredentialsRevokedCallbackForRequestId:requestId];
 #endif
 }
 
