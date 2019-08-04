@@ -29,7 +29,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Setting up the plugin
 ### Installing the package
-1. Download the most recent Unity package <a href="https://github.com/lupidan/apple-signin-unity/releases/download/0.1/AppleSignInUnity_0_1.unitypackage">here</a>
+1. Download the most recent Unity package <a href="https://github.com/lupidan/apple-signin-unity/releases/download/0.2/AppleSignInUnity.unitypackage">here</a>
 2. Import the downloaded Unity package in your app. There are two main folders:
 * The `AppleAuth` folder contains the **main plugin**.
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
