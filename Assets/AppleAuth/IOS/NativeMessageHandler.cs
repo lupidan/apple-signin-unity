@@ -38,7 +38,7 @@ namespace AppleAuth.IOS
         
         internal static void ReplaceMessageCallback(uint requestId, IMessageHandlerScheduler scheduler, bool isSingleUse, Action<string> newMessageCallback)
         {
-            if (CallbackDictionary.ContainsKey(requestId))
+            if (!CallbackDictionary.ContainsKey(requestId))
                 throw new Exception($"Callback with id {requestId} does not exist and can't be replaced");
 
             CallbackDictionary.Remove(requestId);
