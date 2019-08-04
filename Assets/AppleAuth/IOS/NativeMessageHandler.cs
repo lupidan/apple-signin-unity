@@ -53,13 +53,22 @@ namespace AppleAuth.IOS
         [MonoPInvokeCallback(typeof(NativeMessageHandlerDelegate))]
         private static void NativeMessageHandlerCallback(uint requestId, string messagePayload)
         {
-            MessageCallbackEntry callbackEntry;
-            if (!CallbackDictionary.TryGetValue(requestId, out callbackEntry))
-                throw new Exception("A Message Callback with ID " + requestId + " couldn't be found");
-
-            callbackEntry.Scheduler.Schedule(() => callbackEntry.MessageCallback.Invoke(messagePayload));
-            if (callbackEntry.IsSingleUseCallback)
-                CallbackDictionary.Remove(requestId);
+            try
+            {
+                MessageCallbackEntry callbackEntry;
+                if (CallbackDictionary.TryGetValue(requestId, out callbackEntry))
+                {
+                    callbackEntry.Scheduler.Schedule(() => callbackEntry.MessageCallback.Invoke(messagePayload));
+                    if (callbackEntry.IsSingleUseCallback)
+                        CallbackDictionary.Remove(requestId);    
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("[NativeMessageHandler] Received exception while executing callback for request ID " + requestId);
+                Console.WriteLine("[NativeMessageHandler] Exception: " + exception);
+                Console.WriteLine("[NativeMessageHandler] Detailed payload:\n" + messagePayload);
+            }
         }
         
         private class MessageCallbackEntry
