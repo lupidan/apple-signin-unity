@@ -27,14 +27,8 @@ public class MainTestMenu : MonoBehaviour
     {
         this._scheduler = new OnDemandMessageHandlerScheduler();
         this._appleAuth = new AppleAuthManager(new PayloadDeserializer(), this._scheduler);
-        
-        this._appleAuth.SetCredentialsRevokedCallback(result =>
-        {
-            Debug.Log($"Received revoked callback {result}");
-            PlayerPrefs.DeleteKey(AppleUserIdKey);
-        });
-        
-        this.CheckUpCredentials();
+
+        this.InitializeAppleAuth();
     }
 
     private void Update()
@@ -42,38 +36,35 @@ public class MainTestMenu : MonoBehaviour
         this._scheduler.Update();
     }
 
-    private void CheckUpCredentials()
+    private void InitializeAppleAuth()
     {
         this._credentialDetailsLabel.text = "";
+        
+        // We need to check if the current device supports the native sign in with Apple
         if (!this._appleAuth.IsCurrentPlatformSupported)
         {
             this.SetupUnsupportedPlatform();
             return;
         }
+        
+        // If at any point we receive a credentials revoked notification, we delete the stored User ID
+        this._appleAuth.SetCredentialsRevokedCallback(result =>
+        {
+            Debug.Log($"Received revoked callback {result}");
+            PlayerPrefs.DeleteKey(AppleUserIdKey);
+        });
 
-        if (!PlayerPrefs.HasKey(AppleUserIdKey))
+        // If we have a User ID, we first need to check the credential status for it
+        if (PlayerPrefs.HasKey(AppleUserIdKey))
+        {
+            var storedAppleUserId = PlayerPrefs.GetString(AppleUserIdKey);
+            this.CheckCredentialStatusForUserId(storedAppleUserId);
+        }
+        // If we do not have a user ID, we just show the button to Sign In with Apple
+        else
         {
             this.SetupSignInWithAppleButton();
-            return;
         }
-
-        var storedAppleUserId = PlayerPrefs.GetString(AppleUserIdKey);
-        this._mainButton.enabled = false;
-        this._mainButtonLabel.text = "Checking credentials...";
-        this._appleAuth.GetCredentialState(
-            storedAppleUserId,
-            state =>
-            {
-                if (state == CredentialState.Authorized)
-                    this.SignInSilently();
-                else
-                    this.SetupSignInWithAppleButton();
-            },
-            error =>
-            {
-                this._credentialDetailsLabel.text = "Couldn't get Credential state for stored user ID: " + error.LocalizedDescription;
-                this.SetupSignInWithAppleButton();
-            });
     }
 
     private void SetupUnsupportedPlatform()
@@ -81,6 +72,29 @@ public class MainTestMenu : MonoBehaviour
         this._mainButton.enabled = false;
         this._mainButtonLabel.text = "Unsupported platform";
         this._credentialDetailsLabel.text = "<b>This platform is not supported. Try running the scene in a real device or a simulator</b>";
+    }
+
+    private void CheckCredentialStatusForUserId(string userId)
+    {
+        this._mainButton.enabled = false;
+        this._mainButtonLabel.text = "Checking credentials...";
+        this._appleAuth.GetCredentialState(
+            userId,
+            state =>
+            {
+                // If the credential is authorized, all good.
+                if (state == CredentialState.Authorized)
+                    this.SetupSignedInWithCredential(null);
+                
+                // If the credential is something else, try and perform a Quick Login
+                else
+                    this.QuickLogin();
+            },
+            error =>
+            {
+                this._credentialDetailsLabel.text = "Couldn't get Credential state for stored user ID: " + error.LocalizedDescription;
+                this.SetupSignInWithAppleButton();
+            });
     }
 
     private void SetupSignInWithAppleButton()
@@ -97,6 +111,8 @@ public class MainTestMenu : MonoBehaviour
         this._mainButtonLabel.text = "Delete credentials";
         this._mainButton.onClick.RemoveAllListeners();
         this._mainButton.onClick.AddListener(this.DeleteCredentials);
+        if (credential == null)
+            return;
         
         var appleIdCredential = credential as IAppleIDCredential;
         var passwordCredential = credential as IPasswordCredential;
@@ -183,14 +199,15 @@ public class MainTestMenu : MonoBehaviour
         SetupSignInWithAppleButton();
     }
 
-    private void SignInSilently()
+    private void QuickLogin()
     {
         this._mainButton.enabled = false;
-        this._mainButtonLabel.text = "Signing in silently..."; 
-        this._appleAuth.LoginSilently(
+        this._mainButtonLabel.text = "Performing Quick login..."; 
+        this._appleAuth.QuickLogin(
             credential =>
             {
-                Debug.Log("Silent sign in was successful");
+                // If we receive a credential, user is authorized again
+                Debug.Log("Performing Quick login finished successfully");
                 this.SetupSignedInWithCredential(credential);
             },
             error =>

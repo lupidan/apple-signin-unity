@@ -34,7 +34,7 @@ namespace AppleAuth.IOS
 #endif
         }
         
-        public void LoginSilently(
+        public void QuickLogin(
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
