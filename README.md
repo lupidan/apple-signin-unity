@@ -89,18 +89,57 @@ The first option is to manually setup all the entitlements in our Xcode project.
 
 **NOTE 2:** The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
 
-## JSON communication
+## Implement Sign in With Apple
+An overall flow of how the native Sign In With Apple flow works is presented in this diagram.
+There is no official documentation about it, the only available source for this is the WWDC 2019 talk. You can watch it here:
+https://developer.apple.com/videos/play/wwdc2019/706/
+
+![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/AppleSignInFlow_v1.png)
+
+### Initializing
+```csharp
+private IAppleAuthManager appleAuthManager;
+private OnDemandMessageHandlerScheduler scheduler;
+
+void Start()
+{
+    ...
+    // Creates the Scheduler to execute the pending callbacks on demand
+    this.scheduler = new OnDemandMessageHandlerScheduler();
+    // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
+    var deserializer = new PayloadDeserializer();
+    // Creates an Apple Authentication manager with the scheduler and the deserializer
+    this.appleAuthManager = new AppleAuthManager(deserializer, scheduler);
+    ...
+}
+
+void Update()
+{
+    ...
+    // Updates the scheduler to execute pending response callbacks
+    // This ensures they are executed inside Unity's Update loop
+    this.scheduler.Update();
+    ...
+}
+```
+
+## Plugin features
+### JSON communication
 This plugin does **NOT** use UnitySendMessage, meaning that there will be no need to instantiate any components in
 GameObject instances. Just create an instance of the [main class] and keep it alive wherever you would like to use/receive
 the data from the sign in.
 
 The communication between the native Objective-C and C# is made through a static context using JSON serialization and deserialization.
 
-## Custom deserialization
+### Customizable deserialization
 By default, this plugin supports Unity's JSON Serialization system, so no extra libraries are added. A few workarounds had to be made to support it.
 However, if your app/game uses a different serialization library (JSON.net, MiniJSON, etc...), you can create you custom deserializer.
 
 As long as you implement the IPayloadDeserializer interface, you can pass that interface to the main NativeAppleAuth Constructor to use your own solution.
+
+### Customizable callback scheduling
+Pretty much all the calls are async. This means that the native callback has to be executed back.
+It's recommended to schedule the callbacks (or execute them) from a MonoBehaviour of your choice.
 
 ## Current progress
 
