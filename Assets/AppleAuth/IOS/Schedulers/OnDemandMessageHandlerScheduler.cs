@@ -22,6 +22,15 @@ namespace AppleAuth.IOS
 
         public void Update()
         {
+            int numberOfPendingActions;
+            lock (_sync)
+            {
+                numberOfPendingActions = this._pendingActions.Count;
+            }
+            
+            if (numberOfPendingActions == 0)
+                return;
+
             Action[] actionsToExecute;
             lock (_sync)
             {
