@@ -90,6 +90,7 @@ The first option is to manually setup all the entitlements in our Xcode project.
 **NOTE 2:** The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
 
 ## Implement Sign in With Apple
+### ⚠️⚠️ Work in progress ⚠️⚠️
 An overall flow of how the native Sign In With Apple flow works is presented in this diagram.
 There is no official documentation about it, the only available source for this is the WWDC 2019 talk. You can watch it here:
 https://developer.apple.com/videos/play/wwdc2019/706/
@@ -123,6 +124,51 @@ void Update()
 }
 ```
 
+### Checking credential status
+Given an `userId` from a previous successful sign in. You can check the credential state of that user ID like so:
+```csharp
+this.appleAuthManager.GetCredentialState(
+    userId,
+    state =>
+    {
+        switch (state)
+        {
+            case CredentialState.Authorized:
+                // User ID is still valid. Perform login
+                break;
+            
+            case CredentialState.Revoked:
+                // User ID was revoked. Try Quick Login
+                break;
+            
+            case CredentialState.NotFound:
+                // User ID was not found. Go to login screen.
+                break;
+        }
+    },
+    error =>
+    {
+        // Something went wrong
+    });
+```
+
+### Quick login
+This should be tried if your saved User Id from apple was revoked. According to Apple, when going with this approach you should see something similar to this:
+
+![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/QuickLogin.png)
+```csharp
+this.appleAuthManager.QuickLogin(
+    credential =>
+    {
+        // Received a valid credential!
+        // Try casting to IAppleIDCredential or IPasswordCredential
+    },
+    error =>
+    {
+        // Something went wrong. Go to login screen
+    });
+```
+
 ## Plugin features
 ### JSON communication
 This plugin does **NOT** use UnitySendMessage, meaning that there will be no need to instantiate any components in
@@ -141,19 +187,15 @@ As long as you implement the IPayloadDeserializer interface, you can pass that i
 Pretty much all the calls are async. This means that the native callback has to be executed back.
 It's recommended to schedule the callbacks (or execute them) from a MonoBehaviour of your choice.
 
-## Current progress
-
-### iOS Native 
+## Features
+ 
 - ☒ GameObject-less messaging system based on strings.
 - ☒ Get Credential state for a specific User-Id.
 - ☒ Sign in with Apple.
-- ☒ Silent Login to support iTunes Keychains (to be properly tested).
+- ☒ Quick login to support iTunes Keychains credentials (to be properly tested).
 - ☒ Programatically add new AuthenticationServices.framework and Entitlements entry when building for iOS.
 - ☒ NSPersonNameComponents formatting for all different styles.
 - ☒ NSError codes mapping into Unity.
 - ☒ Customize Sign in With Apple call from Unity. (request email and/or full name)
 - ☒ Support to schedule all callbacks in user-configured loops (ex. in an MonoBehaviour's Update loop).
 - ☒ Add support for credential revoked notifications
-
-### Rest API
-- ☐ TBD
