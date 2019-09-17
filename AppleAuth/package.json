@@ -1,0 +1,11 @@
+{
+    "name": "com.lupidan.apple-signin-unity-src",
+    "displayName": "Sign in with Apple [Local Source]",
+    "version": "0.3.0",
+    "unity": "2018.3",
+    "description": "TODO. This package.json is needed in order to avoid circular deps in tests / example project. 'files' property works for remote urls (eg. Github), but not for local file paths",
+    "keywords": [
+        "unity"
+    ],
+    "category": "Unity"
+}
