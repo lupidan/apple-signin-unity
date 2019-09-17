@@ -1,0 +1,17 @@
+{
+    "name": "com.lupidan.apple-signin-unity",
+    "displayName": "Sign in with Apple",
+    "version": "0.3.0",
+    "unity": "2018.3",
+    "description": "TODO",
+    "keywords": [
+        "unity"
+    ],
+    "category": "Unity",
+    "files": [
+        "/LICENSE",
+        "/README.md",
+        "/package.json",
+        "/AppleAuth",
+    ]
+}
