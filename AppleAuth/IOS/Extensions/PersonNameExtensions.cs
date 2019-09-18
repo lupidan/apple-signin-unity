@@ -30,7 +30,7 @@ namespace AppleAuth.IOS.Extensions
             if (string.IsNullOrEmpty(personName.NameSuffix))
                 orderedParts.Add(personName.NameSuffix);
 
-            return string.Join(" ", orderedParts);
+            return string.Join(" ", orderedParts.ToArray());
 #endif
         }
 

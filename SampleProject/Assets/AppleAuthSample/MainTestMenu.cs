@@ -50,7 +50,7 @@ public class MainTestMenu : MonoBehaviour
         // If at any point we receive a credentials revoked notification, we delete the stored User ID
         this._appleAuth.SetCredentialsRevokedCallback(result =>
         {
-            Debug.Log($"Received revoked callback {result}");
+            Debug.Log("Received revoked callback " + result);
             PlayerPrefs.DeleteKey(AppleUserIdKey);
         });
 
