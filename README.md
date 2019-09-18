@@ -31,12 +31,13 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 ## Installation
 ### Option 1: Unity Package manager
 Available starting from Unity 2018.3.
-Just add this line to the `Packages/manifest.json` file of your Unity Project.
+
+Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the plugin available to use in your code.
 ```json
 "dependencies": {
-    ...
+
     "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git",
-    ...
+
 }
 ```
 ### Option 2: Unity Package file
@@ -54,7 +55,9 @@ To be able to use Apple's platform and framework for Authenticating with an Appl
 ### Option 1)  Programmatic setup with a Script
 
 *RECOMMENDED*
+
 This plugin **provides an extension method** for `ProjectCapabilityManager` ([docs](https://docs.unity3d.com/ScriptReference/iOS.Xcode.ProjectCapabilityManager.html)), used to add this entitlement programatically after an Xcode build has finished.
+
 Simply create a Post Processing build script ([more info](https://docs.unity3d.com/ScriptReference/Callbacks.PostProcessBuildAttribute.html)) that performs the call. If you already have a post process build script, it should be simple to add to your code.
 
 The provided extension method is `AddSignInWithApple`. No arguments are required.
