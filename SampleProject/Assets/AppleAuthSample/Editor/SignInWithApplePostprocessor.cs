@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
 
-namespace Editor
+namespace AppleAuthSample.Editor
 {
     public static class SignInWithApplePostprocessor
     {
