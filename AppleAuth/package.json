@@ -6,14 +6,14 @@
     "description": "Author: Daniel Lupiañez Casares\n[Local Source]\nProvides a Unity bridge to use the native Sign In With Apple method on iOS/iPadOS/tvOS devices",
     "keywords": [
         "apple",
-		"iphone",
-		"ios",
-		"ipad",
-		"ipados",
-		"tvos",
-		"signin",
-		"oauth",
-		"native",
+        "iphone",
+        "ios",
+        "ipad",
+        "ipados",
+        "tvos",
+        "signin",
+        "oauth",
+        "native",
         "unity"
     ],
     "category": "Unity"
