@@ -1,15 +1,17 @@
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/UnityIcon.png" alt="Unity 3D"/>
 </p>
 
 # Sign in with Apple Unity Plugin
+
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
 
+[![Donate](https://img.shields.io/static/v1.svg?label=Donate&message=%20%40lupidan&color=red&logo=paypal&style=popout)](https://paypal.me/lupidan)
 [![Twitter](https://img.shields.io/twitter/follow/lupi_dan.svg?style=social)](https://twitter.com/intent/user?screen_name=lupi_dan)
 
-[![Donate](https://img.shields.io/static/v1.svg?label=Donate&message=%20%40lupidan&color=red&logo=paypal&style=popout)](https://paypal.me/lupidan)
 
 <p align="center">
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
@@ -27,24 +29,43 @@ On WWDC19, Apple announced **Sign in with Apple**, and on top of that, they anno
 that used any kind of Third party sign-ins (like *Sign in with Facebook*, or *Sign in with Google*), will have to support
 Sign in with Apple in order to get approved for the App Store, making it **mandatory**.
 
-## Setting up the plugin
-### Installing the package
-1. Download the most recent Unity package <a href="https://github.com/lupidan/apple-signin-unity/releases/download/0.2/AppleSignInUnity.unitypackage">here</a>
+## Installation
+### Option 1: Unity Package manager
+Available starting from Unity 2018.3.
+
+Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the plugin available to use in your code to the latest master.
+```json
+"dependencies": {
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git",
+}
+```
+
+If you want to use a specific [release](https://github.com/lupidan/apple-signin-unity/releases) in your code, just add `#release` at the end, like so:
+```json
+"dependencies": {
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#0.3.0",
+}
+```
+
+### Option 2: Unity Package file
+1. Download the most recent Unity package release [here](https://github.com/lupidan/apple-signin-unity/releases)
 2. Import the downloaded Unity package in your app. There are two main folders:
+
 * The `AppleAuth` folder contains the **main plugin**.
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
 
 ![Import detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png)
 
-### Set up entitlements
+## Plugin setup
 
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project. Two different options are available to set up the entitlements required to enable Apple ID authentication with the iOS SDK.
 
-#### Option 1)  Programmatic setup with a Script
+### Option 1)  Programmatic setup with a Script
 
-**RECOMMENDED**
+*RECOMMENDED*
 
 This plugin **provides an extension method** for `ProjectCapabilityManager` ([docs](https://docs.unity3d.com/ScriptReference/iOS.Xcode.ProjectCapabilityManager.html)), used to add this entitlement programatically after an Xcode build has finished.
+
 Simply create a Post Processing build script ([more info](https://docs.unity3d.com/ScriptReference/Callbacks.PostProcessBuildAttribute.html)) that performs the call. If you already have a post process build script, it should be simple to add to your code.
 
 The provided extension method is `AddSignInWithApple`. No arguments are required.
@@ -70,20 +91,25 @@ public static class SignInWithApplePostprocessor
 }
 ```
 
-#### Option 2) Manual setup
+### Option 2) Manual entitlements setup
 
-The first option is to manually setup all the entitlements in our Xcode project. Note that when making an iOS Build from Unity into the same folder, if you choose the option to overwrite, you will need to perform the Manual setup again. 
+The other option is to manually setup all the entitlements in our Xcode project. Note that when making an iOS Build from Unity into the same folder, if you choose the option to overwrite, you will need to perform the Manual setup again.
 
-1. In your generated Xcode project. Select your product and select the option "Signing And Capabilities". You should see there an option to add a capability from a list. Just locate "Sign In With Apple" and add it to your project.
+1. In your generated Xcode project. Select your product and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
 
 2. This should have added an Entitlements file to your project. Locate it on the project explorer (it should be a file with the extension `.entitlements`). Inside it you should see an entry like this one:
-![Entitlements detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png)
+
+<p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"/></a>
+</p>
 
 3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`
-![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png)
 
+<p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"/></a>
+</p>
 
-#### Final notes
+### Final notes regarding setup
 
 **NOTE:** The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
