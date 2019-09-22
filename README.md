@@ -14,8 +14,9 @@
 
 
 <p align="center">
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png" alt="Screenshot2" height="400"/></a>
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png" alt="Screenshot2" height="400"/></a>
 </p>
 
 by **Daniel Lupiañez Casares**
@@ -43,7 +44,7 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project. I
 If you want to use a specific [release](https://github.com/lupidan/apple-signin-unity/releases) in your code, just add `#release` at the end, like so:
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#0.3.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#0.4.0",
 }
 ```
 
@@ -150,6 +151,25 @@ void Update()
 }
 ```
 
+### Perform Sign In With Apple
+If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
+```csharp
+this._appleAuthManager.LoginWithAppleId(
+    LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+    credential =>
+    {
+        // Obtained credential, cast it to IAppleIDCredential
+        var appleIdCredential = credential as IAppleIDCredential;
+        // You should save the user ID somewhere in the device
+        // And now you have all the information to create/login a user in your system
+        PlayerPrefs.SetString(AppleUserIdKey, credential.User);
+    },
+    error =>
+    {
+        // Something went wrong
+    });
+```
+
 ### Checking credential status
 Given an `userId` from a previous successful sign in. You can check the credential state of that user ID like so:
 ```csharp
@@ -179,21 +199,31 @@ this.appleAuthManager.GetCredentialState(
 ```
 
 ### Quick login
+
+**NOTE:** If you were supporting credentials being stored in the [keychain](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your users, the Quick login should (in theory) return those credentials as a IPasswordCredential.
+
 This should be tried if your saved User Id from apple was revoked. According to Apple, when going with this approach you should see something similar to this:
 
 ![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/QuickLogin.png)
+
+
+
 ```csharp
 this.appleAuthManager.QuickLogin(
     credential =>
     {
         // Received a valid credential!
         // Try casting to IAppleIDCredential or IPasswordCredential
+        var appleIdCredential = credential as IAppleIDCredential; // Previous Apple sign in credential
+        var passwordCredential = credential as IPasswordCredential; // Saved Keychain credential (read about Keychain Items)
     },
     error =>
     {
         // Something went wrong. Go to login screen
     });
 ```
+
+
 
 ## Plugin features
 ### JSON communication
