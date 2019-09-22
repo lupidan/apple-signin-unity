@@ -39,7 +39,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 
 + (instancetype) sharedManager;
 
-- (void) loginSilently:(uint)requestId;
+- (void) quickLogin:(uint)requestId;
 - (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options;
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId;

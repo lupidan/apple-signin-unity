@@ -67,12 +67,12 @@
 
 #pragma mark Public methods
 
-- (void) loginSilently:(uint)requestId
+- (void) quickLogin:(uint)requestId
 {
-    ASAuthorizationAppleIDRequest *appleIDSilentRequest = [[self appleIdProvider] createRequest];
-    ASAuthorizationPasswordRequest *passwordSilentRequest = [[self passwordProvider] createRequest];
+    ASAuthorizationAppleIDRequest *appleIDRequest = [[self appleIdProvider] createRequest];
+    ASAuthorizationPasswordRequest *keychainRequest = [[self passwordProvider] createRequest];
     
-    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDSilentRequest, passwordSilentRequest]];
+    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDRequest, keychainRequest]];
     [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
 }
 
@@ -242,12 +242,12 @@ void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
 #endif
 }
 
-void AppleAuth_IOS_LoginSilently(uint requestId)
+void AppleAuth_IOS_QuickLogin(uint requestId)
 {
     // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-        [[AppleAuthManager sharedManager] loginSilently:requestId];
+        [[AppleAuthManager sharedManager] quickLogin:requestId];
     else
         AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
 #else

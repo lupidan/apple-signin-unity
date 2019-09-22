@@ -53,7 +53,7 @@ namespace AppleAuth.IOS
                         successCallback(response.AppleIDCredential);
                 });
 
-            PInvoke.AppleAuth_IOS_LoginSilently(requestId);
+            PInvoke.AppleAuth_IOS_QuickLogin(requestId);
 #else
             throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
 #endif
@@ -146,7 +146,7 @@ namespace AppleAuth.IOS
             public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_LoginSilently(uint requestId);
+            public static extern void AppleAuth_IOS_QuickLogin(uint requestId);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
