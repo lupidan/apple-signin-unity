@@ -5,8 +5,6 @@ namespace AppleAuth.IOS.Enums
     /// </summary>
     public enum CredentialState
     {
-        Unknown = -1,
-
         /// <summary>
         /// Authorization for the given user has been revoked
         /// </summary>
@@ -21,5 +19,10 @@ namespace AppleAuth.IOS.Enums
         /// The user can't be found
         /// </summary>
         NotFound = 2,
+        
+        /// <summary>
+        /// ASAuthorizationAppleIDProviderCredentialTransferred
+        /// </summary>
+        Transferred = 3,
     }
 }
