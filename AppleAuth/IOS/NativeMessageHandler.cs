@@ -10,9 +10,13 @@ namespace AppleAuth.IOS
     internal static class NativeMessageHandler
     {
         private delegate void NativeMessageHandlerDelegate(uint requestId, string messagePayload);
-
+        
+        private const uint InitialCallbackId = 1U;
+        private const uint MaxCallbackId = uint.MaxValue;
+        
         private static readonly Dictionary<uint, MessageCallbackEntry> CallbackDictionary = new Dictionary<uint, MessageCallbackEntry>();
-        private static uint _callbackId = 1;
+        
+        private static uint _callbackId = InitialCallbackId;
         private static bool _initialized = false;
 
         internal static uint AddMessageCallback(IMessageHandlerScheduler scheduler, bool isSingleUse, Action<string> messageCallback)
@@ -27,27 +31,22 @@ namespace AppleAuth.IOS
                 throw new Exception("Can't add a null Message Callback.");
             
             var usedCallbackId = _callbackId;
+            
             _callbackId += 1;
-            if (CallbackDictionary.ContainsKey(usedCallbackId))
-                throw new Exception("A Message Callback with the same ID " + usedCallbackId + " already exists.");
+            if (_callbackId >= MaxCallbackId)
+                _callbackId = InitialCallbackId;
 
             var callbackEntry = new MessageCallbackEntry(messageCallback, scheduler, isSingleUse);
             CallbackDictionary.Add(usedCallbackId, callbackEntry);
             return usedCallbackId;
         }
         
-        internal static void ReplaceMessageCallback(uint requestId, IMessageHandlerScheduler scheduler, bool isSingleUse, Action<string> newMessageCallback)
+        internal static void RemoveMessageCallback(uint requestId)
         {
             if (!CallbackDictionary.ContainsKey(requestId))
-                throw new Exception("Callback with id " + requestId + " does not exist and can't be replaced");
-
-            CallbackDictionary.Remove(requestId);
-
-            if (newMessageCallback == null)
-                return;
+                throw new Exception("Callback with id " + requestId + " does not exist and can't be removed");
             
-            var callbackEntry = new MessageCallbackEntry(newMessageCallback, scheduler, isSingleUse);
-            CallbackDictionary.Add(requestId, callbackEntry);
+            CallbackDictionary.Remove(requestId);
         }
 
         [MonoPInvokeCallback(typeof(NativeMessageHandlerDelegate))]
