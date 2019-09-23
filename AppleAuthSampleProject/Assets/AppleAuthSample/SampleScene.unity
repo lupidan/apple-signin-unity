@@ -1015,7 +1015,7 @@ GameObject:
   - component: {fileID: 1301715474}
   - component: {fileID: 1301715473}
   m_Layer: 5
-  m_Name: LogoutButton
+  m_Name: LogoutButtonLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
