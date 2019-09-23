@@ -4,8 +4,10 @@
 </p>
 
 # Sign in with Apple Unity Plugin
-![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
 
+by **Daniel Lupiañez Casares**
+
+![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
@@ -20,7 +22,24 @@
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
 </p>
 
-by **Daniel Lupiañez Casares**
+
+
+* [Overview](#overview)
+* [Features](#features)
+* [Installation](#installation)
+  * [Option 1: Unity Package manager](#option-1--unity-package-manager)
+  * [Option 2: Unity Package file](#option-2--unity-package-file)
+* [Plugin setup](#plugin-setup)
+  * [Option 1)  Programmatic setup with a Script](#option-1---programmatic-setup-with-a-script)
+  * [Option 2) Manual entitlements setup](#option-2--manual-entitlements-setup)
+  * [Final notes regarding setup](#final-notes-regarding-setup)
+* [Implement Sign in With Apple](#implement-sign-in-with-apple)
+  * [Initializing](#initializing)
+  * [Perform Sign In With Apple](#perform-sign-in-with-apple)
+  * [Checking credential status](#checking-credential-status)
+  * [Quick login](#quick-login)
+  * [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
+* [Some more info](#some-more-info)
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
