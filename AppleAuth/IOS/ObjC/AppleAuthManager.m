@@ -121,14 +121,17 @@
         [self setCredentialsRevokedObserver:nil];
     }
     
-    NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
-                                                                           object:nil
-                                                                            queue:nil
-                                                                       usingBlock:^(NSNotification * _Nonnull note) {
-                                                                           [[NativeMessageHandler defaultHandler] sendNativeMessageForString:@"Credentials Revoked"
-                                                                                                                                forRequestId:requestId];
-                                                                       }];
-    [self setCredentialsRevokedObserver:observer];
+    if (requestId != 0)
+    {
+        NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
+                                                                               object:nil
+                                                                                queue:nil
+                                                                           usingBlock:^(NSNotification * _Nonnull note) {
+                                                                               [[NativeMessageHandler defaultHandler] sendNativeMessageForString:@"Credentials Revoked"
+                                                                                                                                    forRequestId:requestId];
+                                                                           }];
+        [self setCredentialsRevokedObserver:observer];
+    }
 }
 
 #pragma mark Private methods
