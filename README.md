@@ -4,7 +4,7 @@
 </p>
 
 # Sign in with Apple Unity Plugin
-[![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)](/releases/latest)
+![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
 
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
@@ -17,7 +17,7 @@
 <p align="center">
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN04.png" alt="Screenshot2" height="400"/></a>
+    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
 </p>
 
 by **Daniel Lupiañez Casares**
@@ -125,9 +125,9 @@ The other option is to manually setup all the entitlements in our Xcode project.
 
 ### Final notes regarding setup
 
-**NOTE:** The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
+The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
-**NOTE 2:** The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
 
 ## Implement Sign in With Apple
 
@@ -237,15 +237,20 @@ this.appleAuthManager.QuickLogin(
 
 ### Listening to credentials revoked notification
 
-It may be that your user suddenly decides to revoke the authorization that was given previously. You should be able to listen to the incoming notification by registering a callback. If the callback passed is null, you will be clearing it and stop listening to it.
+It may be that your user suddenly decides to revoke the authorization that was given previously. You should be able to listen to the incoming notification by registering a callback for it.
 
 
 ```csharp
-// If at any point we receive a credentials revoked notification, we delete the stored User ID, and go back to login
 this._appleAuthManager.SetCredentialsRevokedCallback(result =>
 {
 	// Sign in with Apple Credentials were revoked
 });
+```
+
+To clear the callback, and stop listening to notifications, simply set it to `null`
+
+```csharp
+this._appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
 
 ## Some more info
