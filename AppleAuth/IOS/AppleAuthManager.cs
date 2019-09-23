@@ -10,8 +10,7 @@ namespace AppleAuth.IOS
         private readonly IPayloadDeserializer _payloadDeserializer;
         private readonly IMessageHandlerScheduler _scheduler;
         
-        private uint _registeredCredentialsRevokedCallbackId;
-        private bool _didRegisterCredentialsRevokedCallback = false;
+        private uint _registeredCredentialsRevokedCallbackId = 0;
 #endif
 
         public bool IsCurrentPlatformSupported
@@ -110,24 +109,21 @@ namespace AppleAuth.IOS
         public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            if (this._didRegisterCredentialsRevokedCallback)
+            if (this._registeredCredentialsRevokedCallbackId != 0)
             {
-                NativeMessageHandler.ReplaceMessageCallback(
-                    this._registeredCredentialsRevokedCallbackId,
-                    this._scheduler,
-                    false,
-                    credentialsRevokedCallback);
+                NativeMessageHandler.RemoveMessageCallback(this._registeredCredentialsRevokedCallbackId);
+                this._registeredCredentialsRevokedCallbackId = 0;
             }
-            else
+
+            if (credentialsRevokedCallback != null)
             {
                 this._registeredCredentialsRevokedCallbackId = NativeMessageHandler.AddMessageCallback(
                     this._scheduler,
                     false,
                     credentialsRevokedCallback);
-                
-                this._didRegisterCredentialsRevokedCallback = true;
-                PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
             }
+            
+            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
 #else
             throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
 #endif
