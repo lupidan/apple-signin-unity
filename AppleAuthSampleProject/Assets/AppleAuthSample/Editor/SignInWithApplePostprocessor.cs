@@ -1,3 +1,5 @@
+#if UNITY_IOS
+
 using AppleAuth.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -27,5 +29,6 @@ namespace AppleAuthSample.Editor
             manager.WriteToFile();
         }
     }
-    
 }
+
+#endif
