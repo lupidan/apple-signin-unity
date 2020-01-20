@@ -33,6 +33,7 @@ by **Daniel Lupiañez Casares**
   * [Plugin setup](#plugin-setup)
     + [Option 1)  Programmatic setup with a Script](#option-1--programmatic-setup-with-a-script)
     + [Option 2) Manual entitlements setup](#option-2-manual-entitlements-setup)
+    + [Enabling Apple capability](#enabling-apple-capability)
     + [Final notes regarding setup](#final-notes-regarding-setup)
   * [Implement Sign in With Apple](#implement-sign-in-with-apple)
     + [Initializing](#initializing)
@@ -149,11 +150,18 @@ The other option is to manually setup all the entitlements in our Xcode project.
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"/></a>
 </p>
 
+### Enabling Apple capability
+
+You will also need to **setup everything** in the Apple's developer portal. More information can be found [here](https://help.apple.com/developer-account/#/devde676e696). Please remember this plugin only supports native Sign In With Apple on iOS (no REST API support).
+
+There is also a [Getting Started site](https://developer.apple.com/sign-in-with-apple/get-started/).
+
 ### Final notes regarding setup
 
 The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
 The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+
 
 ## Implement Sign in With Apple
 
@@ -287,7 +295,7 @@ this._appleAuthManager.SetCredentialsRevokedCallback(null);
 + [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
 + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
 
-### Does it support landscape orientations
+### Does it support landscape orientations?
 On **iOS 13.0**, Apple does not support landscape orientation for this feature. For more details, check this [issue](https://github.com/lupidan/apple-signin-unity/issues/5). 
 
 ### How can I Logout? Does the plugin provide any Logout option?
