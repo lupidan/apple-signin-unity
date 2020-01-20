@@ -42,7 +42,7 @@ by **Daniel Lupiañez Casares**
     + [Quick login](#quick-login)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
   * [FAQ](#faq)
-    + [Does it support landscape orientations](#does-it-support-landscape-orientations)
+    + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
     + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
     + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
@@ -320,7 +320,7 @@ No. The plugin uses callbacks in a static context with request identifiers using
 
 ### Why do I need to call Update manually on the scheduler?
 
-Callbacks from iOS SDK are executed in their own thread (normally the main thread), and outside Unity's engine control. Meaning that you can't update the UI, or worse, if your callback executes a NRE, it will crash the Game.
+Callbacks from iOS SDK are executed in their own thread (normally the main thread), and outside Unity's engine control. Meaning that you can't update the UI, or worse, if your callback throws an Exception (like a simple NRE), it will crash the Game completely.
 
 It's recommended to update the scheduler regularly in a MonoBehaviour of your choice.
 
