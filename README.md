@@ -28,11 +28,11 @@ by **Daniel Lupiañez Casares**
   * [Features](#features)
     + [Native Sign in with Apple](#native-sign-in-with-apple)
   * [Installation](#installation)
-    + [Option 1: Unity Package manager](#option-1--unity-package-manager)
-    + [Option 2: Unity Package file](#option-2--unity-package-file)
+    + [Option 1: Unity Package manager](#option-1-unity-package-manager)
+    + [Option 2: Unity Package file](#option-2-unity-package-file)
   * [Plugin setup](#plugin-setup)
-    + [Option 1)  Programmatic setup with a Script](#option-1---programmatic-setup-with-a-script)
-    + [Option 2) Manual entitlements setup](#option-2--manual-entitlements-setup)
+    + [Option 1)  Programmatic setup with a Script](#option-1--programmatic-setup-with-a-script)
+    + [Option 2) Manual entitlements setup](#option-2-manual-entitlements-setup)
     + [Final notes regarding setup](#final-notes-regarding-setup)
   * [Implement Sign in With Apple](#implement-sign-in-with-apple)
     + [Initializing](#initializing)
@@ -42,12 +42,11 @@ by **Daniel Lupiañez Casares**
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
   * [FAQ](#faq)
     + [Does it support landscape orientations](#does-it-support-landscape-orientations)
-    + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout--does-the-plugin-provide-any-logout-option-)
-    + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name--or-an-email--even-though-i-am-requesting-them-in-the-loginwithappleid-call)
-  * [Some more info](#some-more-info)
-      - [About JSON communication](#about-json-communication)
-      - [About Customizable deserialization](#about-customizable-deserialization)
-      - [About customizable callback scheduling](#about-customizable-callback-scheduling)
+    + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
+    + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
+    + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
+    + [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
+    + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
@@ -282,8 +281,11 @@ this._appleAuthManager.SetCredentialsRevokedCallback(null);
 
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)
-+ [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout--does-the-plugin-provide-any-logout-option-)
-+ [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name--or-an-email--even-though-i-am-requesting-them-in-the-loginwithappleid-call)
++ [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
++ [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
++ [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
++ [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
++ [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
 
 ### Does it support landscape orientations
 On **iOS 13.0**, Apple does not support landscape orientation for this feature. For more details, check this [issue](https://github.com/lupidan/apple-signin-unity/issues/5). 
@@ -302,23 +304,20 @@ This probably means that you already used Sign In with apple at some point. Appl
 
 If a credential was already created, you will only receive a user identifier, so it will work similarly to a Quick Login.
 
-If you want to test new account scenarios, you need to [revoke](#listening-to-credentials-revoked-notification) your app credentials for that Apple ID through the settings menu. 
+If you want to test new account scenarios, you need to [revoke](#listening-to-credentials-revoked-notification) your app credentials for that Apple ID through the settings menu.
 
-## Some more info
-#### About JSON communication
-This plugin does **NOT** use UnitySendMessage, meaning that there will be no need to instantiate any components in
-GameObject instances. Just create an instance of the [main class] and keep it alive wherever you would like to use/receive
-the data from the sign in.
+### Does the plugin use UnitySendMessage?
 
-The communication between the native Objective-C and C# is made through a static context using JSON serialization and deserialization.
+No. The plugin uses callbacks in a static context with request identifiers using JSON strings. Callbacks can be scheduled On Demand by initializing the `AppleAuthManager` with an `OnDemandMessageScheduler`, and calling `Update` on it.
 
-#### About Customizable deserialization
-By default, this plugin supports Unity's JSON Serialization system, so no extra libraries are added. A few workarounds had to be made to support it.
-However, if your app/game uses a different serialization library (JSON.net, MiniJSON, etc...), you can create you custom deserializer.
+### Why do I need to call Update manually on the scheduler?
 
-As long as you implement the IPayloadDeserializer interface, you can pass that interface to the main NativeAppleAuth Constructor to use your own solution.
+Callbacks from iOS SDK are executed in their own thread (normally the main thread), and outside Unity's engine control. Meaning that you can't update the UI, or worse, if your callback executes a NRE, it will crash the Game.
 
-#### About customizable callback scheduling
-Pretty much all the calls are async. This means that the native callback has to be executed back.
-It's recommended to schedule the callbacks (or execute them) from a MonoBehaviour of your choice.
+It's recommended to update the scheduler regularly in a MonoBehaviour of your choice.
 
+### What deserialization library does it use by default?
+
+If you initialize the `AppleAuthManager` with the built-in `PayloadDeserializer`, it uses Unity JSON serialization system, so **no extra libraries are added**.
+
+You can also implement your own deserialization by implementing an `IPayloadDeserializer`.
