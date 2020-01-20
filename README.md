@@ -24,22 +24,30 @@ by **Daniel Lupiañez Casares**
 
 
 
-* [Overview](#overview)
-* [Features](#features)
-* [Installation](#installation)
-  * [Option 1: Unity Package manager](#option-1--unity-package-manager)
-  * [Option 2: Unity Package file](#option-2--unity-package-file)
-* [Plugin setup](#plugin-setup)
-  * [Option 1)  Programmatic setup with a Script](#option-1---programmatic-setup-with-a-script)
-  * [Option 2) Manual entitlements setup](#option-2--manual-entitlements-setup)
-  * [Final notes regarding setup](#final-notes-regarding-setup)
-* [Implement Sign in With Apple](#implement-sign-in-with-apple)
-  * [Initializing](#initializing)
-  * [Perform Sign In With Apple](#perform-sign-in-with-apple)
-  * [Checking credential status](#checking-credential-status)
-  * [Quick login](#quick-login)
-  * [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
-* [Some more info](#some-more-info)
+  * [Overview](#overview)
+  * [Features](#features)
+    + [Native Sign in with Apple](#native-sign-in-with-apple)
+  * [Installation](#installation)
+    + [Option 1: Unity Package manager](#option-1--unity-package-manager)
+    + [Option 2: Unity Package file](#option-2--unity-package-file)
+  * [Plugin setup](#plugin-setup)
+    + [Option 1)  Programmatic setup with a Script](#option-1---programmatic-setup-with-a-script)
+    + [Option 2) Manual entitlements setup](#option-2--manual-entitlements-setup)
+    + [Final notes regarding setup](#final-notes-regarding-setup)
+  * [Implement Sign in With Apple](#implement-sign-in-with-apple)
+    + [Initializing](#initializing)
+    + [Perform Sign In With Apple](#perform-sign-in-with-apple)
+    + [Checking credential status](#checking-credential-status)
+    + [Quick login](#quick-login)
+    + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
+  * [FAQ](#faq)
+    + [Does it support landscape orientations](#does-it-support-landscape-orientations)
+    + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout--does-the-plugin-provide-any-logout-option-)
+    + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name--or-an-email--even-though-i-am-requesting-them-in-the-loginwithappleid-call)
+  * [Some more info](#some-more-info)
+      - [About JSON communication](#about-json-communication)
+      - [About Customizable deserialization](#about-customizable-deserialization)
+      - [About customizable callback scheduling](#about-customizable-callback-scheduling)
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
@@ -66,10 +74,10 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 ### Option 1: Unity Package manager
 Available starting from Unity 2018.3.
 
-Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the plugin available to use in your code to the latest master.
+Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the v1.0.0 of the plugin available to use in your code to the latest master.
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
 }
 ```
 
@@ -271,6 +279,30 @@ To clear the callback, and stop listening to notifications, simply set it to `nu
 ```csharp
 this._appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
+
+## FAQ
++ [Does it support landscape orientations](#does-it-support-landscape-orientations)
++ [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout--does-the-plugin-provide-any-logout-option-)
++ [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name--or-an-email--even-though-i-am-requesting-them-in-the-loginwithappleid-call)
+
+### Does it support landscape orientations
+On **iOS 13.0**, Apple does not support landscape orientation for this feature. For more details, check this [issue](https://github.com/lupidan/apple-signin-unity/issues/5). 
+
+### How can I Logout? Does the plugin provide any Logout option?
+
+On **iOS 13**  Apple does not provide any method to *"logout"* programatically. If you want to *"logout"* and re-test account creation, you need to revoke the credentials through settings.
+
+Go to `Settings` => `Click your iTunes user` => `Password & Security` => `Apple ID logins`. There you can select the app and click on `Stop using Apple ID`.
+
+After this, the credentials are effectively revoked, your app will receive a [Credentials Revoked notification](#listening-to-credentials-revoked-notification). This will allow you to re-test account creation.
+
+### I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call
+
+This probably means that you already used Sign In with apple at some point. Apple will give you the email/name **ONLY ONCE**. Once the credential is created, __it's your app/game's responsibility to send that information somewhere__, so an account is created with the given user identifier.
+
+If a credential was already created, you will only receive a user identifier, so it will work similarly to a Quick Login.
+
+If you want to test new account scenarios, you need to [revoke](#listening-to-credentials-revoked-notification) your app credentials for that Apple ID through the settings menu. 
 
 ## Some more info
 #### About JSON communication
