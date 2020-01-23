@@ -48,6 +48,7 @@ by **Daniel Lupiañez Casares**
     + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
     + [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
     + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
+    + [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
@@ -294,6 +295,7 @@ this._appleAuthManager.SetCredentialsRevokedCallback(null);
 + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
 + [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
 + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
++ [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
 
 ### Does it support landscape orientations?
 On **iOS 13.0**, Apple does not support landscape orientation for this feature. For more details, check this [issue](https://github.com/lupidan/apple-signin-unity/issues/5). 
@@ -330,7 +332,7 @@ If you initialize the `AppleAuthManager` with the built-in `PayloadDeserializer`
 
 You can also implement your own deserialization by implementing an `IPayloadDeserializer`.
 
-### Any way to get a refresh token after the first user authorization with the native view?
+### Any way to get a refresh token after the first user authorization?
 
 It seems currently is not possible to do so. You can read more details [here](https://github.com/lupidan/apple-signin-unity/issues/3)
 
