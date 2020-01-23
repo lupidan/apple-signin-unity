@@ -312,7 +312,7 @@ This probably means that you already used Sign In with apple at some point. Appl
 
 If a credential was already created, you will only receive a user identifier, so it will work similarly to a Quick Login.
 
-If you want to test new account scenarios, you need to [revoke](#listening-to-credentials-revoked-notification) your app credentials for that Apple ID through the settings menu.
+If you want to test new account scenarios, you need to [revoke](#how-can-i-logout-does-the-plugin-provide-any-logout-option) your app credentials for that Apple ID through the settings menu.
 
 ### Does the plugin use UnitySendMessage?
 
@@ -329,3 +329,8 @@ It's recommended to update the scheduler regularly in a MonoBehaviour of your ch
 If you initialize the `AppleAuthManager` with the built-in `PayloadDeserializer`, it uses Unity JSON serialization system, so **no extra libraries are added**.
 
 You can also implement your own deserialization by implementing an `IPayloadDeserializer`.
+
+### Any way to get a refresh token after the first user authorization with the native view?
+
+It seems currently is not possible to do so. You can read more details [here](https://github.com/lupidan/apple-signin-unity/issues/3)
+
