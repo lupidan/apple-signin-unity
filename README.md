@@ -24,22 +24,31 @@ by **Daniel Lupiañez Casares**
 
 
 
-* [Overview](#overview)
-* [Features](#features)
-* [Installation](#installation)
-  * [Option 1: Unity Package manager](#option-1--unity-package-manager)
-  * [Option 2: Unity Package file](#option-2--unity-package-file)
-* [Plugin setup](#plugin-setup)
-  * [Option 1)  Programmatic setup with a Script](#option-1---programmatic-setup-with-a-script)
-  * [Option 2) Manual entitlements setup](#option-2--manual-entitlements-setup)
-  * [Final notes regarding setup](#final-notes-regarding-setup)
-* [Implement Sign in With Apple](#implement-sign-in-with-apple)
-  * [Initializing](#initializing)
-  * [Perform Sign In With Apple](#perform-sign-in-with-apple)
-  * [Checking credential status](#checking-credential-status)
-  * [Quick login](#quick-login)
-  * [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
-* [Some more info](#some-more-info)
+  * [Overview](#overview)
+  * [Features](#features)
+    + [Native Sign in with Apple](#native-sign-in-with-apple)
+  * [Installation](#installation)
+    + [Option 1: Unity Package manager](#option-1-unity-package-manager)
+    + [Option 2: Unity Package file](#option-2-unity-package-file)
+  * [Plugin setup](#plugin-setup)
+    + [Option 1)  Programmatic setup with a Script](#option-1--programmatic-setup-with-a-script)
+    + [Option 2) Manual entitlements setup](#option-2-manual-entitlements-setup)
+    + [Enabling Apple capability](#enabling-apple-capability)
+    + [Final notes regarding setup](#final-notes-regarding-setup)
+  * [Implement Sign in With Apple](#implement-sign-in-with-apple)
+    + [Initializing](#initializing)
+    + [Perform Sign In With Apple](#perform-sign-in-with-apple)
+    + [Checking credential status](#checking-credential-status)
+    + [Quick login](#quick-login)
+    + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
+  * [FAQ](#faq)
+    + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
+    + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
+    + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
+    + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
+    + [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
+    + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
+    + [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
@@ -66,10 +75,10 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 ### Option 1: Unity Package manager
 Available starting from Unity 2018.3.
 
-Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the plugin available to use in your code to the latest master.
+Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the v1.0.0 of the plugin available to use in your code to the latest master.
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
 }
 ```
 
@@ -142,11 +151,18 @@ The other option is to manually setup all the entitlements in our Xcode project.
     <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"/></a>
 </p>
 
+### Enabling Apple capability
+
+You will also need to **setup everything** in the Apple's developer portal. More information can be found [here](https://help.apple.com/developer-account/#/devde676e696). Please remember this plugin only supports native Sign In With Apple on iOS (no REST API support).
+
+There is also a [Getting Started site](https://developer.apple.com/sign-in-with-apple/get-started/).
+
 ### Final notes regarding setup
 
 The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
 The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+
 
 ## Implement Sign in With Apple
 
@@ -272,21 +288,51 @@ To clear the callback, and stop listening to notifications, simply set it to `nu
 this._appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
 
-## Some more info
-#### About JSON communication
-This plugin does **NOT** use UnitySendMessage, meaning that there will be no need to instantiate any components in
-GameObject instances. Just create an instance of the [main class] and keep it alive wherever you would like to use/receive
-the data from the sign in.
+## FAQ
++ [Does it support landscape orientations](#does-it-support-landscape-orientations)
++ [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
++ [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
++ [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
++ [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
++ [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
++ [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
 
-The communication between the native Objective-C and C# is made through a static context using JSON serialization and deserialization.
+### Does it support landscape orientations?
+On **iOS 13.0**, Apple does not support landscape orientation for this feature. For more details, check this [issue](https://github.com/lupidan/apple-signin-unity/issues/5). 
 
-#### About Customizable deserialization
-By default, this plugin supports Unity's JSON Serialization system, so no extra libraries are added. A few workarounds had to be made to support it.
-However, if your app/game uses a different serialization library (JSON.net, MiniJSON, etc...), you can create you custom deserializer.
+### How can I Logout? Does the plugin provide any Logout option?
 
-As long as you implement the IPayloadDeserializer interface, you can pass that interface to the main NativeAppleAuth Constructor to use your own solution.
+On **iOS 13**  Apple does not provide any method to *"logout"* programatically. If you want to *"logout"* and re-test account creation, you need to revoke the credentials through settings.
 
-#### About customizable callback scheduling
-Pretty much all the calls are async. This means that the native callback has to be executed back.
-It's recommended to schedule the callbacks (or execute them) from a MonoBehaviour of your choice.
+Go to `Settings` => `Click your iTunes user` => `Password & Security` => `Apple ID logins`. There you can select the app and click on `Stop using Apple ID`.
+
+After this, the credentials are effectively revoked, your app will receive a [Credentials Revoked notification](#listening-to-credentials-revoked-notification). This will allow you to re-test account creation.
+
+### I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call
+
+This probably means that you already used Sign In with apple at some point. Apple will give you the email/name **ONLY ONCE**. Once the credential is created, __it's your app/game's responsibility to send that information somewhere__, so an account is created with the given user identifier.
+
+If a credential was already created, you will only receive a user identifier, so it will work similarly to a Quick Login.
+
+If you want to test new account scenarios, you need to [revoke](#how-can-i-logout-does-the-plugin-provide-any-logout-option) your app credentials for that Apple ID through the settings menu.
+
+### Does the plugin use UnitySendMessage?
+
+No. The plugin uses callbacks in a static context with request identifiers using JSON strings. Callbacks can be scheduled On Demand by initializing the `AppleAuthManager` with an `OnDemandMessageScheduler`, and calling `Update` on it.
+
+### Why do I need to call Update manually on the scheduler?
+
+Callbacks from iOS SDK are executed in their own thread (normally the main thread), and outside Unity's engine control. Meaning that you can't update the UI, or worse, if your callback throws an Exception (like a simple NRE), it will crash the Game completely.
+
+It's recommended to update the scheduler regularly in a MonoBehaviour of your choice.
+
+### What deserialization library does it use by default?
+
+If you initialize the `AppleAuthManager` with the built-in `PayloadDeserializer`, it uses Unity JSON serialization system, so **no extra libraries are added**.
+
+You can also implement your own deserialization by implementing an `IPayloadDeserializer`.
+
+### Any way to get a refresh token after the first user authorization?
+
+It seems currently is not possible to do so. You can read more details [here](https://github.com/lupidan/apple-signin-unity/issues/3)
 
