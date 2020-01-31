@@ -114,6 +114,8 @@ The provided extension method is `AddSignInWithApple`. No arguments are required
 
 Sample code:
 ```csharp
+using AppleAuth.Editor;
+
 public static class SignInWithApplePostprocessor
 {
     [PostProcessBuild(1)]
