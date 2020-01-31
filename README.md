@@ -203,7 +203,7 @@ void Update()
 ### Perform Sign In With Apple
 If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
 ```csharp
-this._appleAuthManager.LoginWithAppleId(
+this.appleAuthManager.LoginWithAppleId(
     LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
     credential =>
     {
@@ -276,7 +276,7 @@ It may be that your user suddenly decides to revoke the authorization that was g
 
 
 ```csharp
-this._appleAuthManager.SetCredentialsRevokedCallback(result =>
+this.appleAuthManager.SetCredentialsRevokedCallback(result =>
 {
 	// Sign in with Apple Credentials were revoked
 });
@@ -285,7 +285,7 @@ this._appleAuthManager.SetCredentialsRevokedCallback(result =>
 To clear the callback, and stop listening to notifications, simply set it to `null`
 
 ```csharp
-this._appleAuthManager.SetCredentialsRevokedCallback(null);
+this.appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
 
 ## FAQ
