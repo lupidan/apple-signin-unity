@@ -25,6 +25,20 @@ namespace AppleAuth.IOS
             }
         }
 
+
+        public string RawNonce
+        {
+            get
+            {
+#if UNITY_IOS && !UNITY_EDITOR
+                return PInvoke.AppleAuth_IOS_GetRawNonce();
+#else
+                return null;
+#endif
+            }
+        }
+
+
         public AppleAuthManager(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
         {
 #if UNITY_IOS && !UNITY_EDITOR
@@ -129,11 +143,15 @@ namespace AppleAuth.IOS
 #endif
         }
 
+
 #if UNITY_IOS && !UNITY_EDITOR
         private static class PInvoke
         {
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern bool AppleAuth_IOS_IsCurrentPlatformSupported();
+
+			[System.Runtime.InteropServices.DllImport("__Internal")]
+            public static extern string AppleAuth_IOS_GetRawNonce();
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
