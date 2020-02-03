@@ -7,6 +7,8 @@
 
 by **Daniel Lupiañez Casares**
 
+[CHANGELOG](./CHANGELOG.md)
+
 ![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
@@ -41,6 +43,7 @@ by **Daniel Lupiañez Casares**
     + [Quick login](#quick-login)
     + [Checking credential status](#checking-credential-status)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
+    + [Nonce support for Authorization Requests](#nonce-support-for-authorization-requests)
   * [FAQ](#faq)
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
@@ -66,16 +69,22 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Supports Quick login (including iTunes Keychain credentials).
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
+- Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
 - Customizable callback execution (Immediate or On Demand in an Update loop f.ex)
 - Customizable serialization (uses Unity default serialization, but you can add your own implementation)
 
 ## Installation
+
+> Current stable version is v1.0.0
+
 ### Option 1: Unity Package manager
+
 Available starting from Unity 2018.3.
 
-Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the v1.0.0 of the plugin available to use in your code to the latest master.
+Just add this line to the `Packages/manifest.json` file of your Unity Project:
+
 ```json
 "dependencies": {
     "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
@@ -207,8 +216,10 @@ void Update()
 If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
 
 ```csharp
+var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
+
 this.appleAuthManager.LoginWithAppleId(
-    LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+    loginArgs,
     credential =>
     {
         // Obtained credential, cast it to IAppleIDCredential
@@ -234,7 +245,10 @@ If the credentials were never given, or they were revoked, the Quick login will 
 ![Frameworks detail](./Img/QuickLogin.png)
 
 ```csharp
+var quickLoginArgs = new AppleAuthQuickLoginArgs();
+
 this.appleAuthManager.QuickLogin(
+    quickLoginArgs,
     credential =>
     {
         // Received a valid credential!
@@ -254,7 +268,7 @@ this.appleAuthManager.QuickLogin(
 
 Note that, if this succeeds, you will **ONLY** receive the Apple User ID (no email or name, even if it was previously requested).
 
-##### IOS Keychain Support
+#### IOS Keychain Support
 When performing a quick login, if the SDK detects [IOS Keychain credentials](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your app, it will return those.
 
 Just cast the credential to `IPasswordCredential` to get the login details for the user.
@@ -311,6 +325,27 @@ To clear the callback, and stop listening to notifications, simply set it to `nu
 ```csharp
 this.appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
+
+### Nonce support for Authorization Requests
+
+Both methods, `LoginWithAppleId` and `QuickLogin`, use a custom structure containing arguments for the authorization request.
+
+An optional `Nonce` can be set for both structures when constructing them:
+
+```csharp
+// Your custom Nonce string
+var yourCustomNonce = "YOURCUSTOMNONCEFORTHEAUTHORIZATIONREQUEST";
+
+// Arguments for a normal Sign In With Apple Request
+var loginArgs = new AppleAuthLoginArgs(
+    LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+    yourCustomNonce);
+
+// Arguments for a Quick Login
+var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce);
+```
+
+This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)

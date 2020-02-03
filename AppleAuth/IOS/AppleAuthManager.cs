@@ -34,10 +34,12 @@ namespace AppleAuth.IOS
         }
         
         public void QuickLogin(
+            AppleAuthQuickLoginArgs quickLoginArgs,
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
 #if UNITY_IOS && !UNITY_EDITOR
+            var nonce = quickLoginArgs.Nonce;
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
                 true,
@@ -52,18 +54,20 @@ namespace AppleAuth.IOS
                         successCallback(response.AppleIDCredential);
                 });
 
-            PInvoke.AppleAuth_IOS_QuickLogin(requestId);
+            PInvoke.AppleAuth_IOS_QuickLogin(requestId, nonce);
 #else
             throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
 #endif
         }
         
         public void LoginWithAppleId(
-            LoginOptions loginOptions,
+            AppleAuthLoginArgs loginArgs,
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
 #if UNITY_IOS && !UNITY_EDITOR
+            var loginOptions = loginArgs.Options;
+            var nonce = loginArgs.Nonce;
             var requestId = NativeMessageHandler.AddMessageCallback(
                 this._scheduler,
                 true,
@@ -76,7 +80,7 @@ namespace AppleAuth.IOS
                         successCallback(response.AppleIDCredential);
                 });
             
-            PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions);
+            PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions, nonce);
 #else
             throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
 #endif
@@ -139,10 +143,10 @@ namespace AppleAuth.IOS
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
 
             [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions);
+            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_QuickLogin(uint requestId);
+            public static extern void AppleAuth_IOS_QuickLogin(uint requestId, string nonceCStr);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
