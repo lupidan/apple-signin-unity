@@ -7,7 +7,7 @@
 
 ### Changed
 - Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
-
+- Updates the sample project to better resemble the expected Apple flow
 
 ## [1.0.0] - 2020-01-23
 - No plugin code changes. Just making the v1.0.0 release. No more "preview package"

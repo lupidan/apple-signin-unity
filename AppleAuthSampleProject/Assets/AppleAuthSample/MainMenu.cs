@@ -23,7 +23,7 @@ public class MainMenu : MonoBehaviour
         // Creates an Apple Authentication manager with the scheduler and the deserializer
         this._appleAuthManager = new AppleAuthManager(deserializer, this._scheduler);
 
-        this.SetupLoginMenu();
+        this.InitializeLoginMenu();
     }
 
     private void Update()
@@ -41,13 +41,7 @@ public class MainMenu : MonoBehaviour
         this.SignInWithApple();
     }
 
-    public void LogoutButtonPressed()
-    {
-        this.DeleteCredentials();
-        this.SetupLoginMenu();
-    }
-
-    private void SetupLoginMenu()
+    private void InitializeLoginMenu()
     {
         this.LoginMenu.SetVisible(visible: true);
         this.GameMenu.SetVisible(visible: false);
@@ -63,50 +57,61 @@ public class MainMenu : MonoBehaviour
         this._appleAuthManager.SetCredentialsRevokedCallback(result =>
         {
             Debug.Log("Received revoked callback " + result);
+            this.SetupLoginMenuForSignInWithApple();
             PlayerPrefs.DeleteKey(AppleUserIdKey);
-            this.SetupLoginMenu();
         });
 
-        // If we have stored a Apple User Id, attempt to get the credentials for it first
+        // If we have an Apple User Id available, get the credential status for it
         if (PlayerPrefs.HasKey(AppleUserIdKey))
         {
             var storedAppleUserId = PlayerPrefs.GetString(AppleUserIdKey);
             this.SetupLoginMenuForCheckingCredentials();
             this.CheckCredentialStatusForUserId(storedAppleUserId);
         }
-        // If we do not have a user ID, we just show the button to Sign In with Apple
+        // If we do not have an stored Apple User Id, attempt a quick login
         else
         {
-            this.SetupLoginMenuForSignInWithApple();
+            this.SetupLoginMenuForQuickLoginAttempt();
+            this.AttemptQuickLogin();
         }
     }
 
     private void SetupLoginMenuForUnsupportedPlatform()
     {
+        this.LoginMenu.SetVisible(visible: true);
+        this.GameMenu.SetVisible(visible: false);
         this.LoginMenu.SetSignInWithAppleButton(visible: false, enabled: false);
         this.LoginMenu.SetLoadingMessage(visible: true, message: "Unsupported platform");
     }
     
     private void SetupLoginMenuForSignInWithApple()
     {
+        this.LoginMenu.SetVisible(visible: true);
+        this.GameMenu.SetVisible(visible: false);
         this.LoginMenu.SetSignInWithAppleButton(visible: true, enabled: true);
         this.LoginMenu.SetLoadingMessage(visible: false, message: string.Empty);
     }
     
     private void SetupLoginMenuForCheckingCredentials()
     {
+        this.LoginMenu.SetVisible(visible: true);
+        this.GameMenu.SetVisible(visible: false);
         this.LoginMenu.SetSignInWithAppleButton(visible: true, enabled: false);
         this.LoginMenu.SetLoadingMessage(visible: true, message: "Checking Apple Credentials");
     }
     
     private void SetupLoginMenuForQuickLoginAttempt()
     {
+        this.LoginMenu.SetVisible(visible: true);
+        this.GameMenu.SetVisible(visible: false);
         this.LoginMenu.SetSignInWithAppleButton(visible: true, enabled: false);
         this.LoginMenu.SetLoadingMessage(visible: true, message: "Attempting Quick Login");
     }
     
     private void SetupLoginMenuForAppleSignIn()
     {
+        this.LoginMenu.SetVisible(visible: true);
+        this.GameMenu.SetVisible(visible: false);
         this.LoginMenu.SetSignInWithAppleButton(visible: true, enabled: false);
         this.LoginMenu.SetLoadingMessage(visible: true, message: "Signing In with Apple");
     }
@@ -120,24 +125,24 @@ public class MainMenu : MonoBehaviour
 
     private void CheckCredentialStatusForUserId(string appleUserId)
     {
+        // If there is an apple ID available, we should check the credential state
         this._appleAuthManager.GetCredentialState(
-            appleUserId,
+            appleUserId, // User Id
             state =>
             {
                 switch (state)
                 {
+                    // If it's authorized, login with that user id
                     case CredentialState.Authorized:
                         this.SetupGameMenu(appleUserId, null);
                         return;
                     
+                    // If it was revoked, or not found, we need a new sign in with apple attempt
+                    // Discard previous apple user id
                     case CredentialState.Revoked:
-                        this.SetupLoginMenuForQuickLoginAttempt();
-                        this.AttemptQuickLogin(appleUserId);
-                        return;
-                    
                     case CredentialState.NotFound:
                         this.SetupLoginMenuForSignInWithApple();
-                        this.DeleteCredentials();
+                        PlayerPrefs.DeleteKey(AppleUserIdKey);
                         return;
                 }
             },
@@ -148,15 +153,19 @@ public class MainMenu : MonoBehaviour
             });
     }
     
-    private void AttemptQuickLogin(string appleUserId)
+    private void AttemptQuickLogin()
     {
+        // Quick login should silently succeed if there is already authorized before and not revoked
         this._appleAuthManager.QuickLogin(
             credential =>
             {
-                this.SetupGameMenu(appleUserId, credential);
+                // If Quick Login succeeds, we should have obtained a credential with the user id, save it.
+                PlayerPrefs.SetString(AppleUserIdKey, credential.User);
+                this.SetupGameMenu(credential.User, credential);
             },
             error =>
             {
+                // If Quick Login fails, we should show the normal sign in with apple menu, to allow for a normal Sign In with apple
                 Debug.LogWarning("Quick Login Failed " + error.ToString());
                 this.SetupLoginMenuForSignInWithApple();
             });
@@ -168,6 +177,7 @@ public class MainMenu : MonoBehaviour
             LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
             credential =>
             {
+                // If a sign in with apple succeeds, we should have obtained the credential with the user id, name, and email, save it
                 PlayerPrefs.SetString(AppleUserIdKey, credential.User);
                 this.SetupGameMenu(credential.User, credential);
             },
@@ -176,10 +186,5 @@ public class MainMenu : MonoBehaviour
                 Debug.LogWarning("Sign in with Apple failed " + error.ToString());
                 this.SetupLoginMenuForSignInWithApple();
             });
-    }
-
-    private void DeleteCredentials()
-    {
-        PlayerPrefs.DeleteKey(AppleUserIdKey);
     }
 }
