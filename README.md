@@ -41,6 +41,7 @@ by **Daniel Lupiañez Casares**
     + [Quick login](#quick-login)
     + [Checking credential status](#checking-credential-status)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
+    + [Nonce support for Authorization Requests](#nonce-support-for-authorization-requests)
   * [FAQ](#faq)
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
@@ -207,8 +208,10 @@ void Update()
 If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
 
 ```csharp
+var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
+
 this.appleAuthManager.LoginWithAppleId(
-    LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+    loginArgs,
     credential =>
     {
         // Obtained credential, cast it to IAppleIDCredential
@@ -234,7 +237,10 @@ If the credentials were never given, or they were revoked, the Quick login will 
 ![Frameworks detail](./Img/QuickLogin.png)
 
 ```csharp
+var quickLoginArgs = new AppleAuthQuickLoginArgs();
+
 this.appleAuthManager.QuickLogin(
+    quickLoginArgs,
     credential =>
     {
         // Received a valid credential!
@@ -254,7 +260,7 @@ this.appleAuthManager.QuickLogin(
 
 Note that, if this succeeds, you will **ONLY** receive the Apple User ID (no email or name, even if it was previously requested).
 
-##### IOS Keychain Support
+#### IOS Keychain Support
 When performing a quick login, if the SDK detects [IOS Keychain credentials](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your app, it will return those.
 
 Just cast the credential to `IPasswordCredential` to get the login details for the user.
@@ -311,6 +317,27 @@ To clear the callback, and stop listening to notifications, simply set it to `nu
 ```csharp
 this.appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
+
+### Nonce support for Authorization Requests
+
+Both methods, `LoginWithAppleId` and `QuickLogin`, use a custom structure containing arguments for the authorization request.
+
+An optional `Nonce` can be set for both structures when constructing them:
+
+```csharp
+// Your custom Nonce string
+var yourCustomNonce = "YOURCUSTOMNONCEFORTHEAUTHORIZATIONREQUEST";
+
+// Arguments for a normal Sign In With Apple Request
+var loginArgs = new AppleAuthLoginArgs(
+    LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+    yourCustomNonce);
+
+// Arguments for a Quick Login
+var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce);
+```
+
+This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)

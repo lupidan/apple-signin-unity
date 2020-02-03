@@ -4,8 +4,16 @@
 ### Added
 - Adds a CHANGELOG.md file
 - Adds new v2 diagram files (`.drawio` and `.png`)
+- Adds structure containing arguments for Quick Login `AppleAuthQuickLoginArgs`.
+The structure contains an optional `Nonce`.
+- Adds structure containing arguments for Normal Login `AppleAuthLoginArgs`.
+The structure contains the mandatory `LoginOptions` an optional `Nonce`.
+- Adds support in native code to receive and set a `Nonce` for
+the Authorization Requests in both Quick Login and Sign in With Apple
 
 ### Changed
+- `QuickLogin` now requires a `AppleAuthQuickLoginArgs` to perform the call
+- `LoginWithAppleId` now requires a `AppleAuthLoginArgs` to perform the call
 - Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
 - Updates the sample project to better resemble the expected Apple flow
 - Updates README.md with up to date documentation
