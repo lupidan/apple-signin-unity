@@ -6,6 +6,7 @@
 - Adds new v2 diagram files (`.drawio` and `.png`)
 
 ### Changed
+- Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
 
 
 ## [1.0.0] - 2020-01-23
