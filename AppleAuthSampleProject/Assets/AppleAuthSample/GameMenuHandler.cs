@@ -49,11 +49,19 @@ public class GameMenuHandler
                 stringBuilder.AppendLine("<b>Authorized Scopes:</b> " + string.Join(", ", appleIdCredential.AuthorizedScopes));
 
             if (appleIdCredential.Email != null)
+            {
+                stringBuilder.AppendLine();
+                stringBuilder.AppendLine("<b>EMAIL RECEIVED: YOU WILL ONLY SEE THIS ONCE PER SIGN UP. SEND THIS INFORMATION TO YOUR BACKEND!</b>");
+                stringBuilder.AppendLine("<b>You can test this again by revoking credentials in Settings</b>");
                 stringBuilder.AppendLine("<b>Email:</b> " + appleIdCredential.Email);
+            }
 
             if (appleIdCredential.FullName != null)
             {
                 var fullName = appleIdCredential.FullName;
+                stringBuilder.AppendLine();
+                stringBuilder.AppendLine("<b>NAME RECEIVED: YOU WILL ONLY SEE THIS ONCE PER SIGN UP. SEND THIS INFORMATION TO YOUR BACKEND!</b>");
+                stringBuilder.AppendLine("<b>You can test this again by revoking credentials in Settings</b>");
                 stringBuilder.AppendLine("<b>Name:</b> " + fullName.ToLocalizedString());
                 stringBuilder.AppendLine("<b>Name (Short):</b> " + fullName.ToLocalizedString(PersonNameFormatterStyle.Short));
                 stringBuilder.AppendLine("<b>Name (Medium):</b> " + fullName.ToLocalizedString(PersonNameFormatterStyle.Medium));

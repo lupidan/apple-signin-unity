@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/UnityIcon.png" alt="Unity 3D"/>
+  <img src="./Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="./Img/UnityIcon.png" alt="Unity 3D"/>
 </p>
 
 # Sign in with Apple Unity Plugin
@@ -17,9 +17,9 @@ by **Daniel Lupiañez Casares**
 
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
+    <a href="./Img/SCRN01.png"><img src="./Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
+    <a href="./Img/SCRN02.png"><img src="./Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
+    <a href="./Img/SCRN03.png"><img src="./Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
 </p>
 
 
@@ -38,8 +38,8 @@ by **Daniel Lupiañez Casares**
   * [Implement Sign in With Apple](#implement-sign-in-with-apple)
     + [Initializing](#initializing)
     + [Perform Sign In With Apple](#perform-sign-in-with-apple)
-    + [Checking credential status](#checking-credential-status)
     + [Quick login](#quick-login)
+    + [Checking credential status](#checking-credential-status)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
   * [FAQ](#faq)
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
@@ -96,7 +96,7 @@ If you want to use a specific [release](https://github.com/lupidan/apple-signin-
 * The `AppleAuth` folder contains the **main plugin**.
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
 
-![Import detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png)
+![Import detail](./Img/ImportPlugin.png)
 
 ## Plugin setup
 
@@ -144,13 +144,13 @@ The other option is to manually setup all the entitlements in our Xcode project.
 2. This should have added an Entitlements file to your project. Locate it on the project explorer (it should be a file with the extension `.entitlements`). Inside it you should see an entry like this one:
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"/></a>
+    <a href="./Img/EntitlementsDetail.png"><img src="./Img/EntitlementsDetail.png"/></a>
 </p>
 
 3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"/></a>
+    <a href="./Img/FrameworksDetail.png"><img src="./Img/FrameworksDetail.png"/></a>
 </p>
 
 ### Enabling Apple capability
@@ -173,7 +173,7 @@ The provided extension method uses reflection to integrate with the current tool
 An overall flow of how the native Sign In With Apple flow works is presented in this diagram.
 There is no official documentation about it, the only available source for this is the WWDC 2019 talk. You can watch it [here](https://developer.apple.com/videos/play/wwdc2019/706/)
 
-![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/AppleSignInFlow_v1.png)
+![Frameworks detail](./Img/AppleSignInFlow_v2.png)
 
 ### Initializing
 ```csharp
@@ -203,7 +203,9 @@ void Update()
 ```
 
 ### Perform Sign In With Apple
+
 If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
+
 ```csharp
 this.appleAuthManager.LoginWithAppleId(
     LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
@@ -221,8 +223,50 @@ this.appleAuthManager.LoginWithAppleId(
     });
 ```
 
+### Quick login
+
+This should be the **first thing to try** when the user first runs the application.
+
+If the user has previously authorized the app to login with Apple, this will open a native dialog to re-confirm the login, and obtain an Apple User ID.
+
+If the credentials were never given, or they were revoked, the Quick login will fail.
+
+![Frameworks detail](./Img/QuickLogin.png)
+
+```csharp
+this.appleAuthManager.QuickLogin(
+    credential =>
+    {
+        // Received a valid credential!
+        // Try casting to IAppleIDCredential or IPasswordCredential
+
+        // Previous Apple sign in credential
+        var appleIdCredential = credential as IAppleIDCredential; 
+
+        // Saved Keychain credential (read about Keychain Items)
+        var passwordCredential = credential as IPasswordCredential;
+    },
+    error =>
+    {
+        // Quick login failed. Go to login screen
+    });
+```
+
+Note that, if this succeeds, you will **ONLY** receive the Apple User ID (no email or name, even if it was previously requested).
+
+##### IOS Keychain Support
+When performing a quick login, if the SDK detects [IOS Keychain credentials](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your app, it will return those.
+
+Just cast the credential to `IPasswordCredential` to get the login details for the user.
+
 ### Checking credential status
-Given an `userId` from a previous successful sign in. You can check the credential state of that user ID like so:
+
+This should be the first thing to check when the user starts the app,
+and there is an already logged user with an Apple user id.
+
+Given an `userId` from a previous successful sign in.
+You can check the credential state of that user ID like so:
+
 ```csharp
 this.appleAuthManager.GetCredentialState(
     userId,
@@ -231,11 +275,11 @@ this.appleAuthManager.GetCredentialState(
         switch (state)
         {
             case CredentialState.Authorized:
-                // User ID is still valid. Perform login
+                // User ID is still valid. Login the user.
                 break;
             
             case CredentialState.Revoked:
-                // User ID was revoked. Try Quick Login
+                // User ID was revoked. Go to login screen.
                 break;
             
             case CredentialState.NotFound:
@@ -249,29 +293,6 @@ this.appleAuthManager.GetCredentialState(
     });
 ```
 
-### Quick login
-
-> If you were supporting credentials being stored in the [keychain](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your users, the Quick login should (in theory) return those credentials as a IPasswordCredential.
-
-This should be tried if your saved User Id from apple was revoked. According to Apple, when going with this approach you should see something similar to this:
-
-![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/QuickLogin.png)
-
-```csharp
-this.appleAuthManager.QuickLogin(
-    credential =>
-    {
-        // Received a valid credential!
-        // Try casting to IAppleIDCredential or IPasswordCredential
-        var appleIdCredential = credential as IAppleIDCredential; // Previous Apple sign in credential
-        var passwordCredential = credential as IPasswordCredential; // Saved Keychain credential (read about Keychain Items)
-    },
-    error =>
-    {
-        // Something went wrong. Go to login screen
-    });
-```
-
 ### Listening to credentials revoked notification
 
 It may be that your user suddenly decides to revoke the authorization that was given previously. You should be able to listen to the incoming notification by registering a callback for it.
@@ -280,7 +301,8 @@ It may be that your user suddenly decides to revoke the authorization that was g
 ```csharp
 this.appleAuthManager.SetCredentialsRevokedCallback(result =>
 {
-	// Sign in with Apple Credentials were revoked
+    // Sign in with Apple Credentials were revoked.
+    // Discard credentials/user id and go to login screen.
 });
 ```
 

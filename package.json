@@ -22,6 +22,8 @@
         "/LICENSE.meta",
         "/README.md",
         "/README.md.meta",
+        "/CHANGELOG.md",
+        "/CHANGELOG.md.meta",
         "/package.json",
         "/package.json.meta",
         "/AppleAuth",
