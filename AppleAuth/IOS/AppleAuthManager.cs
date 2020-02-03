@@ -143,10 +143,10 @@ namespace AppleAuth.IOS
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
 
             [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions, string nonce);
+            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_QuickLogin(uint requestId, string nonce);
+            public static extern void AppleAuth_IOS_QuickLogin(uint requestId, string nonceCStr);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);

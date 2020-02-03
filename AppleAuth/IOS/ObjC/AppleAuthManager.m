@@ -67,16 +67,18 @@
 
 #pragma mark Public methods
 
-- (void) quickLogin:(uint)requestId
+- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce
 {
     ASAuthorizationAppleIDRequest *appleIDRequest = [[self appleIdProvider] createRequest];
+    [appleIDRequest setNonce:nonce];
+    
     ASAuthorizationPasswordRequest *keychainRequest = [[self passwordProvider] createRequest];
     
     ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDRequest, keychainRequest]];
     [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
 }
 
-- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options
+- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options andNonce:(NSString *)nonce
 {
     ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
     NSMutableArray *scopes = [NSMutableArray array];
@@ -86,8 +88,9 @@
         
     if (options & AppleAuthManagerIncludeEmail)
         [scopes addObject:ASAuthorizationScopeEmail];
-        
+    
     [request setRequestedScopes:[scopes copy]];
+    [request setNonce:nonce];
     
     ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
     [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
@@ -232,27 +235,37 @@ void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 #endif
 }
 
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options)
+void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr)
 {
     // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-        [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options];
+    {
+        NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
+        [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options andNonce:nonce];
+    }
     else
+    {
         AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
+    }
 #else
     AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
 #endif
 }
 
-void AppleAuth_IOS_QuickLogin(uint requestId)
+void AppleAuth_IOS_QuickLogin(uint requestId, const char* _Nullable nonceCStr)
 {
     // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-        [[AppleAuthManager sharedManager] quickLogin:requestId];
+    {
+        NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
+        [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce];
+    }
     else
+    {
         AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
+    }
 #else
     AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
 #endif

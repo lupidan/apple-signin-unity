@@ -39,8 +39,8 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 
 + (instancetype) sharedManager;
 
-- (void) quickLogin:(uint)requestId;
-- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options;
+- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce;
+- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options andNonce:(NSString *)nonce;
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId;
 
@@ -50,8 +50,8 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 
 bool AppleAuth_IOS_IsCurrentPlatformSupported();
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId);
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options);
-void AppleAuth_IOS_LoginSilently(uint requestId);
+void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr);
+void AppleAuth_IOS_QuickLogin(uint requestId, const char* _Nullable nonceCStr);
 void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint requestId);
 void AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(uint requestId);
 void AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(uint requestId);
