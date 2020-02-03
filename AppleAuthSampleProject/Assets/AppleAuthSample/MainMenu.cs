@@ -127,7 +127,7 @@ public class MainMenu : MonoBehaviour
     {
         // If there is an apple ID available, we should check the credential state
         this._appleAuthManager.GetCredentialState(
-            appleUserId, // User Id
+            appleUserId,
             state =>
             {
                 switch (state)
@@ -155,12 +155,17 @@ public class MainMenu : MonoBehaviour
     
     private void AttemptQuickLogin()
     {
-        // Quick login should silently succeed if there is already authorized before and not revoked
+        // Quick login should succeed if the credential was authorized before and not revoked
         this._appleAuthManager.QuickLogin(
             credential =>
             {
-                // If Quick Login succeeds, we should have obtained a credential with the user id, save it.
-                PlayerPrefs.SetString(AppleUserIdKey, credential.User);
+                // If it's an Apple credential, save the user ID, for later logins
+                var appleIdCredential = credential as IAppleIDCredential;
+                if (appleIdCredential != null)
+                {
+                    PlayerPrefs.SetString(AppleUserIdKey, credential.User);    
+                }
+
                 this.SetupGameMenu(credential.User, credential);
             },
             error =>
