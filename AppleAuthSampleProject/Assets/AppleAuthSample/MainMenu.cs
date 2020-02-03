@@ -155,8 +155,11 @@ public class MainMenu : MonoBehaviour
     
     private void AttemptQuickLogin()
     {
+        var quickLoginArgs = new AppleAuthQuickLoginArgs();
+        
         // Quick login should succeed if the credential was authorized before and not revoked
         this._appleAuthManager.QuickLogin(
+            quickLoginArgs,
             credential =>
             {
                 // If it's an Apple credential, save the user ID, for later logins
@@ -178,8 +181,10 @@ public class MainMenu : MonoBehaviour
     
     private void SignInWithApple()
     {
+        var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
+        
         this._appleAuthManager.LoginWithAppleId(
-            LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
+            loginArgs,
             credential =>
             {
                 // If a sign in with apple succeeds, we should have obtained the credential with the user id, name, and email, save it
