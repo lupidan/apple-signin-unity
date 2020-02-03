@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] Future v1.1.0
+## [Unreleased] v1.1.0
 ### Added
 - Adds a CHANGELOG.md file
 - Adds new v2 diagram files (`.drawio` and `.png`)
