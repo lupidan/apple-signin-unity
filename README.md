@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/UnityIcon.png" alt="Unity 3D"/>
+  <img src="./Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="./Img/UnityIcon.png" alt="Unity 3D"/>
 </p>
 
 # Sign in with Apple Unity Plugin
@@ -17,9 +17,9 @@ by **Daniel Lupiañez Casares**
 
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
+    <a href="./Img/SCRN01.png"><img src="./Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
+    <a href="./Img/SCRN02.png"><img src="./Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
+    <a href="./Img/SCRN03.png"><img src="./Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
 </p>
 
 
@@ -96,7 +96,7 @@ If you want to use a specific [release](https://github.com/lupidan/apple-signin-
 * The `AppleAuth` folder contains the **main plugin**.
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
 
-![Import detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/ImportPlugin.png)
+![Import detail](./Img/ImportPlugin.png)
 
 ## Plugin setup
 
@@ -144,13 +144,13 @@ The other option is to manually setup all the entitlements in our Xcode project.
 2. This should have added an Entitlements file to your project. Locate it on the project explorer (it should be a file with the extension `.entitlements`). Inside it you should see an entry like this one:
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/EntitlementsDetail.png"/></a>
+    <a href="./Img/EntitlementsDetail.png"><img src="./Img/EntitlementsDetail.png"/></a>
 </p>
 
 3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`
 
 <p align="center">
-    <a href="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"><img src="https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/FrameworksDetail.png"/></a>
+    <a href="./Img/FrameworksDetail.png"><img src="./Img/FrameworksDetail.png"/></a>
 </p>
 
 ### Enabling Apple capability
@@ -173,7 +173,7 @@ The provided extension method uses reflection to integrate with the current tool
 An overall flow of how the native Sign In With Apple flow works is presented in this diagram.
 There is no official documentation about it, the only available source for this is the WWDC 2019 talk. You can watch it [here](https://developer.apple.com/videos/play/wwdc2019/706/)
 
-![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/AppleSignInFlow_v1.png)
+![Frameworks detail](./Img/AppleSignInFlow_v2.png)
 
 ### Initializing
 ```csharp
@@ -255,7 +255,7 @@ this.appleAuthManager.GetCredentialState(
 
 This should be tried if your saved User Id from apple was revoked. According to Apple, when going with this approach you should see something similar to this:
 
-![Frameworks detail](https://raw.githubusercontent.com/lupidan/apple-signin-unity/master/Img/QuickLogin.png)
+![Frameworks detail](./Img/QuickLogin.png)
 
 ```csharp
 this.appleAuthManager.QuickLogin(
