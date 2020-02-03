@@ -7,6 +7,8 @@
 
 by **Daniel Lupiañez Casares**
 
+[CHANGELOG](./CHANGELOG.md)
+
 ![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
@@ -74,10 +76,15 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Customizable serialization (uses Unity default serialization, but you can add your own implementation)
 
 ## Installation
+
+> Current stable version is v1.0.0
+
 ### Option 1: Unity Package manager
+
 Available starting from Unity 2018.3.
 
-Just add this line to the `Packages/manifest.json` file of your Unity Project. It will make the v1.0.0 of the plugin available to use in your code to the latest master.
+Just add this line to the `Packages/manifest.json` file of your Unity Project:
+
 ```json
 "dependencies": {
     "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
