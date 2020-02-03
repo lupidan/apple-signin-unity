@@ -38,8 +38,8 @@ by **Daniel Lupiañez Casares**
   * [Implement Sign in With Apple](#implement-sign-in-with-apple)
     + [Initializing](#initializing)
     + [Perform Sign In With Apple](#perform-sign-in-with-apple)
-    + [Checking credential status](#checking-credential-status)
     + [Quick login](#quick-login)
+    + [Checking credential status](#checking-credential-status)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
   * [FAQ](#faq)
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
@@ -203,7 +203,9 @@ void Update()
 ```
 
 ### Perform Sign In With Apple
+
 If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
+
 ```csharp
 this.appleAuthManager.LoginWithAppleId(
     LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
@@ -221,8 +223,50 @@ this.appleAuthManager.LoginWithAppleId(
     });
 ```
 
+### Quick login
+
+This should be the **first thing to try** when the user first runs the application.
+
+If the user has previously authorized the app to login with Apple, this will open a native dialog to re-confirm the login, and obtain an Apple User ID.
+
+If the credentials were never given, or they were revoked, the Quick login will fail.
+
+![Frameworks detail](./Img/QuickLogin.png)
+
+```csharp
+this.appleAuthManager.QuickLogin(
+    credential =>
+    {
+        // Received a valid credential!
+        // Try casting to IAppleIDCredential or IPasswordCredential
+
+        // Previous Apple sign in credential
+        var appleIdCredential = credential as IAppleIDCredential; 
+
+        // Saved Keychain credential (read about Keychain Items)
+        var passwordCredential = credential as IPasswordCredential;
+    },
+    error =>
+    {
+        // Quick login failed. Go to login screen
+    });
+```
+
+Note that, if this succeeds, you will **ONLY** receive the Apple User ID (no email or name, even if it was previously requested).
+
+##### IOS Keychain Support
+When performing a quick login, if the SDK detects [IOS Keychain credentials](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your app, it will return those.
+
+Just cast the credential to `IPasswordCredential` to get the login details for the user.
+
 ### Checking credential status
-Given an `userId` from a previous successful sign in. You can check the credential state of that user ID like so:
+
+This should be the first thing to check when the user starts the app,
+and there is an already logged user with an Apple user id.
+
+Given an `userId` from a previous successful sign in.
+You can check the credential state of that user ID like so:
+
 ```csharp
 this.appleAuthManager.GetCredentialState(
     userId,
@@ -231,11 +275,11 @@ this.appleAuthManager.GetCredentialState(
         switch (state)
         {
             case CredentialState.Authorized:
-                // User ID is still valid. Perform login
+                // User ID is still valid. Login the user.
                 break;
             
             case CredentialState.Revoked:
-                // User ID was revoked. Try Quick Login
+                // User ID was revoked. Go to login screen.
                 break;
             
             case CredentialState.NotFound:
@@ -249,29 +293,6 @@ this.appleAuthManager.GetCredentialState(
     });
 ```
 
-### Quick login
-
-> If you were supporting credentials being stored in the [keychain](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your users, the Quick login should (in theory) return those credentials as a IPasswordCredential.
-
-This should be tried if your saved User Id from apple was revoked. According to Apple, when going with this approach you should see something similar to this:
-
-![Frameworks detail](./Img/QuickLogin.png)
-
-```csharp
-this.appleAuthManager.QuickLogin(
-    credential =>
-    {
-        // Received a valid credential!
-        // Try casting to IAppleIDCredential or IPasswordCredential
-        var appleIdCredential = credential as IAppleIDCredential; // Previous Apple sign in credential
-        var passwordCredential = credential as IPasswordCredential; // Saved Keychain credential (read about Keychain Items)
-    },
-    error =>
-    {
-        // Something went wrong. Go to login screen
-    });
-```
-
 ### Listening to credentials revoked notification
 
 It may be that your user suddenly decides to revoke the authorization that was given previously. You should be able to listen to the incoming notification by registering a callback for it.
@@ -280,7 +301,8 @@ It may be that your user suddenly decides to revoke the authorization that was g
 ```csharp
 this.appleAuthManager.SetCredentialsRevokedCallback(result =>
 {
-	// Sign in with Apple Credentials were revoked
+    // Sign in with Apple Credentials were revoked.
+    // Discard credentials/user id and go to login screen.
 });
 ```
 
