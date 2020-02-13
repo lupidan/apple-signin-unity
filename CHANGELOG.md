@@ -10,6 +10,8 @@ The structure contains an optional `Nonce`.
 The structure contains the mandatory `LoginOptions` an optional `Nonce`.
 - Adds support in native code to receive and set a `Nonce` for
 the Authorization Requests in both Quick Login and Sign in With Apple
+- Adds `Update` method to `IAppleAuthManager` to update pending callbacks
+- Better API version handling in native objective-c code
 
 ### Changed
 - `QuickLogin` now requires a `AppleAuthQuickLoginArgs` to perform the call
@@ -17,6 +19,12 @@ the Authorization Requests in both Quick Login and Sign in With Apple
 - Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
 - Updates the sample project to better resemble the expected Apple flow
 - Updates README.md with up to date documentation
+- `AppleAuthManager` no longer requires a Scheduler, the scheduling is built in
+in the manager instance with the method `Update`
+
+### Removed
+- Removes Schedulers to simplify the callback handling. Now only an `Update`
+call is required to be made to the `AppleAuthManager` instance in order to execute response callbacks.
 
 ## [1.0.0] - 2020-01-23
 - No plugin code changes. Just making the v1.0.0 release. No more "preview package"

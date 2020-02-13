@@ -49,7 +49,7 @@ by **Daniel Lupiañez Casares**
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
     + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
     + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
-    + [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
+    + [Why do I need to call Update manually on the AppleAuthManager instance?](#why-do-i-need-to-call-update-manually-on-the-appleAuthManager-instance)
     + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
     + [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
 
@@ -187,26 +187,23 @@ There is no official documentation about it, the only available source for this 
 ### Initializing
 ```csharp
 private IAppleAuthManager appleAuthManager;
-private OnDemandMessageHandlerScheduler scheduler;
 
 void Start()
 {
     ...
-    // Creates the Scheduler to execute the pending callbacks on demand
-    this.scheduler = new OnDemandMessageHandlerScheduler();
     // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
     var deserializer = new PayloadDeserializer();
-    // Creates an Apple Authentication manager with the scheduler and the deserializer
-    this.appleAuthManager = new AppleAuthManager(deserializer, scheduler);
+    // Creates an Apple Authentication manager with the deserializer
+    this.appleAuthManager = new AppleAuthManager(deserializer);
     ...
 }
 
 void Update()
 {
     ...
-    // Updates the scheduler to execute pending response callbacks
-    // This ensures they are executed inside Unity's Update loop
-    this.scheduler.Update();
+    // Updates the AppleAuthManager instance to execute
+    // pending callbacks inside Unity's execution loop
+    this.appleAuthManager.Update();
     ...
 }
 ```
@@ -352,7 +349,7 @@ This is useful for services that provide a built in solution for **Sign In With 
 + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
 + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
 + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
-+ [Why do I need to call Update manually on the scheduler?](#why-do-i-need-to-call-update-manually-on-the-scheduler)
++ [Why do I need to call Update manually on the AppleAuthManager instance?](#why-do-i-need-to-call-update-manually-on-the-appleAuthManager-instance)
 + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
 + [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
 
@@ -377,13 +374,13 @@ If you want to test new account scenarios, you need to [revoke](#how-can-i-logou
 
 ### Does the plugin use UnitySendMessage?
 
-No. The plugin uses callbacks in a static context with request identifiers using JSON strings. Callbacks can be scheduled On Demand by initializing the `AppleAuthManager` with an `OnDemandMessageScheduler`, and calling `Update` on it.
+No. The plugin uses callbacks in a static context with request identifiers using JSON strings. Callbacks are scheduled inside `AppleAuthManager`, and calling `Update` on it will execute those pending callbacks.
 
-### Why do I need to call Update manually on the scheduler?
+### Why do I need to call Update manually on the AppleAuthManager instance?
 
 Callbacks from iOS SDK are executed in their own thread (normally the main thread), and outside Unity's engine control. Meaning that you can't update the UI, or worse, if your callback throws an Exception (like a simple NRE), it will crash the Game completely.
 
-It's recommended to update the scheduler regularly in a MonoBehaviour of your choice.
+It's recommended to update the instance of `AppleAuthManager` regularly in a MonoBehaviour of your choice.
 
 ### What deserialization library does it use by default?
 

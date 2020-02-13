@@ -17,7 +17,7 @@ public class MainMenu : MonoBehaviour
     {
         // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
         var deserializer = new PayloadDeserializer();
-        // Creates an Apple Authentication manager with the scheduler and the deserializer
+        // Creates an Apple Authentication manager with the deserializer
         this._appleAuthManager = new AppleAuthManager(deserializer);
 
         this.InitializeLoginMenu();
