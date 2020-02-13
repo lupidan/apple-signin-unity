@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AppleAuth.IOS.Enums;
 using AppleAuth.IOS.Interfaces;
 
@@ -6,31 +7,21 @@ namespace AppleAuth.IOS
 {
     public class AppleAuthManager : IAppleAuthManager
     {
-#if UNITY_IOS && !UNITY_EDITOR
         private readonly IPayloadDeserializer _payloadDeserializer;
-        private readonly IMessageHandlerScheduler _scheduler;
-        
-        private uint _registeredCredentialsRevokedCallbackId = 0;
-#endif
+
+        private uint _registeredCredentialsRevokedCallbackId = 0U;
 
         public bool IsCurrentPlatformSupported
         {
             get
             {
-#if UNITY_IOS && !UNITY_EDITOR
                 return PInvoke.AppleAuth_IOS_IsCurrentPlatformSupported();
-#else
-                return false;
-#endif
             }
         }
 
-        public AppleAuthManager(IPayloadDeserializer payloadDeserializer, IMessageHandlerScheduler scheduler)
+        public AppleAuthManager(IPayloadDeserializer payloadDeserializer)
         {
-#if UNITY_IOS && !UNITY_EDITOR
             this._payloadDeserializer = payloadDeserializer;
-            this._scheduler = scheduler;
-#endif
         }
         
         public void QuickLogin(
@@ -38,10 +29,8 @@ namespace AppleAuth.IOS
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
-#if UNITY_IOS && !UNITY_EDITOR
             var nonce = quickLoginArgs.Nonce;
-            var requestId = NativeMessageHandler.AddMessageCallback(
-                this._scheduler,
+            var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
                 {
@@ -55,9 +44,6 @@ namespace AppleAuth.IOS
                 });
 
             PInvoke.AppleAuth_IOS_QuickLogin(requestId, nonce);
-#else
-            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
-#endif
         }
         
         public void LoginWithAppleId(
@@ -65,11 +51,9 @@ namespace AppleAuth.IOS
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
-#if UNITY_IOS && !UNITY_EDITOR
             var loginOptions = loginArgs.Options;
             var nonce = loginArgs.Nonce;
-            var requestId = NativeMessageHandler.AddMessageCallback(
-                this._scheduler,
+            var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
                 {
@@ -81,9 +65,6 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions, nonce);
-#else
-            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
-#endif
         }
         
         public void GetCredentialState(
@@ -91,9 +72,7 @@ namespace AppleAuth.IOS
             Action<CredentialState> successCallback,
             Action<IAppleError> errorCallback)
         {
-#if UNITY_IOS && !UNITY_EDITOR
-            var requestId = NativeMessageHandler.AddMessageCallback(
-                this._scheduler,
+            var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
                 {
@@ -105,39 +84,151 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_GetCredentialState(requestId, userId);
-#else
-            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
-#endif
         }
         
         public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
         {
-#if UNITY_IOS && !UNITY_EDITOR
             if (this._registeredCredentialsRevokedCallbackId != 0)
             {
-                NativeMessageHandler.RemoveMessageCallback(this._registeredCredentialsRevokedCallbackId);
+                CallbackHandler.RemoveMessageCallback(this._registeredCredentialsRevokedCallbackId);
                 this._registeredCredentialsRevokedCallbackId = 0;
             }
 
             if (credentialsRevokedCallback != null)
             {
-                this._registeredCredentialsRevokedCallbackId = NativeMessageHandler.AddMessageCallback(
-                    this._scheduler,
+                this._registeredCredentialsRevokedCallbackId = CallbackHandler.AddMessageCallback(
                     false,
                     credentialsRevokedCallback);
             }
             
             PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
-#else
-            throw new Exception("Apple Auth is only supported for iOS 13.0 onwards");
-#endif
         }
 
-#if UNITY_IOS && !UNITY_EDITOR
+        public void Update()
+        {
+            CallbackHandler.ExecutePendingCallbacks();
+        }
+
+        private static class CallbackHandler
+        {
+            private const uint InitialCallbackId = 1U;
+            private const uint MaxCallbackId = uint.MaxValue;
+
+            private static readonly object SyncLock = new object();
+            private static readonly Dictionary<uint, Entry> CallbackDictionary = new Dictionary<uint, Entry>();
+            private static readonly List<Action> ScheduledActions = new List<Action>();
+
+            private static uint _callbackId = InitialCallbackId;
+            private static bool _initialized = false;
+
+            public static void ScheduleCallback(uint requestId, string payload)
+            {
+                lock (SyncLock)
+                {
+                    var callbackEntry = default(Entry);
+                    if (CallbackDictionary.TryGetValue(requestId, out callbackEntry))
+                    {
+                        var callback = callbackEntry.MessageCallback;
+                        ScheduledActions.Add(() => callback.Invoke(payload));
+
+                        if (callbackEntry.IsSingleUseCallback)
+                        {
+                            CallbackDictionary.Remove(requestId);
+                        }
+                    }
+                }
+            }
+
+            public static void ExecutePendingCallbacks()
+            {
+                lock (SyncLock)
+                {
+                    while (ScheduledActions.Count > 0)
+                    {
+                        var action = ScheduledActions[0];
+                        ScheduledActions.RemoveAt(0);
+                        action.Invoke();
+                    }
+                }
+            }
+
+            public static uint AddMessageCallback(bool isSingleUse, Action<string> messageCallback)
+            {
+                if (!_initialized)
+                {
+                    PInvoke.AppleAuth_IOS_SetupNativeMessageHandlerCallback(PInvoke.NativeMessageHandlerCallback);
+                    _initialized = true;
+                }
+
+                if (messageCallback == null)
+                {
+                    throw new Exception("Can't add a null Message Callback.");
+                }
+
+                var usedCallbackId = default(uint);
+                lock (SyncLock)
+                {
+                    usedCallbackId = _callbackId;
+                    _callbackId += 1;
+                    if (_callbackId >= MaxCallbackId)
+                        _callbackId = InitialCallbackId;
+
+                    var callbackEntry = new Entry(isSingleUse, messageCallback);
+                    CallbackDictionary.Add(usedCallbackId, callbackEntry);
+                }
+                return usedCallbackId;
+            }
+
+            public static void RemoveMessageCallback(uint requestId)
+            {
+                lock (SyncLock)
+                {
+                    if (!CallbackDictionary.ContainsKey(requestId))
+                    {
+                        throw new Exception("Callback with id " + requestId + " does not exist and can't be removed");
+                    }
+
+                    CallbackDictionary.Remove(requestId);
+                }
+            }
+
+            private class Entry
+            {
+                public readonly bool IsSingleUseCallback;
+                public readonly Action<string> MessageCallback;
+
+                public Entry(bool isSingleUseCallback, Action<string> messageCallback)
+                {
+                    this.IsSingleUseCallback = isSingleUseCallback;
+                    this.MessageCallback = messageCallback;
+                }
+            }
+        }
+
         private static class PInvoke
         {
+            public delegate void NativeMessageHandlerCallbackDelegate(uint requestId, string payload);
+
+            [AOT.MonoPInvokeCallback(typeof(NativeMessageHandlerCallbackDelegate))]
+            public static void NativeMessageHandlerCallback(uint requestId, string payload)
+            {
+                try
+                {
+                    CallbackHandler.ScheduleCallback(requestId, payload);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Received exception while scheduling a callback for request ID " + requestId);
+                    Console.WriteLine("Detailed payload:\n" + payload);
+                    Console.WriteLine("Exception: " + exception);
+                }
+            }
+
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern bool AppleAuth_IOS_IsCurrentPlatformSupported();
+
+            [System.Runtime.InteropServices.DllImport("__Internal")]
+            public static extern void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerCallbackDelegate callback);
             
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
@@ -151,6 +242,5 @@ namespace AppleAuth.IOS
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
         }
-#endif
     }
 }
