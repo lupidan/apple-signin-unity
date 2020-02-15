@@ -1,0 +1,17 @@
+{
+    "name": "AppleAuth.IOS",
+    "references": [
+        "AppleAuth"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor",
+        "iOS"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
