@@ -15,7 +15,11 @@ namespace AppleAuth.IOS
         {
             get
             {
+#if UNITY_EDITOR
+                return false;
+#else
                 return PInvoke.AppleAuth_IOS_IsCurrentPlatformSupported();
+#endif
             }
         }
 
@@ -29,6 +33,9 @@ namespace AppleAuth.IOS
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
+#if UNITY_EDITOR
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#else
             var nonce = quickLoginArgs.Nonce;
             var requestId = CallbackHandler.AddMessageCallback(
                 true,
@@ -44,6 +51,7 @@ namespace AppleAuth.IOS
                 });
 
             PInvoke.AppleAuth_IOS_QuickLogin(requestId, nonce);
+#endif
         }
         
         public void LoginWithAppleId(
@@ -51,6 +59,9 @@ namespace AppleAuth.IOS
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
         {
+#if UNITY_EDITOR
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#else
             var loginOptions = loginArgs.Options;
             var nonce = loginArgs.Nonce;
             var requestId = CallbackHandler.AddMessageCallback(
@@ -65,6 +76,7 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions, nonce);
+#endif
         }
         
         public void GetCredentialState(
@@ -72,6 +84,9 @@ namespace AppleAuth.IOS
             Action<CredentialState> successCallback,
             Action<IAppleError> errorCallback)
         {
+#if UNITY_EDITOR
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#else
             var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
@@ -84,10 +99,12 @@ namespace AppleAuth.IOS
                 });
             
             PInvoke.AppleAuth_IOS_GetCredentialState(requestId, userId);
+#endif
         }
         
         public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
         {
+#if !UNITY_EDITOR
             if (this._registeredCredentialsRevokedCallbackId != 0)
             {
                 CallbackHandler.RemoveMessageCallback(this._registeredCredentialsRevokedCallbackId);
@@ -102,13 +119,17 @@ namespace AppleAuth.IOS
             }
             
             PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
+#endif
         }
 
         public void Update()
         {
+#if !UNITY_EDITOR
             CallbackHandler.ExecutePendingCallbacks();
+#endif
         }
 
+#if !UNITY_EDITOR
         private static class CallbackHandler
         {
             private const uint InitialCallbackId = 1U;
@@ -242,5 +263,6 @@ namespace AppleAuth.IOS
             [System.Runtime.InteropServices.DllImport("__Internal")]
             public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
         }
+#endif
     }
 }
