@@ -1,7 +1,7 @@
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
 using System;
 using System.Collections.Generic;
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS
 {

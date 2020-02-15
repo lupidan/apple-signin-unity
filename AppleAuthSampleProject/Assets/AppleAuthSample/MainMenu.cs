@@ -1,6 +1,7 @@
-﻿using AppleAuth.IOS;
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
+﻿using AppleAuth;
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
+using AppleAuth.IOS;
 using AppleAuth.IOS.NativeMessages;
 using UnityEngine;
 

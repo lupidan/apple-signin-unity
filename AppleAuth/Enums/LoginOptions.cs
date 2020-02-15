@@ -1,6 +1,6 @@
 using System;
 
-namespace AppleAuth.IOS.Enums
+namespace AppleAuth.Enums
 {
     [Flags]
     public enum LoginOptions

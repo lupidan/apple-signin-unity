@@ -21,6 +21,11 @@ the Authorization Requests in both Quick Login and Sign in With Apple
 - Updates README.md with up to date documentation
 - `AppleAuthManager` no longer requires a Scheduler, the scheduling is built in
 in the manager instance with the method `Update`
+- Some classes moved from `AppleAuth.IOS` to `AppleAuth` namespace
+- Namespace `AppleAuth.IOS.Enums` becomes `AppleAuth.Enums`
+- Namespace `AppleAuth.IOS.Extensions` becomes `AppleAuth.Extensions`
+- Namespace `AppleAuth.IOS.Interfaces` becomes `AppleAuth.Interfaces`
+- Namespace `AppleAuth.IOS.Interfaces` becomes `AppleAuth.Interfaces`
 
 ### Removed
 - Removes Schedulers to simplify the callback handling. Now only an `Update`

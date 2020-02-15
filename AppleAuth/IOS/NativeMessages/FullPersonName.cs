@@ -1,5 +1,5 @@
+using AppleAuth.Interfaces;
 using System;
-using AppleAuth.IOS.Interfaces;
 
 namespace AppleAuth.IOS.NativeMessages
 {

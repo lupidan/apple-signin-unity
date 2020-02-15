@@ -1,8 +1,8 @@
-﻿using System;
+﻿using AppleAuth.Enums;
+using AppleAuth.Extensions;
+using AppleAuth.Interfaces;
+using System;
 using System.Text;
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Extensions;
-using AppleAuth.IOS.Interfaces;
 using UnityEngine;
 using UnityEngine.UI;
 

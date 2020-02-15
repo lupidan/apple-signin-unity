@@ -1,6 +1,6 @@
-using AppleAuth.IOS.Enums;
+using AppleAuth.Enums;
 
-namespace AppleAuth.IOS
+namespace AppleAuth
 {
     public struct AppleAuthLoginArgs
     {
