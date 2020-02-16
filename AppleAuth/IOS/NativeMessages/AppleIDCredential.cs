@@ -40,6 +40,8 @@ namespace AppleAuth.IOS.NativeMessages
             SerializationTools.FixSerializationForArray(ref this._authorizedScopes);
             
             SerializationTools.FixSerializationForObject(ref this._fullName, this._hasFullName);
+            
+            SerializationTools.FixSerializationForFullPersonName(ref this._fullName);
         }
     }
 }
