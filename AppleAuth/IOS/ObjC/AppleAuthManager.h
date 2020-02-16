@@ -31,6 +31,8 @@ typedef NS_OPTIONS(int, AppleAuthManagerLoginOptions) {
     AppleAuthManagerIncludeEmail = 1 << 1,
 };
 
+typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payload);
+
 @interface AppleAuthManager : NSObject
 
 + (instancetype) sharedManager;

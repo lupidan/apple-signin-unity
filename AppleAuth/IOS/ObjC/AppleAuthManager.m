@@ -23,7 +23,6 @@
 //
 
 #import "AppleAuthManager.h"
-#import "NativeMessageHandler.h"
 #import "AppleAuthSerializer.h"
 
 #pragma mark - AppleAuthManager Implementation
@@ -33,8 +32,6 @@
 #define AUTHENTICATION_SERVICES_AVAILABLE true
 #import <AuthenticationServices/AuthenticationServices.h>
 #endif
-
-typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payload);
 
 @interface AppleAuthManager ()
 @property (nonatomic, assign) NativeMessageHandlerDelegate mainCallback;
@@ -49,7 +46,7 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
 
 #if AUTHENTICATION_SERVICES_AVAILABLE
 API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
-@interface AppleAuthManager (AuthenticationServices) <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
+@interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
 @property (nonatomic, strong) ASAuthorizationPasswordProvider *passwordProvider;
 @property (nonatomic, strong) NSObject *credentialsRevokedObserver;
@@ -79,9 +76,9 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 #if AUTHENTICATION_SERVICES_AVAILABLE
         if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
         {
-            self.appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
-            self.passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
-            self.authorizationsInProgress = [NSMutableDictionary dictionary];
+            _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
+            _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
+            _authorizationsInProgress = [NSMutableDictionary dictionary];
         }
 #endif
     }
