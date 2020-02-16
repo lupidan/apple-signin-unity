@@ -72,7 +72,6 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
-- Customizable callback execution (Immediate or On Demand in an Update loop f.ex)
 - Customizable serialization (uses Unity default serialization, but you can add your own implementation)
 
 ## Installation
@@ -191,10 +190,14 @@ private IAppleAuthManager appleAuthManager;
 void Start()
 {
     ...
-    // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
-    var deserializer = new PayloadDeserializer();
-    // Creates an Apple Authentication manager with the deserializer
-    this.appleAuthManager = new AppleAuthManager(deserializer);
+   // If the current platform is supported
+   if (AppleAuthManager.IsCurrentPlatformSupported)
+   {
+       // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
+       var deserializer = new PayloadDeserializer();
+       // Creates an Apple Authentication manager with the deserializer
+       this.appleAuthManager = new AppleAuthManager(deserializer);    
+   }
     ...
 }
 
@@ -203,7 +206,10 @@ void Update()
     ...
     // Updates the AppleAuthManager instance to execute
     // pending callbacks inside Unity's execution loop
-    this.appleAuthManager.Update();
+    if (this.appleAuthManager != null)
+    {
+        this.appleAuthManager.Update();
+    }
     ...
 }
 ```

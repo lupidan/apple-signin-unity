@@ -22,13 +22,12 @@ namespace AppleAuth.IOS.NativeMessages
         
         internal static void FixSerializationForFullPersonName(ref FullPersonName originalFullPersonName)
         {
-            if (string.IsNullOrEmpty(originalFullPersonName.NamePrefix) && 
-                string.IsNullOrEmpty(originalFullPersonName.GivenName) && 
-                string.IsNullOrEmpty(originalFullPersonName.MiddleName) &&
-                string.IsNullOrEmpty(originalFullPersonName.FamilyName) &&
-                string.IsNullOrEmpty(originalFullPersonName.NameSuffix) &&
-                string.IsNullOrEmpty(originalFullPersonName.Nickname) &&
-                originalFullPersonName.PhoneticRepresentation == null)
+            if (string.IsNullOrEmpty(originalFullPersonName._namePrefix) && 
+                string.IsNullOrEmpty(originalFullPersonName._givenName) && 
+                string.IsNullOrEmpty(originalFullPersonName._middleName) &&
+                string.IsNullOrEmpty(originalFullPersonName._familyName) &&
+                string.IsNullOrEmpty(originalFullPersonName._nameSuffix) &&
+                string.IsNullOrEmpty(originalFullPersonName._nickname))
             {
                 originalFullPersonName = default(FullPersonName);
             }
