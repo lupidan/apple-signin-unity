@@ -1,7 +1,6 @@
 ﻿using AppleAuth;
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
-using AppleAuth.IOS;
 using AppleAuth.IOS.NativeMessages;
 using UnityEngine;
 
@@ -16,10 +15,14 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
-        var deserializer = new PayloadDeserializer();
-        // Creates an Apple Authentication manager with the deserializer
-        this._appleAuthManager = new AppleAuthManager(deserializer);
+        // If the current platform is supported
+        if (AppleAuthManager.IsCurrentPlatformSupported)
+        {
+            // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
+            var deserializer = new PayloadDeserializer();
+            // Creates an Apple Authentication manager with the deserializer
+            this._appleAuthManager = new AppleAuthManager(deserializer);    
+        }
 
         this.InitializeLoginMenu();
     }
@@ -28,7 +31,10 @@ public class MainMenu : MonoBehaviour
     {
         // Updates the AppleAuthManager instance to execute
         // pending callbacks inside Unity's execution loop
-        this._appleAuthManager.Update();
+        if (this._appleAuthManager != null)
+        {
+            this._appleAuthManager.Update();
+        }
         
         this.LoginMenu.UpdateLoadingMessage(Time.deltaTime);
     }
@@ -45,7 +51,7 @@ public class MainMenu : MonoBehaviour
         this.GameMenu.SetVisible(visible: false);
         
         // Check if the current platform supports Sign In With Apple
-        if (!this._appleAuthManager.IsCurrentPlatformSupported)
+        if (this._appleAuthManager == null)
         {
             this.SetupLoginMenuForUnsupportedPlatform();
             return;
