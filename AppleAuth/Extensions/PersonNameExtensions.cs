@@ -1,7 +1,7 @@
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
 
-namespace AppleAuth.IOS.Extensions
+namespace AppleAuth.Extensions
 {
     public static class PersonNameExtensions
     {

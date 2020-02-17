@@ -1,6 +1,6 @@
-﻿using AppleAuth.IOS;
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
+﻿using AppleAuth;
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
 using AppleAuth.IOS.NativeMessages;
 using UnityEngine;
 
@@ -9,28 +9,32 @@ public class MainMenu : MonoBehaviour
     private const string AppleUserIdKey = "AppleUserId";
     
     private IAppleAuthManager _appleAuthManager;
-    private OnDemandMessageHandlerScheduler _scheduler;
-    
+
     public LoginMenuHandler LoginMenu;
     public GameMenuHandler GameMenu;
 
     private void Start()
     {
-        // Creates the Scheduler to execute the pending callbacks on demand
-        this._scheduler = new OnDemandMessageHandlerScheduler();
-        // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
-        var deserializer = new PayloadDeserializer();
-        // Creates an Apple Authentication manager with the scheduler and the deserializer
-        this._appleAuthManager = new AppleAuthManager(deserializer, this._scheduler);
+        // If the current platform is supported
+        if (AppleAuthManager.IsCurrentPlatformSupported)
+        {
+            // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
+            var deserializer = new PayloadDeserializer();
+            // Creates an Apple Authentication manager with the deserializer
+            this._appleAuthManager = new AppleAuthManager(deserializer);    
+        }
 
         this.InitializeLoginMenu();
     }
 
     private void Update()
     {
-        // Updates the scheduler to execute pending response callbacks
-        // This ensures they are executed inside Unity's Update loop
-        this._scheduler.Update();
+        // Updates the AppleAuthManager instance to execute
+        // pending callbacks inside Unity's execution loop
+        if (this._appleAuthManager != null)
+        {
+            this._appleAuthManager.Update();
+        }
         
         this.LoginMenu.UpdateLoadingMessage(Time.deltaTime);
     }
@@ -47,7 +51,7 @@ public class MainMenu : MonoBehaviour
         this.GameMenu.SetVisible(visible: false);
         
         // Check if the current platform supports Sign In With Apple
-        if (!this._appleAuthManager.IsCurrentPlatformSupported)
+        if (this._appleAuthManager == null)
         {
             this.SetupLoginMenuForUnsupportedPlatform();
             return;

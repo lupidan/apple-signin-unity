@@ -19,5 +19,18 @@ namespace AppleAuth.IOS.NativeMessages
             if (!hasOriginalObject)
                 originalObject = default(T);
         }
+        
+        internal static void FixSerializationForFullPersonName(ref FullPersonName originalFullPersonName)
+        {
+            if (string.IsNullOrEmpty(originalFullPersonName._namePrefix) && 
+                string.IsNullOrEmpty(originalFullPersonName._givenName) && 
+                string.IsNullOrEmpty(originalFullPersonName._middleName) &&
+                string.IsNullOrEmpty(originalFullPersonName._familyName) &&
+                string.IsNullOrEmpty(originalFullPersonName._nameSuffix) &&
+                string.IsNullOrEmpty(originalFullPersonName._nickname))
+            {
+                originalFullPersonName = default(FullPersonName);
+            }
+        }
     }
 }

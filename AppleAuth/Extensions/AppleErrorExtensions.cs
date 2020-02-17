@@ -1,8 +1,8 @@
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
 using System;
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
 
-namespace AppleAuth.IOS.Extensions
+namespace AppleAuth.Extensions
 {
     public static class AppleErrorExtensions
     {

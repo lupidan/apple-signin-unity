@@ -4,19 +4,30 @@
 ### Added
 - Adds a CHANGELOG.md file
 - Adds new v2 diagram files (`.drawio` and `.png`)
-- Adds structure containing arguments for Quick Login `AppleAuthQuickLoginArgs`.
-The structure contains an optional `Nonce`.
-- Adds structure containing arguments for Normal Login `AppleAuthLoginArgs`.
-The structure contains the mandatory `LoginOptions` an optional `Nonce`.
-- Adds support in native code to receive and set a `Nonce` for
-the Authorization Requests in both Quick Login and Sign in With Apple
+- Adds `AppleAuthQuickLoginArgs` struct containing arguments for Quick Login. (With optional `Nonce`)
+- Adds `AppleAuthLoginArgs` structure containing arguments for Normal Login like `LoginOptions`. (With optional `Nonce`)
+- Adds support in native code to receive and set a `Nonce` for the Authorization Requests in both Quick Login and Sign in With Apple
+- Adds `Update` method to `IAppleAuthManager` to update pending callbacks
+- Better API version handling in native objective-c code
 
 ### Changed
-- `QuickLogin` now requires a `AppleAuthQuickLoginArgs` to perform the call
-- `LoginWithAppleId` now requires a `AppleAuthLoginArgs` to perform the call
+- Namespace `AppleAuth.IOS` becomes `AppleAuth`
+- Namespace `AppleAuth.IOS.Enums` becomes `AppleAuth.Enums`
+- Namespace `AppleAuth.IOS.Extensions` becomes `AppleAuth.Extensions`
+- Namespace `AppleAuth.IOS.Interfaces` becomes `AppleAuth.Interfaces`
+- Namespace `AppleAuth.IOS.Interfaces` becomes `AppleAuth.Interfaces`
+
+- `QuickLogin` now requires a `AppleAuthQuickLoginArgs` to perform the call. Other `QuickLogin` method marked as obsolete.
+- `LoginWithAppleId` now requires a `AppleAuthLoginArgs` to perform the call. Other `LoginWithAppleId` method marked as obsolete.
+- `AppleAuthManager` no longer requires a Scheduler, the scheduling is built in the manager instance with the method `Update`
+- When receiving a completely empty `FullPersonName`, the instance is cleared after deserialization.
+
 - Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
 - Updates the sample project to better resemble the expected Apple flow
 - Updates README.md with up to date documentation
+
+### Removed
+- Removes Schedulers to simplify the callback handling. `Update` call was moved to `IAppleAuthManager`.
 
 ## [1.0.0] - 2020-01-23
 - No plugin code changes. Just making the v1.0.0 release. No more "preview package"

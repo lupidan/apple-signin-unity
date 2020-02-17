@@ -23,21 +23,36 @@
 //
 
 #import "AppleAuthManager.h"
-#import "NativeMessageHandler.h"
 #import "AppleAuthSerializer.h"
 
 #pragma mark - AppleAuthManager Implementation
 
 // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+#define AUTHENTICATION_SERVICES_AVAILABLE true
 #import <AuthenticationServices/AuthenticationServices.h>
+#endif
 
+@interface AppleAuthManager ()
+@property (nonatomic, assign) NativeMessageHandlerDelegate mainCallback;
+@property (nonatomic, weak) NSOperationQueue *callingOperationQueue;
+
+- (void) sendNativeMessageForDictionary:(NSDictionary *)payloadDictionary forRequestId:(uint)requestId;
+- (void) sendNativeMessageForString:(NSString *)payloadString forRequestId:(uint)requestId;
+- (NSError *)internalErrorWithCode:(NSInteger)code andMessage:(NSString *)message;
+- (void) sendsCredentialStatusInternalErrorWithCode:(NSInteger)code andMessage:(NSString *)message forRequestWithId:(uint)requestId;
+- (void) sendsLoginResponseInternalErrorWithCode:(NSInteger)code andMessage:(NSString *)message forRequestWithId:(uint)requestId;
+@end
+
+#if AUTHENTICATION_SERVICES_AVAILABLE
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 @interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
 @property (nonatomic, strong) ASAuthorizationPasswordProvider *passwordProvider;
 @property (nonatomic, strong) NSObject *credentialsRevokedObserver;
 @property (nonatomic, strong) NSMutableDictionary<NSValue *, NSNumber *> *authorizationsInProgress;
 @end
+#endif
 
 @implementation AppleAuthManager
 
@@ -58,9 +73,14 @@
     self = [super init];
     if (self)
     {
-        _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
-        _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
-        _authorizationsInProgress = [NSMutableDictionary dictionary];
+#if AUTHENTICATION_SERVICES_AVAILABLE
+        if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+        {
+            _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
+            _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
+            _authorizationsInProgress = [NSMutableDictionary dictionary];
+        }
+#endif
     }
     return self;
 }
@@ -69,77 +89,181 @@
 
 - (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce
 {
-    ASAuthorizationAppleIDRequest *appleIDRequest = [[self appleIdProvider] createRequest];
-    [appleIDRequest setNonce:nonce];
+#if AUTHENTICATION_SERVICES_AVAILABLE
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    {
+        ASAuthorizationAppleIDRequest *appleIDRequest = [[self appleIdProvider] createRequest];
+        [appleIDRequest setNonce:nonce];
     
-    ASAuthorizationPasswordRequest *keychainRequest = [[self passwordProvider] createRequest];
+        ASAuthorizationPasswordRequest *keychainRequest = [[self passwordProvider] createRequest];
     
-    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDRequest, keychainRequest]];
-    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+        ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDRequest, keychainRequest]];
+        [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+    }
+    else
+    {
+        [self sendsLoginResponseInternalErrorWithCode:-100
+                                           andMessage:@"Native AppleAuth is only available from iOS 13.0"
+                                     forRequestWithId:requestId];
+    }
+#else
+    [self sendsLoginResponseInternalErrorWithCode:-100
+                                       andMessage:@"Native AppleAuth is only available from iOS 13.0"
+                                 forRequestWithId:requestId];
+#endif
 }
 
 - (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options andNonce:(NSString *)nonce
 {
-    ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
-    NSMutableArray *scopes = [NSMutableArray array];
-    
-    if (options & AppleAuthManagerIncludeName)
-        [scopes addObject:ASAuthorizationScopeFullName];
+#if AUTHENTICATION_SERVICES_AVAILABLE
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    {
+        ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
+        NSMutableArray *scopes = [NSMutableArray array];
         
-    if (options & AppleAuthManagerIncludeEmail)
-        [scopes addObject:ASAuthorizationScopeEmail];
-    
-    [request setRequestedScopes:[scopes copy]];
-    [request setNonce:nonce];
-    
-    ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
-    [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+        if (options & AppleAuthManagerIncludeName)
+            [scopes addObject:ASAuthorizationScopeFullName];
+            
+        if (options & AppleAuthManagerIncludeEmail)
+            [scopes addObject:ASAuthorizationScopeEmail];
+        
+        [request setRequestedScopes:[scopes copy]];
+        [request setNonce:nonce];
+        
+        ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
+        [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
+    }
+    else
+    {
+        [self sendsLoginResponseInternalErrorWithCode:-100
+                                           andMessage:@"Native AppleAuth is only available from iOS 13.0"
+                                     forRequestWithId:requestId];
+    }
+#else
+    [self sendsLoginResponseInternalErrorWithCode:-100
+                                       andMessage:@"Native AppleAuth is only available from iOS 13.0"
+                                 forRequestWithId:requestId];
+#endif
 }
 
 
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
 {
-    [[self appleIdProvider] getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
-        NSNumber *credentialStateNumber = nil;
-        NSDictionary *errorDictionary = nil;
+#if AUTHENTICATION_SERVICES_AVAILABLE
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    {
+        [[self appleIdProvider] getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
+            NSNumber *credentialStateNumber = nil;
+            NSDictionary *errorDictionary = nil;
         
-        if (error)
-            errorDictionary = [AppleAuthSerializer dictionaryForNSError:error];
-        else
-            credentialStateNumber = @(credentialState);
+            if (error)
+                errorDictionary = [AppleAuthSerializer dictionaryForNSError:error];
+            else
+                credentialStateNumber = @(credentialState);
         
-        NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:credentialStateNumber
+            NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:credentialStateNumber
                                                                                                errorDictionary:errorDictionary];
         
-        [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
-                                                                 forRequestId:requestId];
-    }];
+            [self sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+        }];
+    }
+    else
+    {
+        [self sendsCredentialStatusInternalErrorWithCode:-100
+                                              andMessage:@"Native AppleAuth is only available from iOS 13.0"
+                                        forRequestWithId:requestId];
+    }
+#else
+    [self sendsCredentialStatusInternalErrorWithCode:-100
+                                          andMessage:@"Native AppleAuth is only available from iOS 13.0"
+                                    forRequestWithId:requestId];
+#endif
 }
 
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId
 {
-    if ([self credentialsRevokedObserver])
+#if AUTHENTICATION_SERVICES_AVAILABLE
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
     {
-        [[NSNotificationCenter defaultCenter] removeObserver:[self credentialsRevokedObserver]];
-        [self setCredentialsRevokedObserver:nil];
-    }
-    
-    if (requestId != 0)
-    {
-        NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
+        if ([self credentialsRevokedObserver])
+        {
+            [[NSNotificationCenter defaultCenter] removeObserver:[self credentialsRevokedObserver]];
+            [self setCredentialsRevokedObserver:nil];
+        }
+        
+        if (requestId != 0)
+        {
+            NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
                                                                                object:nil
                                                                                 queue:nil
                                                                            usingBlock:^(NSNotification * _Nonnull note) {
-                                                                               [[NativeMessageHandler defaultHandler] sendNativeMessageForString:@"Credentials Revoked"
-                                                                                                                                    forRequestId:requestId];
+                                                                               [self sendNativeMessageForString:@"Credentials Revoked" forRequestId:requestId];
                                                                            }];
-        [self setCredentialsRevokedObserver:observer];
+            [self setCredentialsRevokedObserver:observer];
+        }
     }
+#endif
 }
 
 #pragma mark Private methods
 
+- (void) sendNativeMessageForDictionary:(NSDictionary *)payloadDictionary forRequestId:(uint)requestId
+{
+    NSError *error = nil;
+    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payloadDictionary options:0 error:&error];
+    NSString *payloadString = error ? [NSString stringWithFormat:@"Serialization error %@", [error localizedDescription]] : [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
+    [self sendNativeMessageForString:payloadString forRequestId:requestId];
+}
+
+- (void) sendNativeMessageForString:(NSString *)payloadString forRequestId:(uint)requestId
+{
+    if ([self mainCallback] == NULL)
+        return;
+    
+    if ([self callingOperationQueue])
+    {
+        [[self callingOperationQueue] addOperationWithBlock:^{
+            [self mainCallback](requestId, [payloadString UTF8String]);
+        }];
+    }
+    else
+    {
+        [self mainCallback](requestId, [payloadString UTF8String]);
+    }
+}
+
+- (NSError *)internalErrorWithCode:(NSInteger)code andMessage:(NSString *)message
+{
+    return [NSError errorWithDomain:@"com.unity.AppleAuth"
+                               code:code
+                           userInfo:@{NSLocalizedDescriptionKey : message}];
+}
+
+- (void) sendsCredentialStatusInternalErrorWithCode:(NSInteger)code andMessage:(NSString *)message forRequestWithId:(uint)requestId
+{
+    NSError *customError = [self internalErrorWithCode:code andMessage:message];
+    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
+    NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:nil
+                                                                                           errorDictionary:customErrorDictionary];
+    
+    [self sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+}
+
+- (void) sendsLoginResponseInternalErrorWithCode:(NSInteger)code andMessage:(NSString *)message forRequestWithId:(uint)requestId
+{
+    NSError *customError = [self internalErrorWithCode:code andMessage:message];
+    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
+    NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
+                                                                                     passwordCredentialDictionary:nil
+                                                                                                  errorDictionary:customErrorDictionary];
+    
+    [self sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+}
+
+#if AUTHENTICATION_SERVICES_AVAILABLE
+
 - (void) performAuthorizationRequestsForController:(ASAuthorizationController *)authorizationController withRequestId:(uint)requestId
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
     [[self authorizationsInProgress] setObject:@(requestId) forKey:authControllerAsKey];
@@ -152,6 +276,7 @@
 #pragma mark ASAuthorizationControllerDelegate protocol implementation
 
 - (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
@@ -172,14 +297,14 @@
                                                                                       passwordCredentialDictionary:passwordCredentialDictionary
                                                                                                    errorDictionary:nil];
         
-        [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
-                                                                 forRequestId:[requestIdNumber unsignedIntValue]];
+        [self sendNativeMessageForDictionary:responseDictionary forRequestId:[requestIdNumber unsignedIntValue]];
         
         [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
 }
 
 - (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
@@ -190,8 +315,7 @@
                                                                                          passwordCredentialDictionary:nil
                                                                                                       errorDictionary:errorDictionary];
         
-        [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary
-                                                                 forRequestId:[requestIdNumber unsignedIntValue]];
+        [self sendNativeMessageForDictionary:responseDictionary forRequestId:[requestIdNumber unsignedIntValue]];
         
         [[self authorizationsInProgress] removeObjectForKey:authControllerAsKey];
     }
@@ -200,13 +324,14 @@
 #pragma mark ASAuthorizationControllerPresentationContextProviding protocol implementation
 
 - (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 {
     return [[[UIApplication sharedApplication] delegate] window];
 }
 
-@end
-
 #endif
+
+@end
 
 #pragma mark - Native C Calls
 
@@ -222,86 +347,30 @@ bool AppleAuth_IOS_IsCurrentPlatformSupported()
     }
 }
 
+void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback)
+{
+    [[AppleAuthManager sharedManager] setMainCallback:callback];
+    [[AppleAuthManager sharedManager] setCallingOperationQueue: [NSOperationQueue currentQueue]];
+}
+
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
 {
-    // IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-        [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
-    else
-        AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(requestId);
-#else
-    AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(requestId);
-#endif
+    [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
 }
 
 void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr)
 {
-    // IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-    {
-        NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
-        [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options andNonce:nonce];
-    }
-    else
-    {
-        AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
-    }
-#else
-    AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
-#endif
+    NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
+    [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options andNonce:nonce];
 }
 
 void AppleAuth_IOS_QuickLogin(uint requestId, const char* _Nullable nonceCStr)
 {
-    // IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-    {
-        NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
-        [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce];
-    }
-    else
-    {
-        AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
-    }
-#else
-    AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(requestId);
-#endif
+    NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
+    [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce];
 }
 
 void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint requestId)
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
-        [[AppleAuthManager sharedManager] registerCredentialsRevokedCallbackForRequestId:requestId];
-#endif
-}
-
-void AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(uint requestId)
-{
-    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
-                                               code:-100
-                                           userInfo:@{NSLocalizedDescriptionKey : @"Native AppleAuth is only available from iOS 13.0"}];
-    
-    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
-    NSDictionary *responseDictionary = [AppleAuthSerializer credentialResponseDictionaryForCredentialState:nil
-                                                                                           errorDictionary:customErrorDictionary];
-    
-    [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
-}
-
-void AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(uint requestId)
-{
-    NSError *customError = [NSError errorWithDomain:@"com.unity.AppleAuth"
-                                               code:-100
-                                           userInfo:@{NSLocalizedDescriptionKey : @"Native AppleAuth is only available from iOS 13.0"}];
-    
-    NSDictionary *customErrorDictionary = [AppleAuthSerializer dictionaryForNSError:customError];
-    NSDictionary *responseDictionary = [AppleAuthSerializer loginResponseDictionaryForAppleIdCredentialDictionary:nil
-                                                                                     passwordCredentialDictionary:nil
-                                                                                                  errorDictionary:customErrorDictionary];
-    
-    [[NativeMessageHandler defaultHandler] sendNativeMessageForDictionary:responseDictionary forRequestId:requestId];
+    [[AppleAuthManager sharedManager] registerCredentialsRevokedCallbackForRequestId:requestId];
 }

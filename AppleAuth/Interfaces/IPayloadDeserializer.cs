@@ -1,4 +1,4 @@
-namespace AppleAuth.IOS.Interfaces
+namespace AppleAuth.Interfaces
 {
     public interface IPayloadDeserializer
     {
