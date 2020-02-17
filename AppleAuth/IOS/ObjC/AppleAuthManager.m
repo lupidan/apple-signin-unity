@@ -186,21 +186,21 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
     {
         if ([self credentialsRevokedObserver])
-            {
-                [[NSNotificationCenter defaultCenter] removeObserver:[self credentialsRevokedObserver]];
-                [self setCredentialsRevokedObserver:nil];
-            }
+        {
+            [[NSNotificationCenter defaultCenter] removeObserver:[self credentialsRevokedObserver]];
+            [self setCredentialsRevokedObserver:nil];
+        }
         
-            if (requestId != 0)
-            {
-                NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
-                                                                                   object:nil
-                                                                                    queue:nil
-                                                                               usingBlock:^(NSNotification * _Nonnull note) {
-                                                                                   [self sendNativeMessageForString:@"Credentials Revoked" forRequestId:requestId];
-                                                                               }];
-                [self setCredentialsRevokedObserver:observer];
-            }
+        if (requestId != 0)
+        {
+            NSObject *observer = [[NSNotificationCenter defaultCenter] addObserverForName:ASAuthorizationAppleIDProviderCredentialRevokedNotification
+                                                                               object:nil
+                                                                                queue:nil
+                                                                           usingBlock:^(NSNotification * _Nonnull note) {
+                                                                               [self sendNativeMessageForString:@"Credentials Revoked" forRequestId:requestId];
+                                                                           }];
+            [self setCredentialsRevokedObserver:observer];
+        }
     }
 #endif
 }
