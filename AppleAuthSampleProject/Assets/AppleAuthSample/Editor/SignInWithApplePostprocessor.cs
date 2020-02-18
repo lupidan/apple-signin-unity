@@ -1,4 +1,4 @@
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_TVOS
 
 using AppleAuth.Editor;
 using UnityEditor;
