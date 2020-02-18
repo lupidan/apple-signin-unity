@@ -64,6 +64,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Features
 ### Native Sign in with Apple
+- Support for tvOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
 - Supports Quick login (including iTunes Keychain credentials).

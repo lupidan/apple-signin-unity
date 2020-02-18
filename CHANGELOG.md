@@ -3,6 +3,7 @@
 ## [Unreleased] v1.1.0
 ### Added
 - Adds a CHANGELOG.md file
+- Adds support for tvOS (Experimental)
 - Adds new v2 diagram files (`.drawio` and `.png`)
 - Adds `AppleAuthQuickLoginArgs` struct containing arguments for Quick Login. (With optional `Nonce`)
 - Adds `AppleAuthLoginArgs` structure containing arguments for Normal Login like `LoginOptions`. (With optional `Nonce`)
