@@ -1,6 +1,6 @@
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS)
-#endif
 #define APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+#endif
 
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
