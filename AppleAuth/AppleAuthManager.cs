@@ -1,6 +1,6 @@
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS)
-#define APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
 #endif
+#define APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
 
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
@@ -11,9 +11,11 @@ namespace AppleAuth
     public class AppleAuthManager : IAppleAuthManager
     {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+        private static uint _credentialsRevokedNativeCallbackId = 0U;
+        
         private readonly IPayloadDeserializer _payloadDeserializer;
 
-        private uint _registeredCredentialsRevokedCallbackId = 0U;
+        private Action<string> _credentialsRevokedCallback;
 #endif
 
         public static bool IsCurrentPlatformSupported
@@ -122,20 +124,22 @@ namespace AppleAuth
         public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
-            if (this._registeredCredentialsRevokedCallbackId != 0)
+            if (_credentialsRevokedNativeCallbackId == 0)
             {
-                CallbackHandler.RemoveMessageCallback(this._registeredCredentialsRevokedCallbackId);
-                this._registeredCredentialsRevokedCallbackId = 0;
+                _credentialsRevokedNativeCallbackId = CallbackHandler.AddMessageCallback(
+                    false,
+                    payload =>
+                    {
+                        if (this._credentialsRevokedCallback != null)
+                        {
+                            this._credentialsRevokedCallback.Invoke(payload);                            
+                        }
+                    });
+                
+                PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(_credentialsRevokedNativeCallbackId);
             }
 
-            if (credentialsRevokedCallback != null)
-            {
-                this._registeredCredentialsRevokedCallbackId = CallbackHandler.AddMessageCallback(
-                    false,
-                    credentialsRevokedCallback);
-            }
-            
-            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
+            this._credentialsRevokedCallback = credentialsRevokedCallback;
 #endif
         }
 
