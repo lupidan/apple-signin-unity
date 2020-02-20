@@ -1,7 +1,11 @@
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
+#if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS)
+#define NATIVE_PERSON_NAME_COMPONENTS_AVAILABLE
+#endif
 
-namespace AppleAuth.IOS.Extensions
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
+
+namespace AppleAuth.Extensions
 {
     public static class PersonNameExtensions
     {
@@ -10,7 +14,7 @@ namespace AppleAuth.IOS.Extensions
             PersonNameFormatterStyle style = PersonNameFormatterStyle.Default,
             bool usePhoneticRepresentation = false)
         {
-#if UNITY_IOS && !UNITY_EDITOR
+#if NATIVE_PERSON_NAME_COMPONENTS_AVAILABLE
             var jsonString = JsonStringForPersonName(personName);
             return PInvoke.AppleAuth_IOS_GetPersonNameUsingFormatter(jsonString, (int) style, usePhoneticRepresentation);
 #else
@@ -34,7 +38,7 @@ namespace AppleAuth.IOS.Extensions
 #endif
         }
 
-#if UNITY_IOS && !UNITY_EDITOR
+#if NATIVE_PERSON_NAME_COMPONENTS_AVAILABLE
         private const string StringDictionaryFormat = "\"{0}\": \"{1}\",";
         private const string StringObjectFormat = "\"{0}\": {1},";
 

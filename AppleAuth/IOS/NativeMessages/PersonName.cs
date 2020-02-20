@@ -1,4 +1,4 @@
-using AppleAuth.IOS.Interfaces;
+using AppleAuth.Interfaces;
 using UnityEngine;
 
 namespace AppleAuth.IOS.NativeMessages

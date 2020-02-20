@@ -26,34 +26,29 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-
 typedef NS_OPTIONS(int, AppleAuthManagerLoginOptions) {
     AppleAuthManagerIncludeName = 1 << 0,
     AppleAuthManagerIncludeEmail = 1 << 1,
-} API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0));
+};
 
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
+typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payload);
+
 @interface AppleAuthManager : NSObject
 
 + (instancetype) sharedManager;
 
-- (void) quickLogin:(uint)requestId;
-- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options;
+- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce;
+- (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options andNonce:(NSString *)nonce;
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId;
 
 @end
 
-#endif
-
 bool AppleAuth_IOS_IsCurrentPlatformSupported();
+void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback);
 void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId);
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options);
-void AppleAuth_IOS_LoginSilently(uint requestId);
+void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr);
+void AppleAuth_IOS_QuickLogin(uint requestId, const char* _Nullable nonceCStr);
 void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint requestId);
-void AppleAuth_IOS_SendUnsupportedPlatformCredentialStatusResponse(uint requestId);
-void AppleAuth_IOS_SendUnsupportedPlatformLoginResponse(uint requestId);
 
 NS_ASSUME_NONNULL_END

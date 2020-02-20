@@ -1,4 +1,4 @@
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_TVOS
 
 using AppleAuth.Editor;
 using UnityEditor;
@@ -14,7 +14,7 @@ namespace AppleAuthSample.Editor
         [PostProcessBuild(CallOrder)]
         public static void OnPostProcessBuild(BuildTarget target, string path)
         {
-            if (target != BuildTarget.iOS)
+            if (target != BuildTarget.iOS && target != BuildTarget.tvOS)
                 return;
             
             var projectPath = PBXProject.GetPBXProjectPath(path);

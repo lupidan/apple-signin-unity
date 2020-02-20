@@ -1,6 +1,6 @@
-using AppleAuth.IOS.Enums;
+using AppleAuth.Enums;
 
-namespace AppleAuth.IOS.Interfaces
+namespace AppleAuth.Interfaces
 {
     public interface IAppleIDCredential : ICredential
     {

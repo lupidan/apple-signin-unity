@@ -1,4 +1,4 @@
-namespace AppleAuth.IOS.Enums
+namespace AppleAuth.Enums
 {
     /// <summary>
     /// ASAuthorizationError

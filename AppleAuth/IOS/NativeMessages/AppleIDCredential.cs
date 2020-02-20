@@ -1,6 +1,6 @@
+using AppleAuth.Enums;
+using AppleAuth.Interfaces;
 using System;
-using AppleAuth.IOS.Enums;
-using AppleAuth.IOS.Interfaces;
 using UnityEngine;
 
 namespace AppleAuth.IOS.NativeMessages
@@ -40,6 +40,8 @@ namespace AppleAuth.IOS.NativeMessages
             SerializationTools.FixSerializationForArray(ref this._authorizedScopes);
             
             SerializationTools.FixSerializationForObject(ref this._fullName, this._hasFullName);
+            
+            SerializationTools.FixSerializationForFullPersonName(ref this._fullName);
         }
     }
 }
