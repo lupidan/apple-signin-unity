@@ -64,20 +64,20 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Features
 ### Native Sign in with Apple
-- Support for tvOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
 - Supports Quick login (including iTunes Keychain credentials).
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
 - Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
+- Support for tvOS (Experimental)
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
 - Customizable serialization (uses Unity default serialization, but you can add your own implementation)
 
 ## Installation
 
-> Current stable version is v1.0.0
+> Current stable version is v1.1.0
 
 ### Option 1: Unity Package manager
 
@@ -87,14 +87,14 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.1.0",
 }
 ```
 
 If you want to use a specific [release](https://github.com/lupidan/apple-signin-unity/releases) in your code, just add `#release` at the end, like so:
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v0.4.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
 }
 ```
 

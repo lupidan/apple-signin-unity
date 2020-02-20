@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] v1.1.0
+## [1.1.0] - 2020-02-20
 ### Added
 - Adds a CHANGELOG.md file
 - Adds support for tvOS (Experimental)
@@ -22,7 +22,6 @@
 - `LoginWithAppleId` now requires a `AppleAuthLoginArgs` to perform the call. Other `LoginWithAppleId` method marked as obsolete.
 - `AppleAuthManager` no longer requires a Scheduler, the scheduling is built in the manager instance with the method `Update`
 - When receiving a completely empty `FullPersonName`, the instance is cleared after deserialization.
-
 - Fixes bug when setting credentials revoked callback between multiple instances of  `AppleAuthManager`
 
 - Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
@@ -51,7 +50,7 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.0.0...HEAD
+[1.1.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lupidan/apple-signin-unity/compare/v0.4.0...v1.0.0
 [0.4.0]: https://github.com/lupidan/apple-signin-unity/compare/0.3.0...v0.4.0
 [0.3.0]: https://github.com/lupidan/apple-signin-unity/compare/0.2...0.3.0
