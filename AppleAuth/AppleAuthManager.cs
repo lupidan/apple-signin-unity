@@ -13,7 +13,7 @@ namespace AppleAuth
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
         private readonly IPayloadDeserializer _payloadDeserializer;
 
-        private uint _registeredCredentialsRevokedCallbackId = 0U;
+        private Action<string> _credentialsRevokedCallback;
 #endif
 
         public static bool IsCurrentPlatformSupported
@@ -122,20 +122,17 @@ namespace AppleAuth
         public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
-            if (this._registeredCredentialsRevokedCallbackId != 0)
+            if (this._credentialsRevokedCallback != null)
             {
-                CallbackHandler.RemoveMessageCallback(this._registeredCredentialsRevokedCallbackId);
-                this._registeredCredentialsRevokedCallbackId = 0;
+                CallbackHandler.NativeCredentialsRevoked -= this._credentialsRevokedCallback;
+                this._credentialsRevokedCallback = null;
             }
 
             if (credentialsRevokedCallback != null)
             {
-                this._registeredCredentialsRevokedCallbackId = CallbackHandler.AddMessageCallback(
-                    false,
-                    credentialsRevokedCallback);
+                CallbackHandler.NativeCredentialsRevoked += credentialsRevokedCallback;
+                this._credentialsRevokedCallback = credentialsRevokedCallback;
             }
-            
-            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(this._registeredCredentialsRevokedCallbackId);
 #endif
         }
 
@@ -158,6 +155,41 @@ namespace AppleAuth
 
             private static uint _callbackId = InitialCallbackId;
             private static bool _initialized = false;
+            
+            private static uint _credentialsRevokedCallbackId = 0U;
+            private static event Action<string> _nativeCredentialsRevoked = null;
+
+            public static event Action<string> NativeCredentialsRevoked
+            {
+                add
+                {
+                    lock (SyncLock)
+                    {
+                        if (_nativeCredentialsRevoked == null)
+                        {
+                            _credentialsRevokedCallbackId = AddMessageCallback(false, payload => _nativeCredentialsRevoked.Invoke(payload));
+                            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(_credentialsRevokedCallbackId);
+                        }
+
+                        _nativeCredentialsRevoked += value;
+                    }
+                }
+
+                remove
+                {
+                    lock (SyncLock)
+                    {
+                        _nativeCredentialsRevoked -= value;
+
+                        if (_nativeCredentialsRevoked == null)
+                        {
+                            RemoveMessageCallback(_credentialsRevokedCallbackId);
+                            _credentialsRevokedCallbackId = 0U;
+                            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(0U);
+                        }
+                    }
+                }
+            }
 
             public static void ScheduleCallback(uint requestId, string payload)
             {

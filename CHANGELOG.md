@@ -23,6 +23,8 @@
 - `AppleAuthManager` no longer requires a Scheduler, the scheduling is built in the manager instance with the method `Update`
 - When receiving a completely empty `FullPersonName`, the instance is cleared after deserialization.
 
+- Fixes bug when setting credentials revoked callback between multiple instances of  `AppleAuthManager`
+
 - Updates main package file to include both `CHANGELOG.md` and `CHANGELOG.md.meta files`
 - Updates the sample project to better resemble the expected Apple flow
 - Updates README.md with up to date documentation
