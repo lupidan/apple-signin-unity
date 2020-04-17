@@ -335,7 +335,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 
 #pragma mark - Native C Calls
 
-bool AppleAuth_IOS_IsCurrentPlatformSupported()
+bool AppleAuth_IsCurrentPlatformSupported()
 {
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
     {
@@ -347,30 +347,30 @@ bool AppleAuth_IOS_IsCurrentPlatformSupported()
     }
 }
 
-void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback)
+void AppleAuth_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback)
 {
     [[AppleAuthManager sharedManager] setMainCallback:callback];
     [[AppleAuthManager sharedManager] setCallingOperationQueue: [NSOperationQueue currentQueue]];
 }
 
-void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId)
+void AppleAuth_GetCredentialState(uint requestId, const char* userId)
 {
     [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
 }
 
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr)
+void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr)
 {
     NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
     [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options andNonce:nonce];
 }
 
-void AppleAuth_IOS_QuickLogin(uint requestId, const char* _Nullable nonceCStr)
+void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr)
 {
     NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
     [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce];
 }
 
-void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint requestId)
+void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId)
 {
     [[AppleAuthManager sharedManager] registerCredentialsRevokedCallbackForRequestId:requestId];
 }

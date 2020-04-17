@@ -1,4 +1,4 @@
-#if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS)
+#if ((UNITY_IOS || UNITY_TVOS) && !UNITY_EDITOR) || UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 #define APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
 #endif
 
@@ -21,7 +21,7 @@ namespace AppleAuth
             get
             {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
-                return PInvoke.AppleAuth_IOS_IsCurrentPlatformSupported();
+                return PInvoke.AppleAuth_IsCurrentPlatformSupported();
 #else
                 return false;
 #endif
@@ -60,7 +60,7 @@ namespace AppleAuth
                         successCallback(response.AppleIDCredential);
                 });
 
-            PInvoke.AppleAuth_IOS_QuickLogin(requestId, nonce);
+            PInvoke.AppleAuth_QuickLogin(requestId, nonce);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
@@ -90,7 +90,7 @@ namespace AppleAuth
                         successCallback(response.AppleIDCredential);
                 });
             
-            PInvoke.AppleAuth_IOS_LoginWithAppleId(requestId, (int)loginOptions, nonce);
+            PInvoke.AppleAuth_LoginWithAppleId(requestId, (int)loginOptions, nonce);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
@@ -113,7 +113,7 @@ namespace AppleAuth
                         successCallback(response.CredentialState);
                 });
             
-            PInvoke.AppleAuth_IOS_GetCredentialState(requestId, userId);
+            PInvoke.AppleAuth_GetCredentialState(requestId, userId);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
@@ -168,7 +168,7 @@ namespace AppleAuth
                         if (_nativeCredentialsRevoked == null)
                         {
                             _credentialsRevokedCallbackId = AddMessageCallback(false, payload => _nativeCredentialsRevoked.Invoke(payload));
-                            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(_credentialsRevokedCallbackId);
+                            PInvoke.AppleAuth_RegisterCredentialsRevokedCallbackId(_credentialsRevokedCallbackId);
                         }
 
                         _nativeCredentialsRevoked += value;
@@ -185,7 +185,7 @@ namespace AppleAuth
                         {
                             RemoveMessageCallback(_credentialsRevokedCallbackId);
                             _credentialsRevokedCallbackId = 0U;
-                            PInvoke.AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(0U);
+                            PInvoke.AppleAuth_RegisterCredentialsRevokedCallbackId(0U);
                         }
                     }
                 }
@@ -226,7 +226,7 @@ namespace AppleAuth
             {
                 if (!_initialized)
                 {
-                    PInvoke.AppleAuth_IOS_SetupNativeMessageHandlerCallback(PInvoke.NativeMessageHandlerCallback);
+                    PInvoke.AppleAuth_SetupNativeMessageHandlerCallback(PInvoke.NativeMessageHandlerCallback);
                     _initialized = true;
                 }
 
@@ -277,6 +277,12 @@ namespace AppleAuth
 
         private static class PInvoke
         {
+#if UNITY_IOS || UNITY_TVOS
+            private const string DllName = "__Internal";
+#elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+            private const string DllName = "AppleAuth";
+#endif
+
             public delegate void NativeMessageHandlerCallbackDelegate(uint requestId, string payload);
 
             [AOT.MonoPInvokeCallback(typeof(NativeMessageHandlerCallbackDelegate))]
@@ -294,23 +300,23 @@ namespace AppleAuth
                 }
             }
 
-            [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern bool AppleAuth_IOS_IsCurrentPlatformSupported();
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern bool AppleAuth_IsCurrentPlatformSupported();
 
-            [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerCallbackDelegate callback);
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_SetupNativeMessageHandlerCallback(NativeMessageHandlerCallbackDelegate callback);
             
-            [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_GetCredentialState(uint requestId, string userId);
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_GetCredentialState(uint requestId, string userId);
 
-            [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr);
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr);
             
-            [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_QuickLogin(uint requestId, string nonceCStr);
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_QuickLogin(uint requestId, string nonceCStr);
             
-            [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint callbackId);
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_RegisterCredentialsRevokedCallbackId(uint callbackId);
         }
 #endif
     }
