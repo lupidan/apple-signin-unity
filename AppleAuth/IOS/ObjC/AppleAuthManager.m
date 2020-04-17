@@ -326,7 +326,13 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 - (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
 API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 {
-    return [[[UIApplication sharedApplication] delegate] window];
+    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000
+        return [[[UIApplication sharedApplication] delegate] window];
+    #elif __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+        return [[NSApplication sharedApplication] mainWindow];
+    #else
+        return nil;
+    #endif
 }
 
 #endif

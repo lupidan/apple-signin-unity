@@ -44,11 +44,11 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
 
 @end
 
-bool AppleAuth_IOS_IsCurrentPlatformSupported();
-void AppleAuth_IOS_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback);
-void AppleAuth_IOS_GetCredentialState(uint requestId, const char* userId);
-void AppleAuth_IOS_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr);
-void AppleAuth_IOS_QuickLogin(uint requestId, const char* _Nullable nonceCStr);
-void AppleAuth_IOS_RegisterCredentialsRevokedCallbackId(uint requestId);
+bool AppleAuth_IsCurrentPlatformSupported();
+void AppleAuth_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback);
+void AppleAuth_GetCredentialState(uint requestId, const char* userId);
+void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr);
+void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr);
+void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId);
 
 NS_ASSUME_NONNULL_END

@@ -22,6 +22,8 @@
 //  SOFTWARE.
 //
 
+#import <Foundation/Foundation.h>
+
 const char* AppleAuth_IOS_CopyCString(const char* string)
 {
     if (string == NULL)
