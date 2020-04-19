@@ -10,7 +10,23 @@
 		90D06F50244A3CFA0058C642 /* AppleAuthSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D06F4C244A3CFA0058C642 /* AppleAuthSerializer.m */; };
 		90D06F51244A3CFA0058C642 /* PersonNameComponentsFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D06F4D244A3CFA0058C642 /* PersonNameComponentsFormatting.m */; };
 		90D06F52244A3CFA0058C642 /* AppleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D06F4E244A3CFA0058C642 /* AppleAuthManager.m */; };
+		90F63577244CBB1100F6E362 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F6356D244CB03700F6E362 /* AuthenticationServices.framework */; };
+		90F63578244CBB1100F6E362 /* AuthenticationServices.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 90F6356D244CB03700F6E362 /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		90F63579244CBB1100F6E362 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				90F63578244CBB1100F6E362 /* AuthenticationServices.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		90D06F42244A3CC20058C642 /* AppleAuthManager.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppleAuthManager.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -20,6 +36,7 @@
 		90D06F4D244A3CFA0058C642 /* PersonNameComponentsFormatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PersonNameComponentsFormatting.m; path = ../../../AppleAuth/IOS/ObjC/PersonNameComponentsFormatting.m; sourceTree = "<group>"; };
 		90D06F4E244A3CFA0058C642 /* AppleAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppleAuthManager.m; path = ../../../AppleAuth/IOS/ObjC/AppleAuthManager.m; sourceTree = "<group>"; };
 		90D06F4F244A3CFA0058C642 /* AppleAuthSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleAuthSerializer.h; path = ../../../AppleAuth/IOS/ObjC/AppleAuthSerializer.h; sourceTree = "<group>"; };
+		90F6356D244CB03700F6E362 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90F63577244CBB1100F6E362 /* AuthenticationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +56,7 @@
 			children = (
 				90D06F44244A3CC20058C642 /* AppleAuthManager */,
 				90D06F43244A3CC20058C642 /* Products */,
+				90F6356C244CB03700F6E362 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,6 +81,14 @@
 			path = AppleAuthManager;
 			sourceTree = "<group>";
 		};
+		90F6356C244CB03700F6E362 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				90F6356D244CB03700F6E362 /* AuthenticationServices.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -72,6 +99,8 @@
 				90D06F3E244A3CC20058C642 /* Sources */,
 				90D06F3F244A3CC20058C642 /* Frameworks */,
 				90D06F40244A3CC20058C642 /* Resources */,
+				90F63576244CB30A00F6E362 /* ShellScript */,
+				90F63579244CBB1100F6E362 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -123,6 +152,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		90F63576244CB30A00F6E362 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp -r $BUILT_PRODUCTS_DIR/$FULL_PRODUCT_NAME ../../AppleAuth/IOS/macOS\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		90D06F3E244A3CC20058C642 /* Sources */ = {
@@ -250,12 +299,14 @@
 		90D06F49244A3CC20058C642 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = AppleAuthManager/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lupidan.AppleAuthManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -267,12 +318,14 @@
 		90D06F4A244A3CC20058C642 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = AppleAuthManager/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lupidan.AppleAuthManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
