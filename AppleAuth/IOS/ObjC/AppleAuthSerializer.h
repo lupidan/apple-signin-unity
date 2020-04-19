@@ -33,14 +33,20 @@
 
 + (NSDictionary * _Nullable) dictionaryForNSError:(NSError * _Nullable)error;
 
-+ (NSDictionary * _Nullable) dictionaryForNSPersonNameComponents:(NSPersonNameComponents * _Nullable)nameComponents;
-
 + (NSDictionary * _Nullable) credentialResponseDictionaryForCredentialState:(NSNumber * _Nullable)credentialStateNumber
                                                             errorDictionary:(NSDictionary * _Nullable)errorDictionary;
 
 + (NSDictionary * _Nullable) loginResponseDictionaryForAppleIdCredentialDictionary:(NSDictionary * _Nullable)appleIdCredentialDictionary
                                                       passwordCredentialDictionary:(NSDictionary * _Nullable)passwordCredentialDictionary
                                                                    errorDictionary:(NSDictionary * _Nullable)errorDictionary;
+
+// IOS/TVOS 9.0 | MACOS 10.11
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000 || __TV_OS_VERSION_MAX_ALLOWED >= 90000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
+
++ (NSDictionary * _Nullable) dictionaryForNSPersonNameComponents:(NSPersonNameComponents * _Nullable)nameComponents
+API_AVAILABLE(ios(9.0), macos(10.11), tvos(9.0), watchos(2.0));
+
+#endif
 
 // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500

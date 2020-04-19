@@ -41,26 +41,6 @@
     return [result copy];
 }
 
-+ (NSDictionary *) dictionaryForNSPersonNameComponents:(NSPersonNameComponents *)nameComponents
-{
-    if (!nameComponents)
-        return nil;
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    [result setValue:[nameComponents namePrefix] forKey:@"_namePrefix"];
-    [result setValue:[nameComponents givenName] forKey:@"_givenName"];
-    [result setValue:[nameComponents middleName] forKey:@"_middleName"];
-    [result setValue:[nameComponents familyName] forKey:@"_familyName"];
-    [result setValue:[nameComponents nameSuffix] forKey:@"_nameSuffix"];
-    [result setValue:[nameComponents nickname] forKey:@"_nickname"];
-    
-    NSDictionary *phoneticRepresentationDictionary = [AppleAuthSerializer dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]];
-    [result setValue:@(phoneticRepresentationDictionary != nil) forKey:@"_hasPhoneticRepresentation"];
-    [result setValue:phoneticRepresentationDictionary forKey:@"_phoneticRepresentation"];
-    
-    return [result copy];
-}
-
 + (NSDictionary *) credentialResponseDictionaryForCredentialState:(NSNumber *)credentialStateNumber
                                                   errorDictionary:(NSDictionary *)errorDictionary
 {
@@ -93,6 +73,31 @@
     
     return [result copy];
 }
+
+// IOS/TVOS 9.0 | MACOS 10.11
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000 || __TV_OS_VERSION_MAX_ALLOWED >= 90000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
+
++ (NSDictionary *) dictionaryForNSPersonNameComponents:(NSPersonNameComponents *)nameComponents
+{
+    if (!nameComponents)
+        return nil;
+    
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [result setValue:[nameComponents namePrefix] forKey:@"_namePrefix"];
+    [result setValue:[nameComponents givenName] forKey:@"_givenName"];
+    [result setValue:[nameComponents middleName] forKey:@"_middleName"];
+    [result setValue:[nameComponents familyName] forKey:@"_familyName"];
+    [result setValue:[nameComponents nameSuffix] forKey:@"_nameSuffix"];
+    [result setValue:[nameComponents nickname] forKey:@"_nickname"];
+    
+    NSDictionary *phoneticRepresentationDictionary = [AppleAuthSerializer dictionaryForNSPersonNameComponents:[nameComponents phoneticRepresentation]];
+    [result setValue:@(phoneticRepresentationDictionary != nil) forKey:@"_hasPhoneticRepresentation"];
+    [result setValue:phoneticRepresentationDictionary forKey:@"_phoneticRepresentation"];
+    
+    return [result copy];
+}
+
+#endif
 
 // IOS/TVOS 13.0 | MACOS 10.15
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500

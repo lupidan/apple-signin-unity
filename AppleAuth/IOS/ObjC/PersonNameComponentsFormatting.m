@@ -46,28 +46,33 @@ const char* AppleAuth_IOS_GetPersonNameUsingFormatter(const char *payload, int s
     if (error)
         return NULL;
     
-    NSPersonNameComponents *nameData = [[NSPersonNameComponents alloc] init];
-    [nameData setNamePrefix:[nameComponentsDictionary objectForKey:@"_namePrefix"]];
-    [nameData setGivenName:[nameComponentsDictionary objectForKey:@"_givenName"]];
-    [nameData setMiddleName:[nameComponentsDictionary objectForKey:@"_middleName"]];
-    [nameData setFamilyName:[nameComponentsDictionary objectForKey:@"_familyName"]];
-    [nameData setNameSuffix:[nameComponentsDictionary objectForKey:@"_nameSuffix"]];
-    [nameData setNickname:[nameComponentsDictionary objectForKey:@"_nickname"]];
-
-    NSDictionary *phoneticRepresentationDictionary = [nameComponentsDictionary objectForKey:@"_phoneticRepresentation"];
-    if (phoneticRepresentationDictionary)
-    {
-        NSPersonNameComponents *phoneticRepresentation = [[NSPersonNameComponents alloc] init];
-        [phoneticRepresentation setNamePrefix:[phoneticRepresentationDictionary objectForKey:@"_namePrefix"]];
-        [phoneticRepresentation setGivenName:[phoneticRepresentationDictionary objectForKey:@"_givenName"]];
-        [phoneticRepresentation setMiddleName:[phoneticRepresentationDictionary objectForKey:@"_middleName"]];
-        [phoneticRepresentation setFamilyName:[phoneticRepresentationDictionary objectForKey:@"_familyName"]];
-        [phoneticRepresentation setNameSuffix:[phoneticRepresentationDictionary objectForKey:@"_nameSuffix"]];
-        [phoneticRepresentation setNickname:[phoneticRepresentationDictionary objectForKey:@"_nickname"]];
-        [nameData setPhoneticRepresentation:phoneticRepresentation];
+    if (@available(iOS 9.0, tvOS 9.0, macOS 10.11, *)) {
+        NSPersonNameComponents *nameData = [[NSPersonNameComponents alloc] init];
+        [nameData setNamePrefix:[nameComponentsDictionary objectForKey:@"_namePrefix"]];
+        [nameData setGivenName:[nameComponentsDictionary objectForKey:@"_givenName"]];
+        [nameData setMiddleName:[nameComponentsDictionary objectForKey:@"_middleName"]];
+        [nameData setFamilyName:[nameComponentsDictionary objectForKey:@"_familyName"]];
+        [nameData setNameSuffix:[nameComponentsDictionary objectForKey:@"_nameSuffix"]];
+        [nameData setNickname:[nameComponentsDictionary objectForKey:@"_nickname"]];
+        
+        NSDictionary *phoneticRepresentationDictionary = [nameComponentsDictionary objectForKey:@"_phoneticRepresentation"];
+        if (phoneticRepresentationDictionary)
+        {
+            NSPersonNameComponents *phoneticRepresentation = [[NSPersonNameComponents alloc] init];
+            [phoneticRepresentation setNamePrefix:[phoneticRepresentationDictionary objectForKey:@"_namePrefix"]];
+            [phoneticRepresentation setGivenName:[phoneticRepresentationDictionary objectForKey:@"_givenName"]];
+            [phoneticRepresentation setMiddleName:[phoneticRepresentationDictionary objectForKey:@"_middleName"]];
+            [phoneticRepresentation setFamilyName:[phoneticRepresentationDictionary objectForKey:@"_familyName"]];
+            [phoneticRepresentation setNameSuffix:[phoneticRepresentationDictionary objectForKey:@"_nameSuffix"]];
+            [phoneticRepresentation setNickname:[phoneticRepresentationDictionary objectForKey:@"_nickname"]];
+            [nameData setPhoneticRepresentation:phoneticRepresentation];
+        }
+        
+        NSPersonNameComponentsFormatterOptions options = usePhoneticRepresentation ? NSPersonNameComponentsFormatterPhonetic : 0;
+        NSString *localizedName = [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:nameData style:style options:options];
+        
+        return AppleAuth_IOS_CopyCString([localizedName UTF8String]);
+    } else {
+        return NULL;
     }
-
-    NSPersonNameComponentsFormatterOptions options = usePhoneticRepresentation ? NSPersonNameComponentsFormatterPhonetic : 0;
-    NSString *localizedName = [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:nameData style:style options:options];
-    return AppleAuth_IOS_CopyCString([localizedName UTF8String]);
 }
