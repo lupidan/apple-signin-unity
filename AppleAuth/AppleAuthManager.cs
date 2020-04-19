@@ -280,7 +280,7 @@ namespace AppleAuth
 #if UNITY_IOS || UNITY_TVOS
             private const string DllName = "__Internal";
 #elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-            private const string DllName = "AppleAuth";
+            private const string DllName = "AppleAuthManager";
 #endif
 
             public delegate void NativeMessageHandlerCallbackDelegate(uint requestId, string payload);
