@@ -1,0 +1,330 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		900B92F22454CC0B006DABD8 /* AppleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */; };
+		900B92F32454CC0B006DABD8 /* AppleAuthSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */; };
+		900B92F42454CC0B006DABD8 /* PersonNameComponentsFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		900B92E42454CBAD006DABD8 /* MacOSAppleAuthManager.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacOSAppleAuthManager.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		900B92E72454CBAD006DABD8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppleAuthManager.m; path = ../../AppleAuth/Native/iOS/AppleAuthManager.m; sourceTree = "<group>"; };
+		900B92EE2454CC0B006DABD8 /* AppleAuthManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleAuthManager.h; path = ../../AppleAuth/Native/iOS/AppleAuthManager.h; sourceTree = "<group>"; };
+		900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppleAuthSerializer.m; path = ../../AppleAuth/Native/iOS/AppleAuthSerializer.m; sourceTree = "<group>"; };
+		900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PersonNameComponentsFormatting.m; path = ../../AppleAuth/Native/iOS/PersonNameComponentsFormatting.m; sourceTree = "<group>"; };
+		900B92F12454CC0B006DABD8 /* AppleAuthSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleAuthSerializer.h; path = ../../AppleAuth/Native/iOS/AppleAuthSerializer.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		900B92E12454CBAD006DABD8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		900B92DB2454CBAD006DABD8 = {
+			isa = PBXGroup;
+			children = (
+				900B92E62454CBAD006DABD8 /* MacOSAppleAuthManager */,
+				900B92E52454CBAD006DABD8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		900B92E52454CBAD006DABD8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				900B92E42454CBAD006DABD8 /* MacOSAppleAuthManager.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		900B92E62454CBAD006DABD8 /* MacOSAppleAuthManager */ = {
+			isa = PBXGroup;
+			children = (
+				900B92EE2454CC0B006DABD8 /* AppleAuthManager.h */,
+				900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */,
+				900B92F12454CC0B006DABD8 /* AppleAuthSerializer.h */,
+				900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */,
+				900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */,
+				900B92E72454CBAD006DABD8 /* Info.plist */,
+			);
+			path = MacOSAppleAuthManager;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		900B92E32454CBAD006DABD8 /* MacOSAppleAuthManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 900B92EA2454CBAD006DABD8 /* Build configuration list for PBXNativeTarget "MacOSAppleAuthManager" */;
+			buildPhases = (
+				900B92E02454CBAD006DABD8 /* Sources */,
+				900B92E12454CBAD006DABD8 /* Frameworks */,
+				900B92E22454CBAD006DABD8 /* Resources */,
+				900B92F52454CDA4006DABD8 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacOSAppleAuthManager;
+			productName = MacOSAppleAuthManager;
+			productReference = 900B92E42454CBAD006DABD8 /* MacOSAppleAuthManager.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		900B92DC2454CBAD006DABD8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = "Daniel Lupiañez Casares";
+				TargetAttributes = {
+					900B92E32454CBAD006DABD8 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
+				};
+			};
+			buildConfigurationList = 900B92DF2454CBAD006DABD8 /* Build configuration list for PBXProject "MacOSAppleAuthManager" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 900B92DB2454CBAD006DABD8;
+			productRefGroup = 900B92E52454CBAD006DABD8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				900B92E32454CBAD006DABD8 /* MacOSAppleAuthManager */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		900B92E22454CBAD006DABD8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		900B92F52454CDA4006DABD8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -r $SOURCE_ROOT/../AppleAuth/Native/macOS/$FULL_PRODUCT_NAME\ncp -r $CODESIGNING_FOLDER_PATH $SOURCE_ROOT/../AppleAuth/Native/macOS/$FULL_PRODUCT_NAME\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		900B92E02454CBAD006DABD8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				900B92F42454CC0B006DABD8 /* PersonNameComponentsFormatting.m in Sources */,
+				900B92F32454CC0B006DABD8 /* AppleAuthSerializer.m in Sources */,
+				900B92F22454CC0B006DABD8 /* AppleAuthManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		900B92E82454CBAD006DABD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		900B92E92454CBAD006DABD8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		900B92EB2454CBAD006DABD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacOSAppleAuthManager/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 1.2.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lupidan.MacOSAppleAuthManager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		900B92EC2454CBAD006DABD8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacOSAppleAuthManager/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 1.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lupidan.MacOSAppleAuthManager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		900B92DF2454CBAD006DABD8 /* Build configuration list for PBXProject "MacOSAppleAuthManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				900B92E82454CBAD006DABD8 /* Debug */,
+				900B92E92454CBAD006DABD8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		900B92EA2454CBAD006DABD8 /* Build configuration list for PBXNativeTarget "MacOSAppleAuthManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				900B92EB2454CBAD006DABD8 /* Debug */,
+				900B92EC2454CBAD006DABD8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 900B92DC2454CBAD006DABD8 /* Project object */;
+}
