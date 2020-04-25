@@ -1,4 +1,4 @@
-namespace AppleAuth.IOS.NativeMessages
+namespace AppleAuth.Native
 {
     internal static class SerializationTools
     {

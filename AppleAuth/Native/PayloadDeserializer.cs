@@ -1,7 +1,7 @@
 using AppleAuth.Interfaces;
 using UnityEngine;
 
-namespace AppleAuth.IOS.NativeMessages
+namespace AppleAuth.Native
 {
     public class PayloadDeserializer : IPayloadDeserializer
     {

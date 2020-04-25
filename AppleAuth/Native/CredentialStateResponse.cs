@@ -3,7 +3,7 @@ using AppleAuth.Interfaces;
 using System;
 using UnityEngine;
 
-namespace AppleAuth.IOS.NativeMessages
+namespace AppleAuth.Native
 {
     [Serializable]
     public class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver

@@ -1,7 +1,7 @@
 using AppleAuth.Interfaces;
 using System;
 
-namespace AppleAuth.IOS.NativeMessages
+namespace AppleAuth.Native
 {
     [Serializable]
     public class FullPersonName : PersonName, IPersonName

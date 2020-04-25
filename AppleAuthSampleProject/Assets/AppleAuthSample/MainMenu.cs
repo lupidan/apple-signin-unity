@@ -1,7 +1,7 @@
 ﻿using AppleAuth;
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
-using AppleAuth.IOS.NativeMessages;
+using AppleAuth.Native;
 using UnityEngine;
 
 public class MainMenu : MonoBehaviour
