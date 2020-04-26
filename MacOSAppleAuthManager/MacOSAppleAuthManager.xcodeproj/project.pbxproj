@@ -10,6 +10,7 @@
 		900B92F22454CC0B006DABD8 /* AppleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */; };
 		900B92F32454CC0B006DABD8 /* AppleAuthSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */; };
 		900B92F42454CC0B006DABD8 /* PersonNameComponentsFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */; };
+		900B92F82454DD51006DABD8 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 900B92F72454DD51006DABD8 /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppleAuthSerializer.m; path = ../../AppleAuth/Native/iOS/AppleAuthSerializer.m; sourceTree = "<group>"; };
 		900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PersonNameComponentsFormatting.m; path = ../../AppleAuth/Native/iOS/PersonNameComponentsFormatting.m; sourceTree = "<group>"; };
 		900B92F12454CC0B006DABD8 /* AppleAuthSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleAuthSerializer.h; path = ../../AppleAuth/Native/iOS/AppleAuthSerializer.h; sourceTree = "<group>"; };
+		900B92F72454DD51006DABD8 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				900B92F82454DD51006DABD8 /* AuthenticationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +41,7 @@
 			children = (
 				900B92E62454CBAD006DABD8 /* MacOSAppleAuthManager */,
 				900B92E52454CBAD006DABD8 /* Products */,
+				900B92F62454DD51006DABD8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,6 +64,14 @@
 				900B92E72454CBAD006DABD8 /* Info.plist */,
 			);
 			path = MacOSAppleAuthManager;
+			sourceTree = "<group>";
+		};
+		900B92F62454DD51006DABD8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				900B92F72454DD51006DABD8 /* AuthenticationServices.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
