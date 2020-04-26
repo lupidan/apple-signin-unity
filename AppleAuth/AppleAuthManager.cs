@@ -1,4 +1,4 @@
-#if ((UNITY_IOS || UNITY_TVOS) && !UNITY_EDITOR) || UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+#if ((UNITY_IOS || UNITY_TVOS) && !UNITY_EDITOR) || UNITY_STANDALONE_OSX
 #define APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
 #endif
 
@@ -279,7 +279,7 @@ namespace AppleAuth
         {
 #if UNITY_IOS || UNITY_TVOS
             private const string DllName = "__Internal";
-#elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+#elif UNITY_STANDALONE_OSX
             private const string DllName = "MacOSAppleAuthManager";
 #endif
 
