@@ -32,11 +32,12 @@ by **Daniel Lupiañez Casares**
   * [Installation](#installation)
     + [Option 1: Unity Package manager](#option-1-unity-package-manager)
     + [Option 2: Unity Package file](#option-2-unity-package-file)
-  * [Plugin setup](#plugin-setup)
+  * [Plugin setup (iOS/tvOS)](#plugin-setup-iostvos)
     + [Option 1)  Programmatic setup with a Script](#option-1--programmatic-setup-with-a-script)
     + [Option 2) Manual entitlements setup](#option-2-manual-entitlements-setup)
     + [Enabling Apple capability](#enabling-apple-capability)
     + [Final notes regarding setup](#final-notes-regarding-setup)
+  * [Plugin setup (macOS)](#plugin-setup-macos)
   * [Implement Sign in With Apple](#implement-sign-in-with-apple)
     + [Initializing](#initializing)
     + [Perform Sign In With Apple](#perform-sign-in-with-apple)
@@ -56,21 +57,29 @@ by **Daniel Lupiañez Casares**
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
 
-The main purpose for this plugin is to expose iOS newest feature, Sign in with Apple, to the Unity game engine.
+This plugin supports the following platforms:
+* **iOS**
+* **macOS** ([NOTES](./docs/macOS_NOTES.md))
+* **tvOS** (Experimental)
 
-On WWDC19, Apple announced **Sign in with Apple**, and on top of that, they announced that every iOS Application
+The main purpose for this plugin is to expose Apple's newest feature, Sign in with Apple, to the Unity game engine.
+
+On WWDC19, Apple announced **Sign in with Apple**, and on top of that, they announced that every iOS/tvOS/macOS Application
 that used any kind of Third party sign-ins (like *Sign in with Facebook*, or *Sign in with Google*), will have to support
 Sign in with Apple in order to get approved for the App Store, making it **mandatory**.
 
 ## Features
 ### Native Sign in with Apple
+- Support for iOS
+- Support for macOS ([NOTES](./docs/macOS_NOTES.md))
+- Support for tvOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
 - Supports Quick login (including iTunes Keychain credentials).
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
 - Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
-- Support for tvOS (Experimental)
+
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
 - Customizable serialization (uses Unity default serialization, but you can add your own implementation)
@@ -107,7 +116,7 @@ If you want to use a specific [release](https://github.com/lupidan/apple-signin-
 
 ![Import detail](./Img/ImportPlugin.png)
 
-## Plugin setup
+## Plugin setup (iOS/tvOS)
 
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project. Two different options are available to set up the entitlements required to enable Apple ID authentication with the iOS SDK.
 
@@ -174,6 +183,13 @@ The `AuthenticationServices.framework` should be added as Optional, to support p
 
 The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
 
+## Plugin setup (macOS)
+
+An unsigned precompiled `.bundle` file is available. It will be automatically included in your macOS builds.
+
+The Xcode project with the source code to generate a new bundle file is available at `MacOSAppleAuthManager/MacOSAppleAuthManager.xcodeproj`
+
+To support the feature, the app needs to be codesigned correctly, including the required entitlements. For more information regarding macOS codesign, please follow this [link](./docs/macOS_NOTES.md).
 
 ## Implement Sign in With Apple
 
