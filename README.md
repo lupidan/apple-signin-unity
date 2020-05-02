@@ -32,7 +32,7 @@ by **Daniel Lupiañez Casares**
   * [Installation](#installation)
     + [Option 1: Unity Package manager](#option-1-unity-package-manager)
     + [Option 2: Unity Package file](#option-2-unity-package-file)
-  * [Plugin setup (iOS/tvOS)](#plugin-setup-ios-tvos)
+  * [Plugin setup (iOS/tvOS)](#plugin-setup-iostvos)
     + [Option 1)  Programmatic setup with a Script](#option-1--programmatic-setup-with-a-script)
     + [Option 2) Manual entitlements setup](#option-2-manual-entitlements-setup)
     + [Enabling Apple capability](#enabling-apple-capability)
