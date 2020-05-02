@@ -367,6 +367,8 @@ var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce);
 
 This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
+Some tentative guide is available for Firebase integration [here](./docs/Firebase_NOTES.md)
+
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)
 + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
