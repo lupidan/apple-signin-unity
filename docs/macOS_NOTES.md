@@ -87,7 +87,7 @@ Here is a practical example on how the sample app was codesigned in order to get
 
 Certificate name: `Apple Development: My Full Name (ABCDEFGHIJ)`
 
-**Step 3)** Find out our Team identifier, and our Application identifier. In our case:
+**Step 3)** Find out your Team identifier, and your Application identifier. In our case:
 
 Team ID: `ABC123DEF4`
 
