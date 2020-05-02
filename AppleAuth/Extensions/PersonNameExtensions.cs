@@ -77,7 +77,13 @@ namespace AppleAuth.Extensions
         
         private static class PInvoke
         {
-            [System.Runtime.InteropServices.DllImport("__Internal")]
+#if UNITY_IOS || UNITY_TVOS
+            private const string DllName = "__Internal";
+#elif UNITY_STANDALONE_OSX
+            private const string DllName = "MacOSAppleAuthManager";
+#endif
+
+            [System.Runtime.InteropServices.DllImport(DllName)]
             public static extern string AppleAuth_GetPersonNameUsingFormatter(string payload, int style, bool usePhoneticRepresentation);
         }
 #endif
