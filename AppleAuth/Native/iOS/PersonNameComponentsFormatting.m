@@ -24,7 +24,7 @@
 
 #import <Foundation/Foundation.h>
 
-const char* AppleAuth_IOS_CopyCString(const char* string)
+const char* AppleAuth_CopyCString(const char* string)
 {
     if (string == NULL)
         return NULL;
@@ -35,7 +35,7 @@ const char* AppleAuth_IOS_CopyCString(const char* string)
     return res;
 }
 
-const char* AppleAuth_IOS_GetPersonNameUsingFormatter(const char *payload, int style, bool usePhoneticRepresentation)
+const char* AppleAuth_GetPersonNameUsingFormatter(const char *payload, int style, bool usePhoneticRepresentation)
 {
     if (payload == NULL)
         return NULL;
@@ -71,7 +71,7 @@ const char* AppleAuth_IOS_GetPersonNameUsingFormatter(const char *payload, int s
         NSPersonNameComponentsFormatterOptions options = usePhoneticRepresentation ? NSPersonNameComponentsFormatterPhonetic : 0;
         NSString *localizedName = [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:nameData style:style options:options];
         
-        return AppleAuth_IOS_CopyCString([localizedName UTF8String]);
+        return AppleAuth_CopyCString([localizedName UTF8String]);
     } else {
         return NULL;
     }

@@ -16,8 +16,12 @@ namespace AppleAuth.Extensions
         {
 #if NATIVE_PERSON_NAME_COMPONENTS_AVAILABLE
             var jsonString = JsonStringForPersonName(personName);
-            return PInvoke.AppleAuth_IOS_GetPersonNameUsingFormatter(jsonString, (int) style, usePhoneticRepresentation);
-#else
+            var localizedString = PInvoke.AppleAuth_GetPersonNameUsingFormatter(jsonString, (int) style, usePhoneticRepresentation);
+            if (localizedString != null)
+            {
+                return localizedString;
+            }
+#endif
             var orderedParts = new System.Collections.Generic.List<string>();
             if (string.IsNullOrEmpty(personName.NamePrefix))
                 orderedParts.Add(personName.NamePrefix);
@@ -35,7 +39,6 @@ namespace AppleAuth.Extensions
                 orderedParts.Add(personName.NameSuffix);
 
             return string.Join(" ", orderedParts.ToArray());
-#endif
         }
 
 #if NATIVE_PERSON_NAME_COMPONENTS_AVAILABLE
@@ -75,7 +78,7 @@ namespace AppleAuth.Extensions
         private static class PInvoke
         {
             [System.Runtime.InteropServices.DllImport("__Internal")]
-            public static extern string AppleAuth_IOS_GetPersonNameUsingFormatter(string payload, int style, bool usePhoneticRepresentation);
+            public static extern string AppleAuth_GetPersonNameUsingFormatter(string payload, int style, bool usePhoneticRepresentation);
         }
 #endif
     }
