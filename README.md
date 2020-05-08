@@ -10,6 +10,7 @@ by **Daniel Lupiañez Casares**
 [CHANGELOG](./CHANGELOG.md)
 
 ![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
+[![openupm](https://img.shields.io/npm/v/com.lupidan.apple-signin-unity?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.lupidan.apple-signin-unity/)
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
@@ -81,6 +82,16 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ### Option 1: Unity Package manager
 
+#### Install via OpenUPM
+
+The package is available on the [openupm registry](https://openupm.com). It's recommended to install it via [openupm-cli](https://github.com/openupm/openupm-cli).
+
+```
+openupm add com.lupidan.apple-signin-unity
+```
+
+#### Install via Git URL
+
 Available starting from Unity 2018.3.
 
 Just add this line to the `Packages/manifest.json` file of your Unity Project:
@@ -97,6 +108,8 @@ If you want to use a specific [release](https://github.com/lupidan/apple-signin-
     "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
 }
 ```
+
+You can also 
 
 ### Option 2: Unity Package file
 1. Download the most recent Unity package release [here](https://github.com/lupidan/apple-signin-unity/releases)
