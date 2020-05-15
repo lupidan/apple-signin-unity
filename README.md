@@ -134,7 +134,19 @@ public static class SignInWithApplePostprocessor
             return;
 
         var projectPath = PBXProject.GetPBXProjectPath(path);
+        
+#if UNITY_2019_3_OR_NEWER
+        
+        PBXProject project = new PBXProject();
+        project.ReadFromString(File.ReadAllText(projectPath));
+        
+        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+        
+#else
+        
         var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+        
+#endif
         
         // Adds required Entitlements entry, and framework programatically
         manager.AddSignInWithApple();
