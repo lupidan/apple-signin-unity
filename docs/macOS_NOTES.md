@@ -1,7 +1,7 @@
 # macOS Notes
 
 With version 1.2.0, this plugin introduces support for macOS.
-This means that if your game targets macOS, **the macOS bundle will be automatically included**, and code signing it is mandatory to get it notarized.
+This means that if your game targets macOS, **the macOS bundle will be automatically included**, and code signing it will be mandatory to get it notarized or accepted by the macOS App Store.
 
 ## Support
 Sign In with Apple for macOS is only supported for apps:
@@ -49,7 +49,7 @@ lipo BINARY_PATH -verify_arch arm64e
 ### Remember about extended attributes
 Also recommended, remove extended attributes from all the files inside the `.app`. This is specially important when distributing to other machines for testing.
 
-For example, let's say your app is codesigned with a Developer certificate, with the correct entitlements, and including the correct Provisioning profile with the correct machines UUIDs.
+For example, let's say your app is codesigned with a Developer certificate, with the correct entitlements, and including the correct Provision profile with the correct machines UUIDs.
 If the codesigned app is distributed through some application, let's say, Slack or Telegram, extended attributes are added to all the files, and when attempting to run the app in the machine, you will be prompted with a message like this one 
 
 ![Import detail](./../Img/ExtendedAttributesError.png)
@@ -118,7 +118,9 @@ Entitlements file: `Sign_In_With_Apple_Tests.entilements`
 </plist>
 ```
  
- **Step 5)** Setup and download provision profile. Remember to enable "Sign In with Apple" for the app. We download the file as:
+ **Step 5)** Setup and download provision profile. Remember to enable "Sign In with Apple" for the app.
+ 
+When downloaded, in macOS Finder quick preview (Select the file and press Space), you can see the details for that particular provision profile, like the included device IDs, the used certificate, and the used entitlements.
  
 Provision profile file: `Sign_In_With_Apple_Tests_Development.provisionprofile`
  
@@ -150,11 +152,19 @@ Provision profile file: `Sign_In_With_Apple_Tests_Development.provisionprofile`
  codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Plugins/AppleAuthManager.bundle
  codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" --entitlements ./Sign_In_With_Apple_Tests.entilements ./AppleAuthSampleProject.app
  
- # Finally, copy provisioning profile
+ # Finally, copy provision profile
  cp ./Sign_In_With_Apple_Tests_Development.provisionprofile ./AppleAuthSampleProject.app/Contents/embedded.provisionprofile
  
  # Open the app
  open ./AppleAuthSampleProject.app
+ ```
+
+ **Step 7)** [OPTIONAL] Remove extended attributes when distributing to other machines.
+ 
+ When distributing the app to other people, macOS may add extended attributes to the files in the `.app`. Ask the receivers to clear those extended attributes by executing this line in the Terminal.
+ 
+```console
+xattr -crs ./AppleAuthSampleProject.app
  ```
 
 ## More links
