@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.2.0] 2020-06-16
 ### Added
 - Updates native code to support macOS, including NSPersonNameComponents support.
 - Adds Xcode project `MacOSAppleAuthManager/MacOSAppleAuthManager.xcodeproj` to generate `MacOSAppleAuthManager.bundle` reusing existing iOS objective-c files. Bundle identifier is `com.lupidan.MacOSAppleAuthManager`. Minimum macOS version supported is 10.9.
@@ -8,6 +8,7 @@
 - Adds *unsigned precompiled* `MacOSAppleAuthManager.bundle`.
 - Adds `LandscapeSampleScene.unity` scene for a Landscape version to use on macOS builds.
 - Adds `macOS_NOTES.md` readme dedicated to macOS codesigning.
+- Adds details to install the plugin with ![OpenUPM](https://openupm.com/) in `README.md`
 
 ### Changed
 - Namespace `AppleAuth.IOS.NativeMessages` becomes `AppleAuth.NativeMessages`
@@ -64,7 +65,7 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.1.0...HEAD
+[1.2.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lupidan/apple-signin-unity/compare/v0.4.0...v1.0.0
 [0.4.0]: https://github.com/lupidan/apple-signin-unity/compare/0.3.0...v0.4.0
