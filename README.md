@@ -187,8 +187,7 @@ The other option is to manually setup all the entitlements in our Xcode project.
 1. In your generated Xcode project. Select your product and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
 
 <p align="center">
-    <a href="./Img/AddEntitlement.png"><img src="./Img/AddEntitlement.png"/></a>
-    <a href="./Img/AddEntitlementList.png"><img src="./Img/AddEntitlementList.png"/></a>
+    <a href="./Img/AddEntitlement.png"><img src="./Img/AddEntitlement.png"/></a><a href="./Img/AddEntitlementList.png"><img src="./Img/AddEntitlementList.png"/></a>
 </p>
 
 
