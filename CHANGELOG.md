@@ -11,6 +11,7 @@
 - Adds details to install the plugin with ![OpenUPM](https://openupm.com/) in `README.md`
 
 ### Changed
+- Fixes PostProcessing for Unity 2019.3
 - Renamed plugin´s extension method for `ProjectCapabilityManager` to avoid conflicts with the method added in Unity 2019.3. New method name is `AddSignInWithAppleWithCompatibility`.
 - Namespace `AppleAuth.IOS.NativeMessages` becomes `AppleAuth.NativeMessages`
 - Modified slightly implementation for Person name formatting
