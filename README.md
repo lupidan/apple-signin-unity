@@ -91,6 +91,8 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 > Current stable version is v1.2.0
 
+There are two options available to install this plugin. Either using the Unity Package Manager, or the traditional `.unitypackage` file.
+
 ### Unity Package Manager
 
 #### Install via Git URL
@@ -114,7 +116,7 @@ If you want to use a specific [release](https://github.com/lupidan/apple-signin-
 
 #### Install via OpenUPM
 
-The package is available on the [openupm registry](https://openupm.com). It's recommended to install it via [openupm-cli](https://github.com/openupm/openupm-cli).
+The package is available on the [openupm registry](https://openupm.com). You can install it via [openupm-cli](https://github.com/openupm/openupm-cli).
 
 ```
 openupm add com.lupidan.apple-signin-unity
@@ -183,6 +185,12 @@ public static class SignInWithApplePostprocessor
 The other option is to manually setup all the entitlements in our Xcode project. Note that when making an iOS Build from Unity into the same folder, if you choose the option to overwrite, you will need to perform the Manual setup again.
 
 1. In your generated Xcode project. Select your product and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
+
+<p align="center">
+    <a href="./Img/AddEntitlement.png"><img src="./Img/AddEntitlement.png"/></a>
+    <a href="./Img/AddEntitlementList.png"><img src="./Img/AddEntitlementList.png"/></a>
+</p>
+
 
 2. This should have added an Entitlements file to your project. Locate it on the project explorer (it should be a file with the extension `.entitlements`). Inside it you should see an entry like this one:
 
