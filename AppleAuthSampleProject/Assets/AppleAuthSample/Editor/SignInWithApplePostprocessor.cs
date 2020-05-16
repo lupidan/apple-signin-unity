@@ -25,7 +25,7 @@ namespace AppleAuthSample.Editor
 #else
             var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
 #endif
-            manager.AddSignInWithApple();
+            manager.AddSignInWithAppleWithCompatibility();
             manager.WriteToFile();
         }
     }
