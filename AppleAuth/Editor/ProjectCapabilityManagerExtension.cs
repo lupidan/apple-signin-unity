@@ -13,7 +13,13 @@ namespace AppleAuth.Editor
         private const string AuthenticationServicesFramework = "AuthenticationServices.framework";
         private const BindingFlags NonPublicInstanceBinding = BindingFlags.NonPublic | BindingFlags.Instance;
 
-        public static void AddSignInWithApple(this ProjectCapabilityManager manager)
+        /// <summary>
+        /// Extension method for ProjectCapabilityManager to add the Sign In With Apple capability in compatibility mode.
+        /// In particular, adds the AuthenticationServices.framework as an Optional framework, preventing crashes in
+        /// iOS versions previous to 13.0
+        /// </summary>
+        /// <param name="manager">The manager to use when adding the Sign In With Apple capability.</param>
+        public static void AddSignInWithAppleWithCompatibility(this ProjectCapabilityManager manager)
         {
             var managerType = typeof(ProjectCapabilityManager);
             var capabilityTypeType = typeof(PBXCapabilityType);

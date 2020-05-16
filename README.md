@@ -173,7 +173,8 @@ public static class SignInWithApplePostprocessor
 #endif
         
         // Adds required Entitlements entry, and framework programatically
-        manager.AddSignInWithApple();
+        // using extension method provided with the plugin.
+        manager.AddSignInWithAppleWithCompatibility();
         
         manager.WriteToFile();
     }
