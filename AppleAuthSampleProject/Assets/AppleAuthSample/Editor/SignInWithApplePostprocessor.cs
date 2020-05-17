@@ -22,11 +22,13 @@ namespace AppleAuthSample.Editor
             var project = new PBXProject();
             project.ReadFromString(System.IO.File.ReadAllText(projectPath));
             var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+            manager.WriteToFile();
 #else
             var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-#endif
             manager.AddSignInWithAppleWithCompatibility();
             manager.WriteToFile();
+#endif
         }
     }
 }

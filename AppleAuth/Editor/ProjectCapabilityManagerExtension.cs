@@ -18,8 +18,9 @@ namespace AppleAuth.Editor
         /// In particular, adds the AuthenticationServices.framework as an Optional framework, preventing crashes in
         /// iOS versions previous to 13.0
         /// </summary>
-        /// <param name="manager">The manager to use when adding the Sign In With Apple capability.</param>
-        public static void AddSignInWithAppleWithCompatibility(this ProjectCapabilityManager manager)
+        /// <param name="manager">The manager for the main target to use when adding the Sign In With Apple capability.</param>
+        /// <param name="unityFrameworkTargetGuid">The GUID for the UnityFramework target. If null, it will use the main target GUID.</param>
+        public static void AddSignInWithAppleWithCompatibility(this ProjectCapabilityManager manager, string unityFrameworkTargetGuid = null)
         {
             var managerType = typeof(ProjectCapabilityManager);
             var capabilityTypeType = typeof(PBXCapabilityType);
@@ -50,10 +51,12 @@ namespace AppleAuth.Editor
             var project = projectField.GetValue(manager) as PBXProject;
             if (project != null)
             {
-                var targetGuid = targetGuidField.GetValue(manager) as string;
-                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.signin", true, AuthenticationServicesFramework, true }) as PBXCapabilityType;
-                project.AddCapability(targetGuid, capabilityType, entitlementFilePath, false);
-                project.AddFrameworkToProject(targetGuid, AuthenticationServicesFramework, true);
+                var mainTargetGuid = targetGuidField.GetValue(manager) as string;
+                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.developer.applesignin.custom", true, string.Empty, true }) as PBXCapabilityType;
+
+                var targetGuidToAddFramework = unityFrameworkTargetGuid ?? mainTargetGuid;
+                project.AddFrameworkToProject(targetGuidToAddFramework, AuthenticationServicesFramework, true);
+                project.AddCapability(mainTargetGuid, capabilityType, entitlementFilePath, false);
             }
         }
     }

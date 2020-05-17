@@ -161,22 +161,16 @@ public static class SignInWithApplePostprocessor
         
         // Adds entitlement depending on the Unity version used
 #if UNITY_2019_3_OR_NEWER
-        
-        PBXProject project = new PBXProject();
-        project.ReadFromString(File.ReadAllText(projectPath));
-        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-        
+            var project = new PBXProject();
+            project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+            manager.WriteToFile();
 #else
-        
-        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-        
+            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+            manager.AddSignInWithAppleWithCompatibility();
+            manager.WriteToFile();
 #endif
-        
-        // Adds required Entitlements entry, and framework programatically
-        // using extension method provided with the plugin.
-        manager.AddSignInWithAppleWithCompatibility();
-        
-        manager.WriteToFile();
     }
 }
 ```
