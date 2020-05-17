@@ -143,7 +143,7 @@ This plugin **provides an extension method** for `ProjectCapabilityManager` ([do
 
 Simply create a Post Processing build script ([more info](https://docs.unity3d.com/ScriptReference/Callbacks.PostProcessBuildAttribute.html)) that performs the call. If you already have a post process build script, it should be simple to add to your code.
 
-The provided extension method is `AddSignInWithApple`. No arguments are required.
+The provided extension method is `AddSignInWithAppleWithCompatibility`. It accepts an optional argument for Unity 2019.3 to indicate the UnityFramework target Guid.
 
 Sample code:
 ```csharp
