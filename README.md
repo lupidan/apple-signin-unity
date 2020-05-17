@@ -179,10 +179,10 @@ public static class SignInWithApplePostprocessor
 
 The other option is to manually setup all the entitlements in our Xcode project. Note that when making an iOS Build from Unity into the same folder, if you choose the option to overwrite, you will need to perform the Manual setup again.
 
-1. In your generated Xcode project. Select your product and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
+1. In your generated Xcode project. Select the main app Unity-iPhone target and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
 
 <p align="center">
-    <a href="./Img/AddEntitlement.png"><img src="./Img/AddEntitlement.png"/></a><a href="./Img/AddEntitlementList.png"><img src="./Img/AddEntitlementList.png"/></a>
+    <a href="./Img/AddEntitlements.png"><img src="./Img/AddEntitlements.png" alt="Add Entitlements" width="400"/></a>
 </p>
 
 
@@ -192,10 +192,15 @@ The other option is to manually setup all the entitlements in our Xcode project.
     <a href="./Img/EntitlementsDetail.png"><img src="./Img/EntitlementsDetail.png"/></a>
 </p>
 
-3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`
+3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`.
+
+    For **Unity 2019.3** onwards, add it to the UnityFramework target
+
+    For **previous Unity versions**, add it to the main Unity-iPhone target
 
 <p align="center">
-    <a href="./Img/FrameworksDetail.png"><img src="./Img/FrameworksDetail.png"/></a>
+    <a href="./Img/AddFramework20193.png"><img src="./Img/AddFramework20193.png" alt="Add Framework 2019.3" width="400"/></a>
+    <a href="./Img/AddFrameworkPrevious.png"><img src="./Img/AddFrameworkPrevious.png" alt="Add Framework Previous versions" width="400"/></a>
 </p>
 
 ### Enabling Apple capability
