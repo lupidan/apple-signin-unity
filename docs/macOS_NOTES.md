@@ -95,7 +95,7 @@ App ID: `ABC123DEF4.com.mycompany.mygame`
 
 **Step 4)** Prepare an entitlements file. For our case, this is the entitlements file that works:
 
-Entitlements file: `Sign_In_With_Apple_Tests.entilements`
+Entitlements file: `Sign_In_With_Apple_Tests.entitlements`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -126,37 +126,39 @@ Provision profile file: `Sign_In_With_Apple_Tests_Development.provisionprofile`
  
  **Step 6)** Codesign script
  
+ 
+ 
  ```console
- # Delete .meta files left by Unity in all the elements in the Plugins folder
- find ./AppleAuthSampleProject.app/Contents/Plugins/ -name "*.meta" -print0 | xargs -I {} -0 rm -v "{}"
- 
- # Verify architecture
- lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib -verify_arch arm64e
- lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib -verify_arch arm64e
- lipo ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib -verify_arch arm64e
- lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib -verify_arch arm64e
- lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib -verify_arch arm64e
- lipo ./AppleAuthSampleProject.app/Contents/Plugins/AppleAuthManager.bundle/Contents/MacOS/AppleAuthManager -verify_arch arm64e
- lipo ./AppleAuthSampleProject.app/Contents/MacOS/AppleAuthSampleProject -verify_arch arm64e
- 
- # Clears extended attributes recursively
- xattr -crs ./AppleAuthSampleProject.app
- 
- # Sign all the elements
- # Only sign with entitlements the .app file
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Plugins/AppleAuthManager.bundle
- codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" --entitlements ./Sign_In_With_Apple_Tests.entilements ./AppleAuthSampleProject.app
- 
- # Finally, copy provision profile
- cp ./Sign_In_With_Apple_Tests_Development.provisionprofile ./AppleAuthSampleProject.app/Contents/embedded.provisionprofile
- 
- # Open the app
- open ./AppleAuthSampleProject.app
+# Delete .meta files left by Unity in all the elements in the Plugins folder
+find ./AppleAuthSampleProject.app/Contents/Plugins/ -name "*.meta" -print0 | xargs -I {} -0 rm -v "{}"
+
+# Verify architecture
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib -verify_arch arm64e
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib -verify_arch arm64e
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib -verify_arch arm64e
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib -verify_arch arm64e
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib -verify_arch arm64e
+lipo ./AppleAuthSampleProject.app/Contents/Plugins/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager -verify_arch arm64e
+lipo ./AppleAuthSampleProject.app/Contents/MacOS/AppleAuthSampleProject -verify_arch arm64e
+
+# Clears extended attributes recursively
+xattr -crs ./AppleAuthSampleProject.app
+
+# Sign all the elements
+# Only sign with entitlements the .app file
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" ./AppleAuthSampleProject.app/Contents/Plugins/MacOSAppleAuthManager.bundle
+codesign -vvv --force --timestamp --options runtime -s "Apple Development: My Full Name (ABCDEFGHIJ)" --entitlements ./Sign_In_With_Apple_Tests.entitlements ./AppleAuthSampleProject.app
+
+# Finally, copy provision profile
+cp ./Sign_In_With_Apple_Tests_Development.provisionprofile ./AppleAuthSampleProject.app/Contents/embedded.provisionprofile
+
+# Open the app
+open ./AppleAuthSampleProject.app
  ```
 
  **Step 7)** [OPTIONAL] Remove extended attributes when distributing to other machines.
