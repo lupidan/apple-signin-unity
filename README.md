@@ -10,6 +10,7 @@ by **Daniel Lupiañez Casares**
 [CHANGELOG](./CHANGELOG.md)
 
 ![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
+[![openupm](https://img.shields.io/npm/v/com.lupidan.apple-signin-unity?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.lupidan.apple-signin-unity/)
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
@@ -30,13 +31,16 @@ by **Daniel Lupiañez Casares**
   * [Features](#features)
     + [Native Sign in with Apple](#native-sign-in-with-apple)
   * [Installation](#installation)
-    + [Option 1: Unity Package manager](#option-1-unity-package-manager)
-    + [Option 2: Unity Package file](#option-2-unity-package-file)
-  * [Plugin setup](#plugin-setup)
-    + [Option 1)  Programmatic setup with a Script](#option-1--programmatic-setup-with-a-script)
-    + [Option 2) Manual entitlements setup](#option-2-manual-entitlements-setup)
+    + [Unity Package Manager](#unity-package-manager)
+        - [Install via Git URL](#install-via-git-url)
+        - [Install via OpenUPM](#install-via-openupm)
+    + [Unity Package File](#unity-package-file)
+  * [Plugin setup (iOS/tvOS)](#plugin-setup-iostvos)
+    + [Programmatic setup with a Script](#programmatic-setup-with-a-script)
+    + [Manual entitlements setup](#manual-entitlements-setup)
     + [Enabling Apple capability](#enabling-apple-capability)
     + [Final notes regarding setup](#final-notes-regarding-setup)
+  * [Plugin setup (macOS)](#plugin-setup-macos)
   * [Implement Sign in With Apple](#implement-sign-in-with-apple)
     + [Initializing](#initializing)
     + [Perform Sign In With Apple](#perform-sign-in-with-apple)
@@ -56,30 +60,42 @@ by **Daniel Lupiañez Casares**
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
 
-The main purpose for this plugin is to expose iOS newest feature, Sign in with Apple, to the Unity game engine.
+This plugin supports the following platforms:
+* **iOS**
+* **macOS** ([NOTES](./docs/macOS_NOTES.md))
+* **tvOS** (Experimental)
 
-On WWDC19, Apple announced **Sign in with Apple**, and on top of that, they announced that every iOS Application
+The main purpose for this plugin is to expose Apple's newest feature, Sign in with Apple, to the Unity game engine.
+
+On WWDC19, Apple announced **Sign in with Apple**, and on top of that, they announced that every iOS/tvOS/macOS Application
 that used any kind of Third party sign-ins (like *Sign in with Facebook*, or *Sign in with Google*), will have to support
 Sign in with Apple in order to get approved for the App Store, making it **mandatory**.
 
 ## Features
 ### Native Sign in with Apple
+- Support for iOS
+- Support for macOS ([NOTES](./docs/macOS_NOTES.md))
+- Support for tvOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
 - Supports Quick login (including iTunes Keychain credentials).
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
 - Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
-- Support for tvOS (Experimental)
+
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
 - Customizable serialization (uses Unity default serialization, but you can add your own implementation)
 
 ## Installation
 
-> Current stable version is v1.1.0
+> Current stable version is v1.2.0
 
-### Option 1: Unity Package manager
+There are two options available to install this plugin. Either using the Unity Package Manager, or the traditional `.unitypackage` file.
+
+### Unity Package Manager
+
+#### Install via Git URL
 
 Available starting from Unity 2018.3.
 
@@ -87,18 +103,26 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.1.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.2.0",
 }
 ```
 
 If you want to use a specific [release](https://github.com/lupidan/apple-signin-unity/releases) in your code, just add `#release` at the end, like so:
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.0.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.1.0",
 }
 ```
 
-### Option 2: Unity Package file
+#### Install via OpenUPM
+
+The package is available on the [openupm registry](https://openupm.com). You can install it via [openupm-cli](https://github.com/openupm/openupm-cli).
+
+```
+openupm add com.lupidan.apple-signin-unity
+```
+
+### Unity Package File
 1. Download the most recent Unity package release [here](https://github.com/lupidan/apple-signin-unity/releases)
 2. Import the downloaded Unity package in your app. There are two main folders:
 
@@ -107,11 +131,11 @@ If you want to use a specific [release](https://github.com/lupidan/apple-signin-
 
 ![Import detail](./Img/ImportPlugin.png)
 
-## Plugin setup
+## Plugin setup (iOS/tvOS)
 
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project. Two different options are available to set up the entitlements required to enable Apple ID authentication with the iOS SDK.
 
-### Option 1)  Programmatic setup with a Script
+### Programmatic setup with a Script
 
 *RECOMMENDED*
 
@@ -135,32 +159,32 @@ public static class SignInWithApplePostprocessor
 
         var projectPath = PBXProject.GetPBXProjectPath(path);
         
+        // Adds entitlement depending on the Unity version used
 #if UNITY_2019_3_OR_NEWER
-        
-        PBXProject project = new PBXProject();
-        project.ReadFromString(File.ReadAllText(projectPath));
-        
-        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-        
+            var project = new PBXProject();
+            project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+            manager.WriteToFile();
 #else
-        
-        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-        
+            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+            manager.AddSignInWithAppleWithCompatibility();
+            manager.WriteToFile();
 #endif
-        
-        // Adds required Entitlements entry, and framework programatically
-        manager.AddSignInWithApple();
-        
-        manager.WriteToFile();
     }
 }
 ```
 
-### Option 2) Manual entitlements setup
+### Manual entitlements setup
 
 The other option is to manually setup all the entitlements in our Xcode project. Note that when making an iOS Build from Unity into the same folder, if you choose the option to overwrite, you will need to perform the Manual setup again.
 
-1. In your generated Xcode project. Select your product and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
+1. In your generated Xcode project. Select the main app Unity-iPhone target and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
+
+<p align="center">
+    <a href="./Img/AddEntitlements.png"><img src="./Img/AddEntitlements.png" alt="Add Entitlements" width="400"/></a>
+</p>
+
 
 2. This should have added an Entitlements file to your project. Locate it on the project explorer (it should be a file with the extension `.entitlements`). Inside it you should see an entry like this one:
 
@@ -168,10 +192,15 @@ The other option is to manually setup all the entitlements in our Xcode project.
     <a href="./Img/EntitlementsDetail.png"><img src="./Img/EntitlementsDetail.png"/></a>
 </p>
 
-3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`
+3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`.
+
+    For **Unity 2019.3** onwards, add it to the UnityFramework target
+
+    For **previous Unity versions**, add it to the main Unity-iPhone target
 
 <p align="center">
-    <a href="./Img/FrameworksDetail.png"><img src="./Img/FrameworksDetail.png"/></a>
+    <a href="./Img/AddFramework20193.png"><img src="./Img/AddFramework20193.png" alt="Add Framework 2019.3" width="400"/></a>
+    <a href="./Img/AddFrameworkPrevious.png"><img src="./Img/AddFrameworkPrevious.png" alt="Add Framework Previous versions" width="400"/></a>
 </p>
 
 ### Enabling Apple capability
@@ -186,6 +215,13 @@ The `AuthenticationServices.framework` should be added as Optional, to support p
 
 The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
 
+## Plugin setup (macOS)
+
+An unsigned precompiled `.bundle` file is available. It will be automatically included in your macOS builds.
+
+The Xcode project with the source code to generate a new bundle file is available at `MacOSAppleAuthManager/MacOSAppleAuthManager.xcodeproj`
+
+To support the feature, the app needs to be codesigned correctly, including the required entitlements. For more information regarding macOS codesign, please follow this [link](./docs/macOS_NOTES.md).
 
 ## Implement Sign in With Apple
 
@@ -362,6 +398,8 @@ var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce);
 ```
 
 This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
+
+Some tentative guide is available for Firebase integration [here](./docs/Firebase_NOTES.md)
 
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)

@@ -1,9 +1,14 @@
 {
     "name": "com.lupidan.apple-signin-unity",
     "displayName": "Sign in with Apple",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "unity": "2018.3",
-    "description": "Author: Daniel Lupiañez Casares\nProvides a Unity bridge to use the native Sign In With Apple method on iOS/iPadOS/tvOS devices",
+    "description": "Provides a Unity bridge to use the native Sign In With Apple method on iOS/iPadOS/tvOS/macOS devices",
+    "author": {
+        "name": "Daniel Lupiañez Casares",
+        "email": "daniel.lupianez.casares@gmail.com",
+        "url": "https://github.com/lupidan"
+    },
     "keywords": [
         "apple",
         "iphone",
@@ -11,6 +16,7 @@
         "ipad",
         "ipados",
         "tvos",
+        "macOS",
         "signin",
         "oauth",
         "native",
@@ -27,6 +33,8 @@
         "/package.json",
         "/package.json.meta",
         "/AppleAuth",
-        "/AppleAuth.meta"
+        "/AppleAuth.meta",
+        "/docs",
+        "/docs.meta"
     ]
 }
