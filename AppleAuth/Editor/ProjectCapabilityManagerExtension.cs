@@ -21,7 +21,6 @@ namespace AppleAuth.Editor
         /// <param name="manager">The manager for the main target to use when adding the Sign In With Apple capability.</param>
         /// <param name="unityFrameworkTargetGuid">The GUID for the UnityFramework target. If null, it will use the main target GUID.</param>
         public static void AddSignInWithAppleWithCompatibility(this ProjectCapabilityManager manager, string unityFrameworkTargetGuid = null)
-
         {
             var managerType = typeof(ProjectCapabilityManager);
             var capabilityTypeType = typeof(PBXCapabilityType);
@@ -53,9 +52,11 @@ namespace AppleAuth.Editor
             if (project != null)
             {
                 var mainTargetGuid = targetGuidField.GetValue(manager) as string;
-                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.developer.applesignin.custom", true, null, false }) as PBXCapabilityType;
-                project.AddFrameworkToProject(unityFrameworkTargetGuid ?? mainTargetGuid, AuthenticationServicesFramework, true);
-                project.AddCapability(mainTargetGuid, capabilityType, entitlementFilePath);
+                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.developer.applesignin.custom", true, string.Empty, true }) as PBXCapabilityType;
+
+                var targetGuidToAddFramework = unityFrameworkTargetGuid ?? mainTargetGuid;
+                project.AddFrameworkToProject(targetGuidToAddFramework, AuthenticationServicesFramework, true);
+                project.AddCapability(mainTargetGuid, capabilityType, entitlementFilePath, false);
             }
         }
     }
