@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.0] 2020-06-16
+## [1.2.0] - 2020-05-16
 ### Added
 - Updates native code to support macOS, including NSPersonNameComponents support.
 - Adds Xcode project `MacOSAppleAuthManager/MacOSAppleAuthManager.xcodeproj` to generate `MacOSAppleAuthManager.bundle` reusing existing iOS objective-c files. Bundle identifier is `com.lupidan.MacOSAppleAuthManager`. Minimum macOS version supported is 10.9.
