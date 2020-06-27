@@ -7,17 +7,22 @@
 
 by **Daniel Lupiañez Casares**
 
-[CHANGELOG](./CHANGELOG.md)
 
-![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)
-[![openupm](https://img.shields.io/npm/v/com.lupidan.apple-signin-unity?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.lupidan.apple-signin-unity/)
-[![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://gitHub.com/lupidan/apple-signin-unity/stargazers/)
-[![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
+[![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)](https://github.com/lupidan/apple-signin-unity/releases)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
+[![CHANGELOG](https://img.shields.io/badge/-CHANGELOG-informational)](https://github.com/lupidan/apple-signin-unity/blob/master/CHANGELOG.md)
 
-[![Donate](https://img.shields.io/static/v1.svg?label=Donate&message=%20%40lupidan&color=red&logo=paypal&style=popout)](https://paypal.me/lupidan)
+
+[![openupm](https://img.shields.io/npm/v/com.lupidan.apple-signin-unity?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.lupidan.apple-signin-unity/)
+
+
+[![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://github.com/lupidan/apple-signin-unity/stargazers)
+[![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
+
+
 [![Twitter](https://img.shields.io/twitter/follow/lupi_dan.svg?style=social)](https://twitter.com/intent/user?screen_name=lupi_dan)
 
+[![Donate](https://www.paypalobjects.com/en_US/ES/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G96LW2DJUTHJJ&source=url)
 
 <p align="center">
     <a href="./Img/SCRN01.png"><img src="./Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
@@ -143,7 +148,7 @@ This plugin **provides an extension method** for `ProjectCapabilityManager` ([do
 
 Simply create a Post Processing build script ([more info](https://docs.unity3d.com/ScriptReference/Callbacks.PostProcessBuildAttribute.html)) that performs the call. If you already have a post process build script, it should be simple to add to your code.
 
-The provided extension method is `AddSignInWithApple`. No arguments are required.
+The provided extension method is `AddSignInWithAppleWithCompatibility`. It accepts an optional argument for Unity 2019.3 to indicate the UnityFramework target Guid.
 
 Sample code:
 ```csharp

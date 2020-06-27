@@ -51,7 +51,7 @@ private static string GenerateRandomString(int length)
     while (remainingLength > 0)
     {
         var randomNumbers = new List<int>(16);
-        for (var randomNumberCount = 0; randomNumberCount < randomNumbers.Count; randomNumberCount++)
+        for (var randomNumberCount = 0; randomNumberCount < 16; randomNumberCount++)
         {
             cryptographicallySecureRandomNumberGenerator.GetBytes(randomNumberHolder);
             randomNumbers.Add(randomNumberHolder[0]);
