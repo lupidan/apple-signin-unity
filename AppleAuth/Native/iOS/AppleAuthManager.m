@@ -364,13 +364,13 @@ void AppleAuth_GetCredentialState(uint requestId, const char* userId)
     [[AppleAuthManager sharedManager] getCredentialStateForUser:[NSString stringWithUTF8String:userId] withRequestId:requestId];
 }
 
-void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr)
+void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr, const char* _Nullable stateCStr)
 {
     NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
     [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options andNonce:nonce];
 }
 
-void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr)
+void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr)
 {
     NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
     [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce];
