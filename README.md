@@ -86,7 +86,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Supports Quick login (including iTunes Keychain credentials).
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
-- Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
+- Supports setting custom Nonce and State for authorization requests when Signing In, and attempting a Quick Login.
 
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
