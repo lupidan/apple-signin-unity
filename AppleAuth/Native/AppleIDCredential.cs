@@ -16,9 +16,8 @@ namespace AppleAuth.Native
         public bool _hasFullName;
         public FullPersonName _fullName;
         public string _email;
-        public int _realUserStatusRaw;
+        public int _realUserStatus;
 
-        private RealUserStatus _realUserStatus;
         private byte[] _identityToken;
         private byte[] _authorizationCode;
 
@@ -29,7 +28,7 @@ namespace AppleAuth.Native
         public string[] AuthorizedScopes { get { return this._authorizedScopes; } }
         public IPersonName FullName { get { return this._fullName; } }
         public string Email { get { return this._email; } }
-        public RealUserStatus RealUserStatus { get { return this._realUserStatus; } }
+        public RealUserStatus RealUserStatus { get { return (RealUserStatus) this._realUserStatus; } }
         
         public void OnBeforeSerialize() { }
 
@@ -49,7 +48,6 @@ namespace AppleAuth.Native
 
             this._identityToken = SerializationTools.GetBytesFromBase64String(this._base64IdentityToken, "_identityToken");
             this._authorizationCode = SerializationTools.GetBytesFromBase64String(this._base64AuthorizationCode, "_authorizationCode");
-            this._realUserStatus = (RealUserStatus) this._realUserStatusRaw;
         }
     }
 }
