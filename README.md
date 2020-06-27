@@ -52,7 +52,7 @@ by **Daniel Lupiañez Casares**
     + [Quick login](#quick-login)
     + [Checking credential status](#checking-credential-status)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
-    + [Nonce support for Authorization Requests](#nonce-support-for-authorization-requests)
+    + [Nonce and State support for Authorization Requests](#nonce-and-state-support-for-authorization-requests)
   * [FAQ](#faq)
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
@@ -383,26 +383,30 @@ To clear the callback, and stop listening to notifications, simply set it to `nu
 this.appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
 
-### Nonce support for Authorization Requests
+### Nonce and State support for Authorization Requests
 
 Both methods, `LoginWithAppleId` and `QuickLogin`, use a custom structure containing arguments for the authorization request.
 
-An optional `Nonce` can be set for both structures when constructing them:
+An optional `Nonce` and an optional `State` can be set for both structures when constructing them:
 
 ```csharp
 // Your custom Nonce string
-var yourCustomNonce = "YOURCUSTOMNONCEFORTHEAUTHORIZATIONREQUEST";
+var yourCustomNonce = "RANDOM_NONCE_FORTHEAUTHORIZATIONREQUEST";
+var yourCustomState = "RANDOM_STATE_FORTHEAUTHORIZATIONREQUEST";
 
 // Arguments for a normal Sign In With Apple Request
 var loginArgs = new AppleAuthLoginArgs(
     LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
-    yourCustomNonce);
+    yourCustomNonce,
+    yourCustomState);
 
 // Arguments for a Quick Login
-var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce);
+var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce, yourCustomState);
 ```
 
-This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
+The `State` is returned later in the received Apple ID credential, allowing you to validate that the request is valid in your device.
+
+The `Nonce` is embedded in the IdentityToken included in the received Apple ID credential. Useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
 Some tentative guide is available for Firebase integration [here](./docs/Firebase_NOTES.md)
 
