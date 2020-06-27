@@ -404,11 +404,13 @@ var loginArgs = new AppleAuthLoginArgs(
 var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce, yourCustomState);
 ```
 
-The `State` is returned later in the received Apple ID credential, allowing you to validate that the request is valid in your device.
+The `State` is returned later in the received Apple ID credential, allowing you to validate that the request was generated in your device.
 
-The `Nonce` is embedded in the IdentityToken included in the received Apple ID credential. Useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
+The `Nonce` is embedded in the IdentityToken, included in the received Apple ID credential. It is important to generate a new random `Nonce` for every request. This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
 Some tentative guide is available for Firebase integration [here](./docs/Firebase_NOTES.md)
+
+More info about State and Nonce can be found in [this WWDC 2020 session](https://developer.apple.com/videos/play/wwdc2020/10173/) (check at 2m35s)
 
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)
