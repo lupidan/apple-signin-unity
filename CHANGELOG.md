@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Adds support to set the `State` when making a Login or a Quick Login request to sign in with Apple. 
+- Improves deserialization for the data. 
 
 ## [1.2.0] - 2020-05-16
 ### Added
