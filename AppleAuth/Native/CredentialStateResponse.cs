@@ -11,8 +11,10 @@ namespace AppleAuth.Native
         public bool _success;
         public bool _hasCredentialState;
         public bool _hasError;
-        public CredentialState _credentialState;
+        public int _credentialStateRaw;
         public AppleError _error;
+
+        private CredentialState _credentialState;
 
         public bool Success { get { return this._success; } }
         public CredentialState CredentialState { get { return this._credentialState; } }
@@ -22,8 +24,10 @@ namespace AppleAuth.Native
 
         public void OnAfterDeserialize()
         {
-            SerializationTools.FixSerializationForObject(ref this._credentialState, this._hasCredentialState);
+            SerializationTools.FixSerializationForObject(ref this._credentialStateRaw, this._hasCredentialState);
             SerializationTools.FixSerializationForObject(ref this._error, this._hasError);
+
+            this._credentialState = (CredentialState) this._credentialStateRaw;
         }
     }
 }
