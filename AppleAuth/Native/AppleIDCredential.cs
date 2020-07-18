@@ -6,7 +6,7 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class AppleIDCredential : IAppleIDCredential, ISerializationCallbackReceiver
+    internal class AppleIDCredential : IAppleIDCredential, ISerializationCallbackReceiver
     {
         public string _base64IdentityToken;
         public string _base64AuthorizationCode;

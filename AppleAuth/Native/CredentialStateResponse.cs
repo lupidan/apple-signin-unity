@@ -6,7 +6,7 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
+    internal class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
     {
         public bool _success;
         public bool _hasCredentialState;

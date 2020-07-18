@@ -4,7 +4,7 @@ using System;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class FullPersonName : PersonName, IPersonName
+    internal class FullPersonName : PersonName, IPersonName
     {
         public bool _hasPhoneticRepresentation;
         public PersonName _phoneticRepresentation;

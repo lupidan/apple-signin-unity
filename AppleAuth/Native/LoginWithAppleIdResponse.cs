@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class LoginWithAppleIdResponse : ILoginWithAppleIdResponse, ISerializationCallbackReceiver
+    internal class LoginWithAppleIdResponse : ILoginWithAppleIdResponse, ISerializationCallbackReceiver
     {
         public bool _success;
         public bool _hasAppleIdCredential;
