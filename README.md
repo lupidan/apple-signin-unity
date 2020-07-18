@@ -295,9 +295,9 @@ this.appleAuthManager.LoginWithAppleId(
 
             // Authorization code
             var authorizationCode = Encoding.UTF8.GetString(
-                    appleIdCredential.AuthorizationCode,
-                    0,
-                    appleIdCredential.AuthorizationCode.Length);
+                appleIdCredential.AuthorizationCode,
+                0,
+                appleIdCredential.AuthorizationCode.Length);
 
             // And now you have all the information to create/login a user in your system
         }
