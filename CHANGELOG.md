@@ -3,7 +3,10 @@
 ## [Unreleased]
 ### Added
 - Adds support to set the `State` when making a Login or a Quick Login request to sign in with Apple. 
-- Improves deserialization for the data. 
+- Improves deserialization for the data.
+
+### Changed
+- Makes the parsed classes `internal` to force the usage of the interfaces.
 
 ## [1.2.0] - 2020-05-16
 ### Added

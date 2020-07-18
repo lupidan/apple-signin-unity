@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class AppleError : IAppleError, ISerializationCallbackReceiver
+    internal class AppleError : IAppleError, ISerializationCallbackReceiver
     {
         public int _code;
         public string _domain;
