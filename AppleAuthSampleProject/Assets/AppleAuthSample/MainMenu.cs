@@ -180,7 +180,8 @@ public class MainMenu : MonoBehaviour
             error =>
             {
                 // If Quick Login fails, we should show the normal sign in with apple menu, to allow for a normal Sign In with apple
-                Debug.LogWarning("Quick Login Failed " + error.ToString());
+                var authorizationErrorCode = error.GetAuthorizationErrorCode();
+                Debug.LogWarning("Quick Login Failed " + authorizationErrorCode.ToString() + " " + error.ToString());
                 this.SetupLoginMenuForSignInWithApple();
             });
     }
@@ -199,7 +200,8 @@ public class MainMenu : MonoBehaviour
             },
             error =>
             {
-                Debug.LogWarning("Sign in with Apple failed " + error.ToString());
+                var authorizationErrorCode = error.GetAuthorizationErrorCode();
+                Debug.LogWarning("Sign in with Apple failed " + authorizationErrorCode.ToString() + " " + error.ToString());
                 this.SetupLoginMenuForSignInWithApple();
             });
     }
