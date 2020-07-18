@@ -7,12 +7,12 @@ namespace AppleAuth.Native
     [Serializable]
     internal class PersonName : IPersonName, ISerializationCallbackReceiver
     {
-        public string _namePrefix;
-        public string _givenName;
-        public string _middleName;
-        public string _familyName;
-        public string _nameSuffix;
-        public string _nickname;
+        public string _namePrefix = null;
+        public string _givenName = null;
+        public string _middleName = null;
+        public string _familyName = null;
+        public string _nameSuffix = null;
+        public string _nickname = null;
         
         public string NamePrefix { get { return _namePrefix; } }
         public string GivenName { get { return _givenName; } }

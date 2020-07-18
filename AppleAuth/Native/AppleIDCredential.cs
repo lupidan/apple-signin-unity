@@ -8,15 +8,15 @@ namespace AppleAuth.Native
     [Serializable]
     internal class AppleIDCredential : IAppleIDCredential, ISerializationCallbackReceiver
     {
-        public string _base64IdentityToken;
-        public string _base64AuthorizationCode;
-        public string _state;
-        public string _user;
-        public string[] _authorizedScopes;
-        public bool _hasFullName;
-        public FullPersonName _fullName;
-        public string _email;
-        public int _realUserStatus;
+        public string _base64IdentityToken = null;
+        public string _base64AuthorizationCode = null;
+        public string _state = null;
+        public string _user = null;
+        public string[] _authorizedScopes = null;
+        public bool _hasFullName = false;
+        public FullPersonName _fullName = null;
+        public string _email = null;
+        public int _realUserStatus = 0;
 
         private byte[] _identityToken;
         private byte[] _authorizationCode;
