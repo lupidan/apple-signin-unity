@@ -50,5 +50,6 @@ void AppleAuth_GetCredentialState(uint requestId, const char* userId);
 void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr, const char* _Nullable stateCStr);
 void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr);
 void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId);
+void AppleAuth_LogMessage(const char* _Nullable messageCStr);
 
 NS_ASSUME_NONNULL_END
