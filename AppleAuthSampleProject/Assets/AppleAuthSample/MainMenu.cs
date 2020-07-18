@@ -1,5 +1,6 @@
 ﻿using AppleAuth;
 using AppleAuth.Enums;
+using AppleAuth.Extensions;
 using AppleAuth.Interfaces;
 using AppleAuth.Native;
 using UnityEngine;
@@ -152,7 +153,8 @@ public class MainMenu : MonoBehaviour
             },
             error =>
             {
-                Debug.LogWarning("Error while trying to get credential state " + error.ToString());
+                var authorizationErrorCode = error.GetAuthorizationErrorCode();
+                Debug.LogWarning("Error while trying to get credential state " + authorizationErrorCode.ToString() + " " + error.ToString());
                 this.SetupLoginMenuForSignInWithApple();
             });
     }

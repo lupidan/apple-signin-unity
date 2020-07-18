@@ -7,6 +7,8 @@
 
 ### Changed
 - Makes the parsed classes `internal` to force the usage of the interfaces.
+- Minor changes for lower C# compatibility
+- `GetAuthorizationErrorCode` no longer returns a nullable reference type. If the error can't be obtained, it returns `Unknown` instead.
 
 ## [1.2.0] - 2020-05-16
 ### Added
