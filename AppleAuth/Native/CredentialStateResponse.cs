@@ -8,11 +8,11 @@ namespace AppleAuth.Native
     [Serializable]
     internal class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
     {
-        public bool _success;
-        public bool _hasCredentialState;
-        public bool _hasError;
-        public int _credentialState;
-        public AppleError _error;
+        public bool _success = false;
+        public bool _hasCredentialState = false;
+        public bool _hasError = false;
+        public int _credentialState = 0;
+        public AppleError _error = null;
 
         public bool Success { get { return this._success; } }
         public CredentialState CredentialState { get { return (CredentialState) this._credentialState; } }

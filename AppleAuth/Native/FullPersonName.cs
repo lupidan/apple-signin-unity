@@ -6,8 +6,8 @@ namespace AppleAuth.Native
     [Serializable]
     internal class FullPersonName : PersonName, IPersonName
     {
-        public bool _hasPhoneticRepresentation;
-        public PersonName _phoneticRepresentation;
+        public bool _hasPhoneticRepresentation = false;
+        public PersonName _phoneticRepresentation = null;
 
         public new IPersonName PhoneticRepresentation { get { return _phoneticRepresentation; } }
 

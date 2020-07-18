@@ -312,6 +312,7 @@ this.appleAuthManager.LoginWithAppleId(
     error =>
     {
         // Something went wrong
+        var authorizationErrorCode = error.GetAuthorizationErrorCode();
     });
 ```
 
