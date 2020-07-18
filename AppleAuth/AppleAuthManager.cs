@@ -5,7 +5,6 @@
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
 using System;
-using UnityEngine;
 
 namespace AppleAuth
 {
@@ -14,15 +13,11 @@ namespace AppleAuth
         static AppleAuthManager()
         {
             const string versionMessage = "Using Sign in with Apple Unity Plugin - v1.3.0";
-
-            if (Debug.isDebugBuild)
-            {
-                Debug.Log(versionMessage);
-            }
-            else
-            {
-                Console.WriteLine(versionMessage);
-            }
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            PInvoke.AppleAuth_LogMessage(versionMessage);
+#else
+            UnityEngine.Debug.Log(versionMessage);
+#endif
         }
 
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
@@ -334,6 +329,9 @@ namespace AppleAuth
             
             [System.Runtime.InteropServices.DllImport(DllName)]
             public static extern void AppleAuth_RegisterCredentialsRevokedCallbackId(uint callbackId);
+
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_LogMessage(string messageCStr);
         }
 #endif
     }

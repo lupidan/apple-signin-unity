@@ -384,3 +384,9 @@ void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId)
 {
     [[AppleAuthManager sharedManager] registerCredentialsRevokedCallbackForRequestId:requestId];
 }
+
+void AppleAuth_LogMessage(const char* _Nullable messageCStr)
+{
+    NSString *message = messageCStr != NULL ? [NSString stringWithUTF8String:messageCStr] : nil;
+    NSLog(@"%@", message);
+}
