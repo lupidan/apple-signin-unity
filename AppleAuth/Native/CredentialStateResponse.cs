@@ -6,16 +6,16 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
+    internal class CredentialStateResponse : ICredentialStateResponse, ISerializationCallbackReceiver
     {
-        public bool _success;
-        public bool _hasCredentialState;
-        public bool _hasError;
-        public CredentialState _credentialState;
-        public AppleError _error;
+        public bool _success = false;
+        public bool _hasCredentialState = false;
+        public bool _hasError = false;
+        public int _credentialState = 0;
+        public AppleError _error = null;
 
         public bool Success { get { return this._success; } }
-        public CredentialState CredentialState { get { return this._credentialState; } }
+        public CredentialState CredentialState { get { return (CredentialState) this._credentialState; } }
         public IAppleError Error { get { return this._error; } }
         
         public void OnBeforeSerialize() { }

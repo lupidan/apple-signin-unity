@@ -52,7 +52,7 @@ by **Daniel Lupiañez Casares**
     + [Quick login](#quick-login)
     + [Checking credential status](#checking-credential-status)
     + [Listening to credentials revoked notification](#listening-to-credentials-revoked-notification)
-    + [Nonce support for Authorization Requests](#nonce-support-for-authorization-requests)
+    + [Nonce and State support for Authorization Requests](#nonce-and-state-support-for-authorization-requests)
   * [FAQ](#faq)
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
@@ -86,7 +86,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Supports Quick login (including iTunes Keychain credentials).
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
-- Supports setting custom Nonce for authorization requests when Signing In, and attempting a Quick Login.
+- Supports setting custom Nonce and State for authorization requests when Signing In, and attempting a Quick Login.
 
 - NSError mapping so no details are missing.
 - NSPersonNameComponents support (for ALL different styles).
@@ -94,7 +94,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Installation
 
-> Current stable version is v1.2.0
+> Current stable version is v1.3.0
 
 There are two options available to install this plugin. Either using the Unity Package Manager, or the traditional `.unitypackage` file.
 
@@ -108,14 +108,7 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.2.0",
-}
-```
-
-If you want to use a specific [release](https://github.com/lupidan/apple-signin-unity/releases) in your code, just add `#release` at the end, like so:
-```json
-"dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.1.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.3.0",
 }
 ```
 
@@ -281,13 +274,38 @@ this.appleAuthManager.LoginWithAppleId(
     {
         // Obtained credential, cast it to IAppleIDCredential
         var appleIdCredential = credential as IAppleIDCredential;
-        // You should save the user ID somewhere in the device
-        // And now you have all the information to create/login a user in your system
-        PlayerPrefs.SetString(AppleUserIdKey, credential.User);
+        if (appleIdCredential != null)
+        {
+            // Apple User ID
+            // You should save the user ID somewhere in the device
+            var userId = appleIdCredential.User;
+            PlayerPrefs.SetString(AppleUserIdKey, userId);
+
+            // Email (Received ONLY in the first login)
+            var email = appleIdCredential.Email;
+
+            // Full name (Received ONLY in the first login)
+            var fullName = appleIdCredential.FullName
+
+            // Identity token
+            var identityToken = Encoding.UTF8.GetString(
+                appleIdCredential.IdentityToken,
+                0,
+                appleIdCredential.IdentityToken.Length);
+
+            // Authorization code
+            var authorizationCode = Encoding.UTF8.GetString(
+                appleIdCredential.AuthorizationCode,
+                0,
+                appleIdCredential.AuthorizationCode.Length);
+
+            // And now you have all the information to create/login a user in your system
+        }
     },
     error =>
     {
         // Something went wrong
+        var authorizationErrorCode = error.GetAuthorizationErrorCode();
     });
 ```
 
@@ -383,28 +401,34 @@ To clear the callback, and stop listening to notifications, simply set it to `nu
 this.appleAuthManager.SetCredentialsRevokedCallback(null);
 ```
 
-### Nonce support for Authorization Requests
+### Nonce and State support for Authorization Requests
 
 Both methods, `LoginWithAppleId` and `QuickLogin`, use a custom structure containing arguments for the authorization request.
 
-An optional `Nonce` can be set for both structures when constructing them:
+An optional `Nonce` and an optional `State` can be set for both structures when constructing them:
 
 ```csharp
 // Your custom Nonce string
-var yourCustomNonce = "YOURCUSTOMNONCEFORTHEAUTHORIZATIONREQUEST";
+var yourCustomNonce = "RANDOM_NONCE_FORTHEAUTHORIZATIONREQUEST";
+var yourCustomState = "RANDOM_STATE_FORTHEAUTHORIZATIONREQUEST";
 
 // Arguments for a normal Sign In With Apple Request
 var loginArgs = new AppleAuthLoginArgs(
     LoginOptions.IncludeEmail | LoginOptions.IncludeFullName,
-    yourCustomNonce);
+    yourCustomNonce,
+    yourCustomState);
 
 // Arguments for a Quick Login
-var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce);
+var quickLoginArgs = new AppleAuthQuickLoginArgs(yourCustomNonce, yourCustomState);
 ```
 
-This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
+The `State` is returned later in the received Apple ID credential, allowing you to validate that the request was generated in your device.
+
+The `Nonce` is embedded in the IdentityToken, included in the received Apple ID credential. It is important to generate a new random `Nonce` for every request. This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
 Some tentative guide is available for Firebase integration [here](./docs/Firebase_NOTES.md)
+
+More info about State and Nonce can be found in [this WWDC 2020 session](https://developer.apple.com/videos/play/wwdc2020/10173/) (check at 2m35s)
 
 ## FAQ
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)

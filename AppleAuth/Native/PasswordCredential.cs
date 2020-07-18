@@ -5,10 +5,10 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class PasswordCredential : IPasswordCredential, ISerializationCallbackReceiver
+    internal class PasswordCredential : IPasswordCredential, ISerializationCallbackReceiver
     {
-        public string _user;
-        public string _password;
+        public string _user = null;
+        public string _password = null;
         
         public string User { get { return this._user; } }
         public string Password { get { return this._password; } }

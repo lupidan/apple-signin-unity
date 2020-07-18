@@ -10,6 +10,16 @@ namespace AppleAuth
 {
     public class AppleAuthManager : IAppleAuthManager
     {
+        static AppleAuthManager()
+        {
+            const string versionMessage = "Using Sign in with Apple Unity Plugin - v1.3.0";
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            PInvoke.AppleAuth_LogMessage(versionMessage);
+#else
+            UnityEngine.Debug.Log(versionMessage);
+#endif
+        }
+
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
         private readonly IPayloadDeserializer _payloadDeserializer;
 
@@ -47,6 +57,7 @@ namespace AppleAuth
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var nonce = quickLoginArgs.Nonce;
+            var state = quickLoginArgs.State;
             var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
@@ -60,7 +71,7 @@ namespace AppleAuth
                         successCallback(response.AppleIDCredential);
                 });
 
-            PInvoke.AppleAuth_QuickLogin(requestId, nonce);
+            PInvoke.AppleAuth_QuickLogin(requestId, nonce, state);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
@@ -79,6 +90,7 @@ namespace AppleAuth
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var loginOptions = loginArgs.Options;
             var nonce = loginArgs.Nonce;
+            var state = loginArgs.State;
             var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
@@ -90,7 +102,7 @@ namespace AppleAuth
                         successCallback(response.AppleIDCredential);
                 });
             
-            PInvoke.AppleAuth_LoginWithAppleId(requestId, (int)loginOptions, nonce);
+            PInvoke.AppleAuth_LoginWithAppleId(requestId, (int)loginOptions, nonce, state);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
@@ -310,13 +322,16 @@ namespace AppleAuth
             public static extern void AppleAuth_GetCredentialState(uint requestId, string userId);
 
             [System.Runtime.InteropServices.DllImport(DllName)]
-            public static extern void AppleAuth_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr);
+            public static extern void AppleAuth_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr, string stateCStr);
             
             [System.Runtime.InteropServices.DllImport(DllName)]
-            public static extern void AppleAuth_QuickLogin(uint requestId, string nonceCStr);
+            public static extern void AppleAuth_QuickLogin(uint requestId, string nonceCStr, string stateCStr);
             
             [System.Runtime.InteropServices.DllImport(DllName)]
             public static extern void AppleAuth_RegisterCredentialsRevokedCallbackId(uint callbackId);
+
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_LogMessage(string messageCStr);
         }
 #endif
     }

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] - 2020-07-18
+### Added
+- Adds support to set the `State` when making a Login or a Quick Login request to sign in with Apple. 
+- Improves deserialization for the data.
+
+### Changed
+- Makes the parsed classes `internal` to force the usage of the interfaces.
+- Minor changes for lower C# compatibility
+- `GetAuthorizationErrorCode` no longer returns a nullable reference type. If the error can't be obtained, it returns `Unknown` instead.
+
 ## [1.2.0] - 2020-05-16
 ### Added
 - Updates native code to support macOS, including NSPersonNameComponents support.
@@ -67,6 +77,8 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
+[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/lupidan/apple-signin-unity/compare/v0.4.0...v1.0.0

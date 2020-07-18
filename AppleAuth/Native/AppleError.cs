@@ -5,14 +5,14 @@ using UnityEngine;
 namespace AppleAuth.Native
 {
     [Serializable]
-    public class AppleError : IAppleError, ISerializationCallbackReceiver
+    internal class AppleError : IAppleError, ISerializationCallbackReceiver
     {
-        public int _code;
-        public string _domain;
-        public string _localizedDescription;
-        public string[] _localizedRecoveryOptions;
-        public string _localizedRecoverySuggestion;
-        public string _localizedFailureReason;
+        public int _code = 0;
+        public string _domain = null;
+        public string _localizedDescription = null;
+        public string[] _localizedRecoveryOptions = null;
+        public string _localizedRecoverySuggestion = null;
+        public string _localizedFailureReason = null;
         
         public int Code { get { return this._code; } }
         public string Domain { get { return this._domain; } }
