@@ -40,10 +40,19 @@ public class GameMenuHandler
                 stringBuilder.AppendLine("<b>State:</b> " + appleIdCredential.State);
 
             if (appleIdCredential.IdentityToken != null)
-                stringBuilder.AppendLine("<b>Identity token:</b> " + appleIdCredential.IdentityToken.Length + " bytes");
+            {
+                var identityToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
+                stringBuilder.AppendLine("<b>Identity token (" + appleIdCredential.IdentityToken.Length + " bytes)</b>");
+                stringBuilder.AppendLine(identityToken.Substring(0, 45) + "...");
+            }
 
             if (appleIdCredential.AuthorizationCode != null)
-                stringBuilder.AppendLine("<b>Authorization Code:</b> " + appleIdCredential.AuthorizationCode.Length + " bytes");
+            {
+                var authorizationCodeString = Encoding.UTF8.GetString(appleIdCredential.AuthorizationCode, 0, appleIdCredential.AuthorizationCode.Length);
+                stringBuilder.AppendLine("<b>Authorization Code (" + appleIdCredential.AuthorizationCode.Length + " bytes)</b>");
+                stringBuilder.AppendLine(authorizationCodeString.Substring(0, 45) + "...");
+            }
+
 
             if (appleIdCredential.AuthorizedScopes != null)
                 stringBuilder.AppendLine("<b>Authorized Scopes:</b> " + string.Join(", ", appleIdCredential.AuthorizedScopes));
