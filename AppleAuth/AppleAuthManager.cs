@@ -5,11 +5,26 @@
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
 using System;
+using UnityEngine;
 
 namespace AppleAuth
 {
     public class AppleAuthManager : IAppleAuthManager
     {
+        static AppleAuthManager()
+        {
+            const string versionMessage = "Using Sign in with Apple Unity Plugin - v1.3.0";
+
+            if (Debug.isDebugBuild)
+            {
+                Debug.Log(versionMessage);
+            }
+            else
+            {
+                Console.WriteLine(versionMessage);
+            }
+        }
+
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
         private readonly IPayloadDeserializer _payloadDeserializer;
 
