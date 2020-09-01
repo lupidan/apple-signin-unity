@@ -458,6 +458,16 @@ If a credential was already created, you will only receive a user identifier, so
 
 If you want to test new account scenarios, you need to [revoke](#how-can-i-logout-does-the-plugin-provide-any-logout-option) your app credentials for that Apple ID through the settings menu.
 
+### Is it possible to NOT request the user's email or full name?
+
+Yes! By passing `0` to the `LoginWithAppleId` method the user will not be asked for their email or full name.
+This will skip that entire login step and make it more smooth. It is recommended if the user's email or full name is not used.
+
+Full example:
+```csharp
+appleAuthManager.LoginWithAppleId(0, credential => {}, error =>{});
+```
+
 ### Does the plugin use UnitySendMessage?
 
 No. The plugin uses callbacks in a static context with request identifiers using JSON strings. Callbacks are scheduled inside `AppleAuthManager`, and calling `Update` on it will execute those pending callbacks.
