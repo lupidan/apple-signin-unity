@@ -434,6 +434,7 @@ More info about State and Nonce can be found in [this WWDC 2020 session](https:/
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)
 + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
 + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
++ [Is it possible to NOT request the user's email or full name?](#is-it-possible-to-not-request-the-users-email-or-full-name)
 + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
 + [Why do I need to call Update manually on the AppleAuthManager instance?](#why-do-i-need-to-call-update-manually-on-the-appleAuthManager-instance)
 + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
