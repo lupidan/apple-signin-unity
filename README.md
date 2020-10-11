@@ -57,6 +57,7 @@ by **Daniel Lupiañez Casares**
     + [Does it support landscape orientations?](#does-it-support-landscape-orientations)
     + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
     + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
+    + [Is it possible to NOT request the user's email or full name?](#is-it-possible-to-not-request-the-users-email-or-full-name)
     + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
     + [Why do I need to call Update manually on the AppleAuthManager instance?](#why-do-i-need-to-call-update-manually-on-the-appleAuthManager-instance)
     + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
@@ -434,6 +435,7 @@ More info about State and Nonce can be found in [this WWDC 2020 session](https:/
 + [Does it support landscape orientations](#does-it-support-landscape-orientations)
 + [How can I Logout? Does the plugin provide any Logout option?](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
 + [I am not getting a full name, or an email, even though I am requesting them in the LoginWithAppleId call](#i-am-not-getting-a-full-name-or-an-email-even-though-i-am-requesting-them-in-the-loginwithappleid-call)
++ [Is it possible to NOT request the user's email or full name?](#is-it-possible-to-not-request-the-users-email-or-full-name)
 + [Does the plugin use UnitySendMessage?](#does-the-plugin-use-unitysendmessage)
 + [Why do I need to call Update manually on the AppleAuthManager instance?](#why-do-i-need-to-call-update-manually-on-the-appleAuthManager-instance)
 + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
@@ -457,6 +459,15 @@ This probably means that you already used Sign In with apple at some point. Appl
 If a credential was already created, you will only receive a user identifier, so it will work similarly to a Quick Login.
 
 If you want to test new account scenarios, you need to [revoke](#how-can-i-logout-does-the-plugin-provide-any-logout-option) your app credentials for that Apple ID through the settings menu.
+
+### Is it possible to NOT request the user's email or full name?
+
+Yes! By passing `0` to the `LoginWithAppleId` method the user will not be asked for their email or full name.
+This will skip that entire login step and make it more smooth. It is recommended if the user's email or full name is not used.
+
+```csharp
+appleAuthManager.LoginWithAppleId(0, credential => {}, error =>{});
+```
 
 ### Does the plugin use UnitySendMessage?
 
