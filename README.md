@@ -62,6 +62,7 @@ by **Daniel Lupiañez Casares**
     + [Why do I need to call Update manually on the AppleAuthManager instance?](#why-do-i-need-to-call-update-manually-on-the-appleAuthManager-instance)
     + [What deserialization library does it use by default?](#what-deserialization-library-does-it-use-by-default)
     + [Any way to get a refresh token after the first user authorization?](#any-way-to-get-a-refresh-token-after-the-first-user-authorization)
+    + [I am getting a CFBundleIdentifier Collision error when uploading my app to the macOS App Store](#i-am-getting-a-cfbundleIdentifier-collision-error-when-uploading-my-app-to-the-macos-app-store)
 
 ## Overview
 Sign in with Apple plugin to use with Unity 3D game engine.
@@ -95,7 +96,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Installation
 
-> Current stable version is v1.3.0
+> Current stable version is v1.4.0
 
 There are two options available to install this plugin. Either using the Unity Package Manager, or the traditional `.unitypackage` file.
 
@@ -109,7 +110,7 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.3.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.4.0",
 }
 ```
 
@@ -217,10 +218,32 @@ The provided extension method uses reflection to integrate with the current tool
 ## Plugin setup (macOS)
 
 An unsigned precompiled `.bundle` file is available. It will be automatically included in your macOS builds.
+However that `.bundle` needs to be modified to avoid issues when uploading it to the MacOS App Store.
+
+In particular, the bundle identifier of that `.bundle` needs to be modified to a custom one.
+
+To automate the process, there is a helper method that will change the bundle identifier to one based on your project's application identifier.
+You should call this method on a Postprocess build script of your choice.
+
+```csharp
+using AppleAuth.Editor;
+
+public static class SignInWithApplePostprocessor
+{
+    [PostProcessBuild(1)]
+    public static void OnPostProcessBuild(BuildTarget target, string path)
+    {
+        if (target != BuildTarget.StandaloneOSX)
+            return;
+
+        AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier(target, path);
+    }
+}
+```
 
 The Xcode project with the source code to generate a new bundle file is available at `MacOSAppleAuthManager/MacOSAppleAuthManager.xcodeproj`
 
-To support the feature, the app needs to be codesigned correctly, including the required entitlements. For more information regarding macOS codesign, please follow this [link](./docs/macOS_NOTES.md).
+To support the feature, **the app needs to be codesigned correctly**, including the required entitlements. For more information regarding macOS codesign, please follow this [link](./docs/macOS_NOTES.md).
 
 ## Implement Sign in With Apple
 
@@ -462,11 +485,11 @@ If you want to test new account scenarios, you need to [revoke](#how-can-i-logou
 
 ### Is it possible to NOT request the user's email or full name?
 
-Yes! By passing `0` to the `LoginWithAppleId` method the user will not be asked for their email or full name.
+Yes, just provide `LoginOptions.None` when calling `LoginWithAppleId` and the user will not be asked for their email or full name.
 This will skip that entire login step and make it more smooth. It is recommended if the user's email or full name is not used.
 
 ```csharp
-appleAuthManager.LoginWithAppleId(0, credential => {}, error =>{});
+appleAuthManager.LoginWithAppleId(LoginOptions.None, credential => { ... }, error => { ... });
 ```
 
 ### Does the plugin use UnitySendMessage?
@@ -488,4 +511,15 @@ You can also implement your own deserialization by implementing an `IPayloadDese
 ### Any way to get a refresh token after the first user authorization?
 
 It seems currently is not possible to do so. You can read more details [here](https://github.com/lupidan/apple-signin-unity/issues/3)
+
+### I am getting a CFBundleIdentifier Collision error when uploading my app to the macOS App Store:
+
+If you are experiencing an error like this when uploading your macOS app to the App Store
+> The info.plist CFBundleIdentifier value 'com.lupidan.MacOSAppleAuthManager" of 'appname.app/Contents/Plugins/MacOSAppleAuthManager.bundle' is already in use by another application"
+
+It probably means that your [postprocess build script for macOS](#plugin-setup-macos) is not setup correctly.
+
+You should call `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` to fix the plugin's bundle identifier to a custom one for your app.
+
+You can find more details about the bug [here](https://github.com/lupidan/apple-signin-unity/issues/72)
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0] - 2020-10-18
+### Added
+- Adds static class `AppleAuthMacosPostprocessorHelper`, so now there should always be an AppleAuth.Editor namespace independent of the current platform.
+- Adds static method to `AppleAuthMacosPostprocessorHelper`, `FixManagerBundleIdentifier` is a method to change the plugin's bundle identifier to a custom one based on the current project's application identifier. This should avoid CFBundleIdentifier collision errors when uploading to the MacOS App Store.
+- Adds enum value for `LoginOptions` to not request full name or email, `LoginOptions.None`.
+
+### Changed
+- Updates sample code Postprocessor script to support the new recommended post processing for macOS builds
+
 ## [1.3.0] - 2020-07-18
 ### Added
 - Adds support to set the `State` when making a Login or a Quick Login request to sign in with Apple. 
@@ -77,7 +86,8 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.0.0...v1.1.0
