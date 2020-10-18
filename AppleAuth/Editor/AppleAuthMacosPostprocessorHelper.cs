@@ -36,6 +36,7 @@ namespace AppleAuth.Editor
                     "$1" + PlayerSettings.applicationIdentifier + "$3");
 
                 File.WriteAllText(macosAppleAuthManagerInfoPlistPath, modifiedMacosAppleAuthManagerInfoPlist);
+                Debug.Log("AppleAuthMacosPostprocessorHelper: Renamed MacOSAppleAuthManager.bundle bundle identifier from \"com.lupidan.MacOSAppleAuthManager\" -> \"" + PlayerSettings.applicationIdentifier + ".MacOSAppleAuthManager\"");
             }
             catch (Exception exception)
             {
