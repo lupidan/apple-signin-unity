@@ -5,6 +5,9 @@
 - Adds static class `AppleAuthMacosPostprocessorHelper`, so now there should always be an AppleAuth.Editor namespace independent of the current platform.
 - Adds static method to `AppleAuthMacosPostprocessorHelper`, `FixManagerBundleIdentifier` is a method to change the plugin's bundle identifier to a custom one based on the current project's application identifier. This should avoid CFBundleIdentifier collision errors when uploading to the MacOS App Store.
 
+### Changed
+- Updates sample code Postprocessor script to support the new recommended post processing for macOS builds
+
 ## [1.3.0] - 2020-07-18
 ### Added
 - Adds support to set the `State` when making a Login or a Quick Login request to sign in with Apple. 
