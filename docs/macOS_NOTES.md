@@ -2,6 +2,7 @@
 
 With version 1.2.0, this plugin introduces support for macOS.
 This means that if your game targets macOS, **the macOS bundle will be automatically included**, and code signing it will be mandatory to get it notarized or accepted by the macOS App Store.
+The bundle should be valid for both architectures Intel (x86_64) and Apple Silicon (arm64)
 
 ## Support
 Sign In with Apple for macOS is only supported for apps:
@@ -43,7 +44,12 @@ find MYGAME.app/Contents/Plugins/ -name "*.meta" -print0 | xargs -I {} -0 rm -v 
 ### Add architecture checks for binaries
 This is a step even Xcode seems to do when codesigning right before Distributing an app. Probably not necessary, but it can help detect possible issues.
 ```console
-lipo BINARY_PATH -verify_arch arm64e
+# If you are only targetting Intel only
+lipo BINARY_PATH -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+
+# If you are targetting both Apple Silicon and Intel (Universal Binary)
+lipo BINARY_PATH -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo BINARY_PATH -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
 ```
 
 ### Remember about extended attributes
@@ -132,14 +138,23 @@ Provision profile file: `Sign_In_With_Apple_Tests_Development.provisionprofile`
 # Delete .meta files left by Unity in all the elements in the Plugins folder
 find ./AppleAuthSampleProject.app/Contents/Plugins/ -name "*.meta" -print0 | xargs -I {} -0 rm -v "{}"
 
-# Verify architecture
-lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib -verify_arch arm64e
-lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib -verify_arch arm64e
-lipo ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib -verify_arch arm64e
-lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib -verify_arch arm64e
-lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib -verify_arch arm64e
-lipo ./AppleAuthSampleProject.app/Contents/Plugins/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager -verify_arch arm64e
-lipo ./AppleAuthSampleProject.app/Contents/MacOS/AppleAuthSampleProject -verify_arch arm64e
+# Verify Intel architecture
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Plugins/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/MacOS/AppleAuthSampleProject -verify_arch x86_64 || { echo "Intel x86_64 architecture is missing"; exit 1; }
+
+# Verify Apple Silicon architecture (THIS IS ONLY REQUIRED IF YOU ARE BUILDING A UNIVERSAL BINARY)
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libMonoPosixHelper.dylib -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/UnityPlayer.dylib -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libcrypto.dylib -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Frameworks/libssl.dylib -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/Plugins/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
+lipo ./AppleAuthSampleProject.app/Contents/MacOS/AppleAuthSampleProject -verify_arch arm64 || { echo "Apple Silicon amr64 architecture is missing"; exit 1; }
 
 # Clears extended attributes recursively
 xattr -crs ./AppleAuthSampleProject.app
