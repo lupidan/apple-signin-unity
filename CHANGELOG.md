@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Updates plugin's main `MacOSAppleAuthManager.bundle` to support Apple Silicon `arm64` architecture
+
+### Changed
+- Updates some elements in the dedicated macOS documentation file that were incorrect
+
 ## [1.4.0] - 2020-10-18
 ### Added
 - Adds static class `AppleAuthMacosPostprocessorHelper`, so now there should always be an AppleAuth.Editor namespace independent of the current platform.

@@ -69,7 +69,7 @@ Sign in with Apple plugin to use with Unity 3D game engine.
 
 This plugin supports the following platforms:
 * **iOS**
-* **macOS** ([NOTES](./docs/macOS_NOTES.md))
+* **macOS** Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
 * **tvOS** (Experimental)
 
 The main purpose for this plugin is to expose Apple's newest feature, Sign in with Apple, to the Unity game engine.
@@ -81,7 +81,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 ## Features
 ### Native Sign in with Apple
 - Support for iOS
-- Support for macOS ([NOTES](./docs/macOS_NOTES.md))
+- Support for macOS: Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
 - Support for tvOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
@@ -217,7 +217,7 @@ The provided extension method uses reflection to integrate with the current tool
 
 ## Plugin setup (macOS)
 
-An unsigned precompiled `.bundle` file is available. It will be automatically included in your macOS builds.
+An unsigned precompiled `.bundle` file is available. The precompiled `.bundle` should support both architectures: Intel `x86_64` & Apple Silicon `arm64`(Experimental). The bundle should be automatically included in your macOS builds.
 However that `.bundle` needs to be modified to avoid issues when uploading it to the MacOS App Store.
 
 In particular, the bundle identifier of that `.bundle` needs to be modified to a custom one.
