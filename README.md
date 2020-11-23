@@ -517,8 +517,6 @@ _On iOS:_ The first login gives you the Apple User ID and an Authorization Code 
 _On the server:_ It receives the data from the first login on iOS to create the user. Uses that received Authorization Code to get a refresh token for the user. Refreshes the token once a day.
 [More info here](http://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api/verifying_a_user)
 
-You can read more details [here](https://github.com/lupidan/apple-signin-unity/issues/80)
-
 ### I am getting a CFBundleIdentifier Collision error when uploading my app to the macOS App Store:
 
 If you are experiencing an error like this when uploading your macOS app to the App Store
