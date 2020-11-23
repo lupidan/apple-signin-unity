@@ -5,7 +5,10 @@
 
 # Sign in with Apple Unity Plugin
 
-by **Daniel Lupiañez Casares** [![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/lupidan)
+by **Daniel Lupiañez Casares**
+
+
+[![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/lupidan)
 
 
 [![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)](https://github.com/lupidan/apple-signin-unity/releases)
