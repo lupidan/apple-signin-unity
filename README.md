@@ -249,10 +249,9 @@ To support the feature, **the app needs to be codesigned correctly**, including 
 
 > Currently, it seems Sign In With Apple does not work properly in the simulator. This needs testing on a device with an iOS 13 version.
 
-An overall flow of how the native Sign In With Apple flow works is presented in this diagram.
-There is no official documentation about it, the only available source for this is the WWDC 2019 talk. You can watch it [here](https://developer.apple.com/videos/play/wwdc2019/706/)
+An overall flow of how the native Sign In With Apple flow could work is presented in this diagram.
 
-![Frameworks detail](./Img/AppleSignInFlow_v2.png)
+![Frameworks detail](./Img/AppleSignInFlow_v3.png)
 
 ### Initializing
 ```csharp
