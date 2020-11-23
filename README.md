@@ -8,6 +8,9 @@
 by **Daniel Lupiañez Casares**
 
 
+[![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/lupidan)
+
+
 [![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)](https://github.com/lupidan/apple-signin-unity/releases)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
 [![CHANGELOG](https://img.shields.io/badge/-CHANGELOG-informational)](https://github.com/lupidan/apple-signin-unity/blob/master/CHANGELOG.md)
@@ -19,10 +22,6 @@ by **Daniel Lupiañez Casares**
 [![Stars](https://img.shields.io/github/stars/lupidan/apple-signin-unity.svg?style=social)](https://github.com/lupidan/apple-signin-unity/stargazers)
 [![Followers](https://img.shields.io/github/followers/lupidan.svg?style=social)](https://github.com/lupidan?tab=followers)
 
-
-[![Twitter](https://img.shields.io/twitter/follow/lupi_dan.svg?style=social)](https://twitter.com/intent/user?screen_name=lupi_dan)
-
-[![Donate](https://www.paypalobjects.com/en_US/ES/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G96LW2DJUTHJJ&source=url)
 
 <p align="center">
     <a href="./Img/SCRN01.png"><img src="./Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
@@ -249,10 +248,9 @@ To support the feature, **the app needs to be codesigned correctly**, including 
 
 > Currently, it seems Sign In With Apple does not work properly in the simulator. This needs testing on a device with an iOS 13 version.
 
-An overall flow of how the native Sign In With Apple flow works is presented in this diagram.
-There is no official documentation about it, the only available source for this is the WWDC 2019 talk. You can watch it [here](https://developer.apple.com/videos/play/wwdc2019/706/)
+An overall flow of how the native Sign In With Apple flow could work is presented in this diagram.
 
-![Frameworks detail](./Img/AppleSignInFlow_v2.png)
+![Frameworks detail](./Img/AppleSignInFlow_v3.png)
 
 ### Initializing
 ```csharp
@@ -286,6 +284,8 @@ void Update()
 ```
 
 ### Perform Sign In With Apple
+
+> :warning: You will receive users's email and name **ONLY THE FIRST TIME THE USER LOGINS**. Any further login attempts **will have a NULL Email and FullName**, unless you [revoke the credentials](#how-can-i-logout-does-the-plugin-provide-any-logout-option)
 
 If you want to Sign In and request the Email and Full Name for a user, you can do it like this:
 
@@ -361,7 +361,7 @@ this.appleAuthManager.QuickLogin(
     },
     error =>
     {
-        // Quick login failed. Go to login screen
+        // Quick login failed. The user has never used Sign in With Apple on your app. Go to login screen
     });
 ```
 
@@ -374,8 +374,7 @@ Just cast the credential to `IPasswordCredential` to get the login details for t
 
 ### Checking credential status
 
-This should be the first thing to check when the user starts the app,
-and there is an already logged user with an Apple user id.
+This is used to verify that an Apple User ID is still valid.
 
 Given an `userId` from a previous successful sign in.
 You can check the credential state of that user ID like so:
@@ -508,9 +507,14 @@ If you initialize the `AppleAuthManager` with the built-in `PayloadDeserializer`
 
 You can also implement your own deserialization by implementing an `IPayloadDeserializer`.
 
-### Any way to get a refresh token after the first user authorization?
+### Any way to get a refresh token on iOS to verify a user?
 
-It seems currently is not possible to do so. You can read more details [here](https://github.com/lupidan/apple-signin-unity/issues/3)
+**NO**, That's not how Apple wants you to do it. This is how they want you to verify a user:
+
+_On iOS:_ The first login gives you the Apple User ID and an Authorization Code to send to your backend. Checking the validity of a user on the device, from now on, should be done with `GetCredentialState` and that Apple User ID.
+
+_On the server:_ It receives the data from the first login on iOS to create the user. Uses that received Authorization Code to get a refresh token for the user. Refreshes the token once a day.
+[More info here](http://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api/verifying_a_user)
 
 ### I am getting a CFBundleIdentifier Collision error when uploading my app to the macOS App Store:
 
