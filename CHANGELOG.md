@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.4.1] - 2020-11-28
 ### Added
 - Updates plugin's main `MacOSAppleAuthManager.bundle` to support Apple Silicon `arm64` architecture
 
@@ -93,7 +93,8 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.1.0...v1.2.0
