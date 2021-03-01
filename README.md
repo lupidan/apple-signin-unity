@@ -309,7 +309,7 @@ this.appleAuthManager.LoginWithAppleId(
             var email = appleIdCredential.Email;
 
             // Full name (Received ONLY in the first login)
-            var fullName = appleIdCredential.FullName
+            var fullName = appleIdCredential.FullName;
 
             // Identity token
             var identityToken = Encoding.UTF8.GetString(
