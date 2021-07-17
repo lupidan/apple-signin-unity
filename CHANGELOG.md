@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased] - 2020-07-17
+### Changed
+- Handles empty `NSPersonNameComponents` sent by Apple when not requesting a name, to be `nil` natively.
+
+### Removed
+- Removes `FixSerializationForFullPersonName` and any usage of it when deserializing to avoid NRE
+
 ## [1.4.1] - 2020-11-28
 ### Added
 - Updates plugin's main `MacOSAppleAuthManager.bundle` to support Apple Silicon `arm64` architecture
