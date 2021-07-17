@@ -95,7 +95,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Installation
 
-> Current stable version is v1.4.1
+> Current stable version is v1.4.2
 
 There are two options available to install this plugin. Either using the Unity Package Manager, or the traditional `.unitypackage` file.
 
@@ -109,7 +109,7 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.4.1",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.4.2",
 }
 ```
 
