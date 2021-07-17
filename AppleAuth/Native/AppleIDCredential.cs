@@ -43,8 +43,6 @@ namespace AppleAuth.Native
             SerializationTools.FixSerializationForArray(ref this._authorizedScopes);
             
             SerializationTools.FixSerializationForObject(ref this._fullName, this._hasFullName);
-            
-            SerializationTools.FixSerializationForFullPersonName(ref this._fullName);
 
             this._identityToken = SerializationTools.GetBytesFromBase64String(this._base64IdentityToken, "_identityToken");
             this._authorizationCode = SerializationTools.GetBytesFromBase64String(this._base64AuthorizationCode, "_authorizationCode");

@@ -82,6 +82,18 @@
     if (!nameComponents)
         return nil;
     
+    // Sometimes, when not requesting a name in the ASAuthorizationAppleIDRequest scopes,
+    // Apple will just send an empty NSPersonNameComponents instance...
+    // This should be treated as a nil person name components
+    if ([nameComponents namePrefix] == nil &&
+        [nameComponents givenName] == nil &&
+        [nameComponents middleName] == nil &&
+        [nameComponents familyName] == nil &&
+        [nameComponents nameSuffix] == nil &&
+        [nameComponents nickname] == nil &&
+        [nameComponents phoneticRepresentation] == nil)
+        return nil;
+    
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     [result setValue:[nameComponents namePrefix] forKey:@"_namePrefix"];
     [result setValue:[nameComponents givenName] forKey:@"_givenName"];

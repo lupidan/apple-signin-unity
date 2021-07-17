@@ -1,7 +1,7 @@
 {
     "name": "com.lupidan.apple-signin-unity-src",
     "displayName": "Sign in with Apple [Local Source]",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "unity": "2018.3",
     "description": "[Local Source]\nProvides a Unity bridge to use the native Sign In With Apple method on iOS/iPadOS/tvOS/macOS devices",
     "author": {
