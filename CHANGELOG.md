@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Adds `ShouldSearchInKeychain` to `AppleAuthQuickLoginArgs` with the default value being `false`
+**IMPORTANT**: `QuickLogin` was, by default, performing a check for Keychain passwords alongside Apple ID credentials. However due to changes (or bugs) on iPadOS 15.0, this has been moved as an optional check.
+**If your app was supporting Keychain password credentials, you might want to enable it when attempting a QuickLogin. Bear in mind however that this behaviour is inconsistent between iOS 15.0, iPadOS 15.0 and tvOS 15.0.**
+
+### Removed
+- Removes default `QuickLogin` functionality that checked for existing Keychain passwords alongside Apple ID credentials. It´s now an optional functionality, configurable with a new argument in `AppleAuthQuickLoginArgs`
+
 ## [1.4.2] - 2020-07-17
 ### Changed
 - Handles empty `NSPersonNameComponents` sent by Apple when not requesting a name, to be `nil` natively.
