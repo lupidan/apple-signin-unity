@@ -156,6 +156,7 @@ PlayerSettings:
     Android: com.lupidan.testappleauth
     Standalone: com.lupidan.testappleauth
     iOS: com.lupidan.testappleauth
+    iPhone: com.lupidan.testappleauth
     tvOS: com.lupidan.testappleauth
   buildNumber: {}
   AndroidBundleVersionCode: 1

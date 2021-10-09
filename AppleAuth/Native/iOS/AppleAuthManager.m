@@ -87,7 +87,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 
 #pragma mark Public methods
 
-- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state
+- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state searchInKeychain:(BOOL)searchInKeychain
 {
 #if AUTHENTICATION_SERVICES_AVAILABLE
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
@@ -96,9 +96,19 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
         [appleIDRequest setNonce:nonce];
         [appleIDRequest setState:state];
 
-        ASAuthorizationPasswordRequest *keychainRequest = [[self passwordProvider] createRequest];
-
-        ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDRequest, keychainRequest]];
+        NSArray *authorizationRequests = nil;
+        if (searchInKeychain)
+        {
+            ASAuthorizationPasswordRequest *keychainRequest = [[self passwordProvider] createRequest];
+            authorizationRequests = @[appleIDRequest, keychainRequest];
+            
+        }
+        else
+        {
+            authorizationRequests = @[appleIDRequest];
+        }
+        
+        ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:authorizationRequests];
         [self performAuthorizationRequestsForController:authorizationController withRequestId:requestId];
     }
     else
@@ -373,11 +383,12 @@ void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullab
     [[AppleAuthManager sharedManager] loginWithAppleId:requestId withOptions:options nonce:nonce andState:state];
 }
 
-void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr)
+void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr, int shouldSearchInKeychain)
 {
     NSString *nonce = nonceCStr != NULL ? [NSString stringWithUTF8String:nonceCStr] : nil;
     NSString *state = stateCStr != NULL ? [NSString stringWithUTF8String:stateCStr] : nil;
-    [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce andState:state];
+    BOOL searchInKeychain = shouldSearchInKeychain != 0 ? YES : NO;
+    [[AppleAuthManager sharedManager] quickLogin:requestId withNonce:nonce andState:state searchInKeychain:searchInKeychain];
 }
 
 void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId)

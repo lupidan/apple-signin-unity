@@ -37,7 +37,7 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
 
 + (instancetype) sharedManager;
 
-- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state;
+- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state searchInKeychain:(BOOL)searchInKeychain;
 - (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options nonce:(NSString *)nonce andState:(NSString *)state;
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId;
@@ -48,7 +48,7 @@ bool AppleAuth_IsCurrentPlatformSupported(void);
 void AppleAuth_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback);
 void AppleAuth_GetCredentialState(uint requestId, const char* userId);
 void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr, const char* _Nullable stateCStr);
-void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr);
+void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr, int shouldSearchInKeychain);
 void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId);
 void AppleAuth_LogMessage(const char* _Nullable messageCStr);
 

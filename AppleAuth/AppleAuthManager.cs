@@ -58,6 +58,7 @@ namespace AppleAuth
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var nonce = quickLoginArgs.Nonce;
             var state = quickLoginArgs.State;
+            var shouldSearchInKeychain = quickLoginArgs.ShouldSearchInKeychain ? 1 : 0;
             var requestId = CallbackHandler.AddMessageCallback(
                 true,
                 payload =>
@@ -71,7 +72,7 @@ namespace AppleAuth
                         successCallback(response.AppleIDCredential);
                 });
 
-            PInvoke.AppleAuth_QuickLogin(requestId, nonce, state);
+            PInvoke.AppleAuth_QuickLogin(requestId, nonce, state, shouldSearchInKeychain);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
@@ -325,7 +326,7 @@ namespace AppleAuth
             public static extern void AppleAuth_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr, string stateCStr);
             
             [System.Runtime.InteropServices.DllImport(DllName)]
-            public static extern void AppleAuth_QuickLogin(uint requestId, string nonceCStr, string stateCStr);
+            public static extern void AppleAuth_QuickLogin(uint requestId, string nonceCStr, string stateCStr, int shouldSearchInKeychain);
             
             [System.Runtime.InteropServices.DllImport(DllName)]
             public static extern void AppleAuth_RegisterCredentialsRevokedCallbackId(uint callbackId);
