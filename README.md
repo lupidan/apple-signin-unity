@@ -84,7 +84,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Support for tvOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
-- Supports Quick login (including iTunes Keychain credentials).
+- Supports Quick login for Apple ID credentials and, optionally, iTunes Keychain password credentials.
 - Supports adding Sign In with Apple capability to Xcode project programatically in a PostBuild script.
 - Supports listening to Credentials Revoked notifications.
 - Supports setting custom Nonce and State for authorization requests when Signing In, and attempting a Quick Login.
@@ -337,9 +337,7 @@ this.appleAuthManager.LoginWithAppleId(
 
 This should be the **first thing to try** when the user first runs the application.
 
-If the user has previously authorized the app to login with Apple, this will open a native dialog to re-confirm the login, and obtain an Apple User ID.
-
-If the credentials were never given, or they were revoked, the Quick login will fail.
+A Quick login will perform a check for existing Apple ID credentials, specially useful if a user reinstalls your app. If the user has previously authorized the app to login with Apple, this will open a native dialog to re-confirm the login, and obtain an Apple User ID. **If the credentials were never given, or they were revoked, the Quick login will fail**.
 
 ![Frameworks detail](./Img/QuickLogin.png)
 
@@ -351,13 +349,12 @@ this.appleAuthManager.QuickLogin(
     credential =>
     {
         // Received a valid credential!
-        // Try casting to IAppleIDCredential or IPasswordCredential
+        // Cast it to IAppleIDCredential
 
-        // Previous Apple sign in credential
         var appleIdCredential = credential as IAppleIDCredential; 
-
-        // Saved Keychain credential (read about Keychain Items)
-        var passwordCredential = credential as IPasswordCredential;
+        if (appleIdCredential != null)
+        {
+        }
     },
     error =>
     {
@@ -367,10 +364,44 @@ this.appleAuthManager.QuickLogin(
 
 Note that, if this succeeds, you will **ONLY** receive the Apple User ID (no email or name, even if it was previously requested).
 
-#### IOS Keychain Support
-When performing a quick login, if the SDK detects [IOS Keychain credentials](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=objc) for your app, it will return those.
+#### iTunes Keychain Support
+Alongside an Apple ID credentials check, you can configure Quick login to check for existing [standard password credentials within the iTunes Keychain](https://developer.apple.com/documentation/security/keychain_services/keychain_items?language=obj) for your app domain, to return those instead. If a keychain password credential is detected, the user will be presented with a native window that looks something like this:
 
-Just cast the credential to `IPasswordCredential` to get the login details for the user.
+![Frameworks detail](./Img/PasswordProvidedDetected.png)
+
+If the user uses it, you will obtain the credential as an `IPasswordCredential`, just add the cast for it.
+
+> :warning: This behaviour is inconsistent between iOS 15.0, iPadOS 15.0 and tvOS 15.0. If QuickLogin fails with this setup, you might want to try another QuickLogin just for Apple ID credentials. More info [here](https://github.com/lupidan/apple-signin-unity/issues/119).
+
+```csharp
+// Add argument to allow for Keychain Password Credential support
+var quickLoginArgs = new AppleAuthQuickLoginArgs(yourNonceIfAny, yourStatusIfAny, true);
+
+this.appleAuthManager.QuickLogin(
+    quickLoginArgs,
+    credential =>
+    {
+        // Received a valid credential!
+        // Try casting to IAppleIDCredential or IPasswordCredential
+
+        // Previous Apple sign in credential
+        var appleIdCredential = credential as IAppleIDCredential;
+        if (appleIdCredential != null)
+        {
+        }
+
+        // Saved Keychain Password Credential
+        var passwordCredential = credential as IPasswordCredential;
+        if (passwordCredential != null)
+        {
+        }
+    },
+    error =>
+    {
+        // Quick login failed. The user has never used Sign in With Apple on your app. Go to login screen
+    });
+```
+
 
 ### Checking credential status
 
