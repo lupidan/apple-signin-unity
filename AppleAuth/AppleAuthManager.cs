@@ -45,12 +45,7 @@ namespace AppleAuth
 #endif
         }
 
-        public void QuickLogin(Action<ICredential> successCallback, Action<IAppleError> errorCallback)
-        {
-            this.QuickLogin(new AppleAuthQuickLoginArgs(), successCallback, errorCallback);
-        }
-
-        public void QuickLogin(
+        public void QuickLoginForAppleId(
             AppleAuthQuickLoginArgs quickLoginArgs,
             Action<ICredential> successCallback,
             Action<IAppleError> errorCallback)
@@ -58,24 +53,23 @@ namespace AppleAuth
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var nonce = quickLoginArgs.Nonce;
             var state = quickLoginArgs.State;
-            var shouldSearchInKeychain = quickLoginArgs.ShouldSearchInKeychain ? 1 : 0;
-            var requestId = CallbackHandler.AddMessageCallback(
-                true,
-                payload =>
-                {
-                    var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
-                    if (response.Error != null)
-                        errorCallback(response.Error);
-                    else if (response.PasswordCredential != null)
-                        successCallback(response.PasswordCredential);
-                    else
-                        successCallback(response.AppleIDCredential);
-                });
-
-            PInvoke.AppleAuth_QuickLogin(requestId, nonce, state, shouldSearchInKeychain);
+            var requestId = this.AddCallbackHandlerForCredentialResponse(successCallback, errorCallback);
+            PInvoke.AppleAuth_QuickLoginForAppleId(requestId, nonce, state);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
+        }
+
+        public void QuickLoginForItunesKeychainCredentials(
+            Action<ICredential> successCallback,
+            Action<IAppleError> errorCallback)
+        {
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            var requestId = this.AddCallbackHandlerForCredentialResponse(successCallback, errorCallback);
+            PInvoke.AppleAuth_QuickLoginForItunesKeychainCredentials(requestId);
+#else
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#endif   
         }
 
         public void LoginWithAppleId(LoginOptions options, Action<ICredential> successCallback, Action<IAppleError> errorCallback)
@@ -92,17 +86,7 @@ namespace AppleAuth
             var loginOptions = loginArgs.Options;
             var nonce = loginArgs.Nonce;
             var state = loginArgs.State;
-            var requestId = CallbackHandler.AddMessageCallback(
-                true,
-                payload =>
-                {
-                    var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
-                    if (response.Error != null)
-                        errorCallback(response.Error);
-                    else
-                        successCallback(response.AppleIDCredential);
-                });
-            
+            var requestId = this.AddCallbackHandlerForCredentialResponse(successCallback, errorCallback);
             PInvoke.AppleAuth_LoginWithAppleId(requestId, (int)loginOptions, nonce, state);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
@@ -115,17 +99,7 @@ namespace AppleAuth
             Action<IAppleError> errorCallback)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
-            var requestId = CallbackHandler.AddMessageCallback(
-                true,
-                payload =>
-                {
-                    var response = this._payloadDeserializer.DeserializeCredentialStateResponse(payload);
-                    if (response.Error != null)
-                        errorCallback(response.Error);
-                    else
-                        successCallback(response.CredentialState);
-                });
-            
+            var requestId = AddCallbackHandlerForCredentialStateResponse(successCallback, errorCallback);
             PInvoke.AppleAuth_GetCredentialState(requestId, userId);
 #else
             throw new Exception("AppleAuthManager is not supported in this platform");
@@ -157,6 +131,40 @@ namespace AppleAuth
         }
 
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+        private uint AddCallbackHandlerForCredentialResponse(
+            Action<ICredential> successCallback,
+            Action<IAppleError> errorCallback)
+        {
+            return CallbackHandler.AddMessageCallback(
+                true,
+                payload =>
+                {
+                    var response = this._payloadDeserializer.DeserializeLoginWithAppleIdResponse(payload);
+                    if (response.Error != null)
+                        errorCallback(response.Error);
+                    else if (response.PasswordCredential != null)
+                        successCallback(response.PasswordCredential);
+                    else
+                        successCallback(response.AppleIDCredential);
+                });
+        }
+        
+        private uint AddCallbackHandlerForCredentialStateResponse(
+            Action<CredentialState> successCallback,
+            Action<IAppleError> errorCallback)
+        {
+            return CallbackHandler.AddMessageCallback(
+                true,
+                payload =>
+                {
+                    var response = this._payloadDeserializer.DeserializeCredentialStateResponse(payload);
+                    if (response.Error != null)
+                        errorCallback(response.Error);
+                    else
+                        successCallback(response.CredentialState);
+                });
+        }
+        
         private static class CallbackHandler
         {
             private const uint InitialCallbackId = 1U;
@@ -326,7 +334,10 @@ namespace AppleAuth
             public static extern void AppleAuth_LoginWithAppleId(uint requestId, int loginOptions, string nonceCStr, string stateCStr);
             
             [System.Runtime.InteropServices.DllImport(DllName)]
-            public static extern void AppleAuth_QuickLogin(uint requestId, string nonceCStr, string stateCStr, int shouldSearchInKeychain);
+            public static extern void AppleAuth_QuickLoginForAppleId(uint requestId, string nonceCStr, string stateCStr);
+            
+            [System.Runtime.InteropServices.DllImport(DllName)]
+            public static extern void AppleAuth_QuickLoginForItunesKeychainCredentials(uint requestId);
             
             [System.Runtime.InteropServices.DllImport(DllName)]
             public static extern void AppleAuth_RegisterCredentialsRevokedCallbackId(uint callbackId);

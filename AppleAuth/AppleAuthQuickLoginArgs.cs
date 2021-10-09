@@ -4,13 +4,11 @@ namespace AppleAuth
     {
         public readonly string Nonce;
         public readonly string State;
-        public readonly bool ShouldSearchInKeychain;
 
-        public AppleAuthQuickLoginArgs(string nonce = null, string state = null, bool shouldSearchInKeychain = false)
+        public AppleAuthQuickLoginArgs(string nonce = null, string state = null)
         {
             this.Nonce = nonce;
             this.State = state;
-            this.ShouldSearchInKeychain = shouldSearchInKeychain;
         }
     }
 }

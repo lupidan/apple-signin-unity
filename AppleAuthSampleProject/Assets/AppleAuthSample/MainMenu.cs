@@ -164,7 +164,7 @@ public class MainMenu : MonoBehaviour
         var quickLoginArgs = new AppleAuthQuickLoginArgs();
         
         // Quick login should succeed if the credential was authorized before and not revoked
-        this._appleAuthManager.QuickLogin(
+        this._appleAuthManager.QuickLoginForAppleId(
             quickLoginArgs,
             credential =>
             {

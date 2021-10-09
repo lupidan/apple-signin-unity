@@ -1,7 +1,7 @@
 //
 //  MIT License
 //
-//  Copyright (c) 2019-2020 Daniel Lupiañez Casares
+//  Copyright (c) 2019 Daniel Lupiañez Casares
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,8 @@ typedef void (*NativeMessageHandlerDelegate)(uint requestId,  const char* payloa
 
 + (instancetype) sharedManager;
 
-- (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state searchInKeychain:(BOOL)searchInKeychain;
+- (void) quickLoginForAppleId:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state;
+- (void) quickLoginForItunesKeychainCredentials:(uint)requestId;
 - (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options nonce:(NSString *)nonce andState:(NSString *)state;
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId;
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId;
@@ -48,7 +49,8 @@ bool AppleAuth_IsCurrentPlatformSupported(void);
 void AppleAuth_SetupNativeMessageHandlerCallback(NativeMessageHandlerDelegate callback);
 void AppleAuth_GetCredentialState(uint requestId, const char* userId);
 void AppleAuth_LoginWithAppleId(uint requestId, int options, const char* _Nullable nonceCStr, const char* _Nullable stateCStr);
-void AppleAuth_QuickLogin(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr, int shouldSearchInKeychain);
+void AppleAuth_QuickLoginForAppleId(uint requestId, const char* _Nullable nonceCStr, const char* _Nullable stateCStr);
+void AppleAuth_QuickLoginForItunesKeychainCredentials(uint requestId);
 void AppleAuth_RegisterCredentialsRevokedCallbackId(uint requestId);
 void AppleAuth_LogMessage(const char* _Nullable messageCStr);
 
