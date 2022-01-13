@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Add `ToString` override to `AppleError`
+
 ## [1.4.2] - 2020-07-17
 ### Changed
 - Handles empty `NSPersonNameComponents` sent by Apple when not requesting a name, to be `nil` natively.
