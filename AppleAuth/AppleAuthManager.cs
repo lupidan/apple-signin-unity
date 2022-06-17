@@ -78,7 +78,7 @@ namespace AppleAuth
 #endif
         }
 
-        public Task<Errorable<ICredential>> QuickLoginAsync(AppleAuthQuickLoginArgs quickLoginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback)
+        public Task<Errorable<ICredential>> QuickLoginAsync(AppleAuthQuickLoginArgs quickLoginArgs)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var completionSource = new TaskCompletionSource<Errorable<ICredential>>();
@@ -122,7 +122,7 @@ namespace AppleAuth
 #endif
         }
 
-        public Task<Errorable<ICredential>> LoginWithAppleIdAsync(AppleAuthLoginArgs loginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback)
+        public Task<Errorable<ICredential>> LoginWithAppleIdAsync(AppleAuthLoginArgs loginArgs)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var completionSource = new TaskCompletionSource<Errorable<ICredential>>();
@@ -158,7 +158,7 @@ namespace AppleAuth
 #endif
         }
 
-        public Task<Errorable<CredentialState>> GetCredentialStateAsync(string userId, Action<CredentialState> successCallback, Action<IAppleError> errorCallback)
+        public Task<Errorable<CredentialState>> GetCredentialStateAsync(string userId)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             var completionSource = new TaskCompletionSource<Errorable<CredentialState>>();

@@ -12,18 +12,18 @@ namespace AppleAuth
         
         void QuickLogin(AppleAuthQuickLoginArgs quickLoginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback);
 
-        Task<Errorable<ICredential>> QuickLoginAsync(AppleAuthQuickLoginArgs quickLoginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback);
+        Task<Errorable<ICredential>> QuickLoginAsync(AppleAuthQuickLoginArgs quickLoginArgs);
 
         [Obsolete("This method is deprecated and will be removed soon. Please provide an instance of AppleAuthLoginArgs to LoginWithAppleId with the LoginOptions instead.")]
         void LoginWithAppleId(LoginOptions options, Action<ICredential> successCallback, Action<IAppleError> errorCallback);
         
         void LoginWithAppleId(AppleAuthLoginArgs loginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback);
 
-        Task<Errorable<ICredential>> LoginWithAppleIdAsync(AppleAuthLoginArgs loginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback);
+        Task<Errorable<ICredential>> LoginWithAppleIdAsync(AppleAuthLoginArgs loginArgs);
 
         void GetCredentialState(string userId, Action<CredentialState> successCallback, Action<IAppleError> errorCallback);
 
-        Task<Errorable<CredentialState>> GetCredentialStateAsync(string userId, Action<CredentialState> successCallback, Action<IAppleError> errorCallback);
+        Task<Errorable<CredentialState>> GetCredentialStateAsync(string userId);
 
         void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback);
 
