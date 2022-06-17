@@ -5,6 +5,7 @@
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace AppleAuth
 {
@@ -77,6 +78,19 @@ namespace AppleAuth
 #endif
         }
 
+        public Task<Errorable<ICredential>> QuickLoginAsync(AppleAuthQuickLoginArgs quickLoginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback)
+        {
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            var completionSource = new TaskCompletionSource<Errorable<ICredential>>();
+            void success(ICredential credential) => completionSource.TrySetResult(new Errorable<ICredential>(credential));
+            void error(IAppleError error) => completionSource.TrySetResult(new Errorable<ICredential>(error));
+            QuickLogin(quickLoginArgs, success, error);
+            return completionSource.Task;
+#else
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#endif
+        }
+
         public void LoginWithAppleId(LoginOptions options, Action<ICredential> successCallback, Action<IAppleError> errorCallback)
         {
             this.LoginWithAppleId(new AppleAuthLoginArgs(options), successCallback, errorCallback);
@@ -107,7 +121,20 @@ namespace AppleAuth
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
         }
-        
+
+        public Task<Errorable<ICredential>> LoginWithAppleIdAsync(AppleAuthLoginArgs loginArgs, Action<ICredential> successCallback, Action<IAppleError> errorCallback)
+        {
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            var completionSource = new TaskCompletionSource<Errorable<ICredential>>();
+            void success(ICredential credential) => completionSource.TrySetResult(new Errorable<ICredential>(credential));
+            void error(IAppleError error) => completionSource.TrySetResult(new Errorable<ICredential>(error));
+            LoginWithAppleId(loginArgs, success, error);
+            return completionSource.Task;
+#else
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#endif
+        }
+
         public void GetCredentialState(
             string userId,
             Action<CredentialState> successCallback,
@@ -130,7 +157,20 @@ namespace AppleAuth
             throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
         }
-        
+
+        public Task<Errorable<CredentialState>> GetCredentialStateAsync(string userId, Action<CredentialState> successCallback, Action<IAppleError> errorCallback)
+        {
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            var completionSource = new TaskCompletionSource<Errorable<CredentialState>>();
+            void success(CredentialState credentialState) => completionSource.TrySetResult(new Errorable<CredentialState>(credentialState));
+            void error(IAppleError error) => completionSource.TrySetResult(new Errorable<CredentialState>(error));
+            GetCredentialState(userId, success, error);
+            return completionSource.Task;
+#else
+            throw new Exception("AppleAuthManager is not supported in this platform");
+#endif
+        }
+
         public void SetCredentialsRevokedCallback(Action<string> credentialsRevokedCallback)
         {
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
@@ -145,6 +185,20 @@ namespace AppleAuth
                 CallbackHandler.NativeCredentialsRevoked += credentialsRevokedCallback;
                 this._credentialsRevokedCallback = credentialsRevokedCallback;
             }
+#endif
+        }
+
+        public async Task<string> WaitForCredentialsRevokedAsync()
+        {
+#if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
+            var taskCompletionSource = new TaskCompletionSource<string>();
+            void callback(string x) => taskCompletionSource.TrySetResult(x);
+            CallbackHandler.NativeCredentialsRevoked += callback;
+            var result = await taskCompletionSource.Task.ConfigureAwait(false);
+            CallbackHandler.NativeCredentialsRevoked -= callback;
+            return result;
+#else
+            throw new Exception("AppleAuthManager is not supported in this platform");
 #endif
         }
 
