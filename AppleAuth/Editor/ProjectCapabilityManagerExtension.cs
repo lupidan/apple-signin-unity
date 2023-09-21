@@ -12,6 +12,7 @@ namespace AppleAuth.Editor
         private const string DefaultAccessLevel = "Default";
         private const string AuthenticationServicesFramework = "AuthenticationServices.framework";
         private const BindingFlags NonPublicInstanceBinding = BindingFlags.NonPublic | BindingFlags.Instance;
+        private const BindingFlags PublicInstanceBinding = BindingFlags.Public | BindingFlags.Instance;
 
         /// <summary>
         /// Extension method for ProjectCapabilityManager to add the Sign In With Apple capability in compatibility mode.
@@ -29,11 +30,18 @@ namespace AppleAuth.Editor
             var targetGuidField = managerType.GetField("m_TargetGuid", NonPublicInstanceBinding);
             var entitlementFilePathField = managerType.GetField("m_EntitlementFilePath", NonPublicInstanceBinding);
             var getOrCreateEntitlementDocMethod = managerType.GetMethod("GetOrCreateEntitlementDoc", NonPublicInstanceBinding);
-            var constructorInfo = capabilityTypeType.GetConstructor(
-                NonPublicInstanceBinding, 
-                null,
-                new[] {typeof(string), typeof(bool), typeof(string), typeof(bool)}, 
-                null);
+
+            // in old unity versions PBXCapabilityType had internal ctor; that was changed to public afterwards - try both
+            System.Reflection.ConstructorInfo GetPBXCapabilityTypeConstructor(BindingFlags flags)
+            {
+                return capabilityTypeType.GetConstructor(
+                    flags, null, new[] {typeof(string), typeof(bool), typeof(string), typeof(bool)}, null
+                );
+            }
+
+            var constructorInfo = GetPBXCapabilityTypeConstructor(PublicInstanceBinding);
+            if(constructorInfo == null)
+                constructorInfo = GetPBXCapabilityTypeConstructor(NonPublicInstanceBinding);
             
             if (projectField == null || targetGuidField == null  || entitlementFilePathField == null ||
                 getOrCreateEntitlementDocMethod == null || constructorInfo == null)
