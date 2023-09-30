@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.4.3] - 2023-09-30
 ### Changed
 - Updates `AddSignInWithAppleWithCompatibility` to support new public constructor for `PBXCapabilityType` introduced in Unity 2022.3.10
 - Increases minimum target for the macOS bundle to 10.13
@@ -109,7 +109,8 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.3...HEAD
+[1.4.3]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.3.0...v1.4.0
