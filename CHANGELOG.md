@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+- Updates `AddSignInWithAppleWithCompatibility` to support new public constructor for `PBXCapabilityType` introduced in Unity 2022.3.10.
+
 ### Added
 - Add `ToString` override to `AppleError`
 
