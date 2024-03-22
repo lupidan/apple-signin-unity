@@ -24,8 +24,8 @@
 
 #import <Foundation/Foundation.h>
 
-// IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+// IOS/TVOS 13.0 | MACOS 10.15 | VISIONOS 1.0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500 || __VISION_OS_VERSION_MAX_ALLOWED >= 10000
 #import <AuthenticationServices/AuthenticationServices.h>
 #endif
 
@@ -40,22 +40,22 @@
                                                       passwordCredentialDictionary:(NSDictionary * _Nullable)passwordCredentialDictionary
                                                                    errorDictionary:(NSDictionary * _Nullable)errorDictionary;
 
-// IOS/TVOS 9.0 | MACOS 10.11
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000 || __TV_OS_VERSION_MAX_ALLOWED >= 90000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
+// IOS/TVOS 9.0 | MACOS 10.11 | VISIONOS 1.0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000 || __TV_OS_VERSION_MAX_ALLOWED >= 90000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101100 || __VISION_OS_VERSION_MAX_ALLOWED >= 10000
 
 + (NSDictionary * _Nullable) dictionaryForNSPersonNameComponents:(NSPersonNameComponents * _Nullable)nameComponents
-API_AVAILABLE(ios(9.0), macos(10.11), tvos(9.0), watchos(2.0));
+API_AVAILABLE(ios(9.0), macos(10.11), tvos(9.0), watchos(2.0), visionos(1.0));
 
 #endif
 
-// IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+// IOS/TVOS 13.0 | MACOS 10.15 | VISIONOS 1.0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500 || __VISION_OS_VERSION_MAX_ALLOWED >= 10000
 
 + (NSDictionary * _Nullable) dictionaryForASAuthorizationAppleIDCredential:(ASAuthorizationAppleIDCredential * _Nullable)appleIDCredential
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0));
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0));
 
 + (NSDictionary * _Nullable) dictionaryForASPasswordCredential:(ASPasswordCredential * _Nullable)passwordCredential
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0));
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0));
 
 #endif
 

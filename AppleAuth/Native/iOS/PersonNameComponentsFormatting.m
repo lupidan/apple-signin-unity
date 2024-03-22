@@ -46,7 +46,7 @@ const char* AppleAuth_GetPersonNameUsingFormatter(const char *payload, int style
     if (error)
         return NULL;
     
-    if (@available(iOS 9.0, tvOS 9.0, macOS 10.11, *)) {
+    if (@available(iOS 9.0, tvOS 9.0, macOS 10.11, visionOS 1.0, *)) {
         NSPersonNameComponents *nameData = [[NSPersonNameComponents alloc] init];
         [nameData setNamePrefix:[nameComponentsDictionary objectForKey:@"_namePrefix"]];
         [nameData setGivenName:[nameComponentsDictionary objectForKey:@"_givenName"]];
