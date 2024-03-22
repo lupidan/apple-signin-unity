@@ -70,6 +70,7 @@ This plugin supports the following platforms:
 * **iOS**
 * **macOS** Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
 * **tvOS** (Experimental)
+* **visionOS** (Experimental)
 
 The main purpose for this plugin is to expose Apple's newest feature, Sign in with Apple, to the Unity game engine.
 
@@ -82,6 +83,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Support for iOS
 - Support for macOS: Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
 - Support for tvOS (Experimental)
+- Support for visionOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
 - Supports Quick login (including iTunes Keychain credentials).
@@ -130,7 +132,7 @@ openupm add com.lupidan.apple-signin-unity
 
 ![Import detail](./Img/ImportPlugin.png)
 
-## Plugin setup (iOS/tvOS)
+## Plugin setup (iOS/tvOS/visionOS)
 
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project. Two different options are available to set up the entitlements required to enable Apple ID authentication with the iOS SDK.
 
@@ -146,32 +148,51 @@ The provided extension method is `AddSignInWithAppleWithCompatibility`. It accep
 
 Sample code:
 ```csharp
-using AppleAuth.Editor;
-
-public static class SignInWithApplePostprocessor
-{
-    [PostProcessBuild(1)]
-    public static void OnPostProcessBuild(BuildTarget target, string path)
-    {
-        if (target != BuildTarget.iOS)
-            return;
-
-        var projectPath = PBXProject.GetPBXProjectPath(path);
-        
-        // Adds entitlement depending on the Unity version used
-#if UNITY_2019_3_OR_NEWER
-            var project = new PBXProject();
-            project.ReadFromString(System.IO.File.ReadAllText(projectPath));
-            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
-            manager.WriteToFile();
-#else
-            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-            manager.AddSignInWithAppleWithCompatibility();
-            manager.WriteToFile();
+#if UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS
+#define UNITY_XCODE_EXTENSIONS_AVAILABLE
 #endif
+
+using AppleAuth.Editor;
+using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEngine;
+#if UNITY_XCODE_EXTENSIONS_AVAILABLE
+using UnityEditor.iOS.Xcode;
+#endif
+
+namespace AppleAuthSample.Editor {
+  public static class SignInWithApplePostprocessor {
+    private const int CallOrder = 1;
+
+    [PostProcessBuild(CallOrder)]
+    public static void OnPostProcessBuild(BuildTarget target, string path) {
+      if (target == BuildTarget.iOS || target == BuildTarget.tvOS || target == BuildTarget.VisionOS) {
+#if UNITY_XCODE_EXTENSIONS_AVAILABLE
+        string projectPath = PBXProject.GetPBXProjectPath(path);
+        if (target == BuildTarget.VisionOS) {
+          // Unity's bug:
+          // After switch to VisionOS platform the projectPath is still "xx/Unity-iPhone.xcodeproj/project.pbxproj",
+          // while the expected path is "xx/Unity-VisionOS.xcodeproj/project.pbxproj",
+          // temporary fix:
+          projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
+        }
+#if UNITY_2019_3_OR_NEWER
+        var project = new PBXProject();
+        project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+        manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+        manager.WriteToFile();
+#else
+                        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+                        manager.AddSignInWithAppleWithCompatibility();
+                        manager.WriteToFile();
+#endif
+#endif
+      }
     }
+  }
 }
+
 ```
 
 ### Manual entitlements setup
