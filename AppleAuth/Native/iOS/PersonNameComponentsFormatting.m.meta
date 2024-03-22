@@ -24,6 +24,7 @@ PluginImporter:
         Exclude Win: 1
         Exclude Win64: 1
         Exclude iOS: 0
+        Exclude tvOS: 0
   - first:
       Android: Android
     second:
@@ -90,7 +91,10 @@ PluginImporter:
       tvOS: tvOS
     second:
       enabled: 1
-      settings: {}
+      settings:
+        CPU: AnyCPU
+        CompileFlags: 
+        FrameworkDependencies: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 
