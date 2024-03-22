@@ -1,4 +1,4 @@
-#if ((UNITY_IOS || UNITY_TVOS || UNITY_STANDALONE_OSX) && !UNITY_EDITOR)
+#if ((UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX) && !UNITY_EDITOR)
 #define NATIVE_PERSON_NAME_COMPONENTS_AVAILABLE
 #endif
 
@@ -77,7 +77,7 @@ namespace AppleAuth.Extensions
         
         private static class PInvoke
         {
-#if UNITY_IOS || UNITY_TVOS
+#if UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS
             private const string DllName = "__Internal";
 #elif UNITY_STANDALONE_OSX
             private const string DllName = "MacOSAppleAuthManager";
