@@ -336,7 +336,6 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
     #else
         return nil;
     #endif
-    
 }
 
 #endif

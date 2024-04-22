@@ -11,7 +11,6 @@ by **Daniel Lupiañez Casares**
 [![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/lupidan)
 
 
-
 [![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)](https://github.com/lupidan/apple-signin-unity/releases)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
 [![CHANGELOG](https://img.shields.io/badge/-CHANGELOG-informational)](https://github.com/lupidan/apple-signin-unity/blob/master/CHANGELOG.md)
@@ -133,7 +132,7 @@ openupm add com.lupidan.apple-signin-unity
 
 ![Import detail](./Img/ImportPlugin.png)
 
-## Plugin setup (iOS/tvOS/visionOS)
+## Plugin setup (iOS/tvOS)
 
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project. Two different options are available to set up the entitlements required to enable Apple ID authentication with the iOS SDK.
 
@@ -235,6 +234,16 @@ There is also a [Getting Started site](https://developer.apple.com/sign-in-with-
 The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
 The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+
+## Plugin setup (visionOS)
+
+On visionOS, the setup is pretty much the same as the iOS/tvOS setup.
+However, due to how Unity's visionOS project is exported, you need to adapt the Postprocess code to find the proper xcode project filename:
+
+if (target == BuildTarget.VisionOS)
+{
+    projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
+}
 
 ## Plugin setup (macOS)
 

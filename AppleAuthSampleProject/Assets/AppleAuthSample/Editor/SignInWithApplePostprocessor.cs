@@ -5,7 +5,7 @@
 using AppleAuth.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEngine;
+
 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
 using UnityEditor.iOS.Xcode;
 #endif
@@ -19,6 +19,7 @@ namespace AppleAuthSample.Editor {
       if (target == BuildTarget.iOS || target == BuildTarget.tvOS || target == BuildTarget.VisionOS) {
 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
         string projectPath = PBXProject.GetPBXProjectPath(path);
+#if UNITY_2022_3_OR_LATER
         if (target == BuildTarget.VisionOS) {
             
           // This is a temporary fix for the Unity Editor's bug:
@@ -26,6 +27,7 @@ namespace AppleAuthSample.Editor {
           // while the expected path is "xx/Unity-VisionOS.xcodeproj/project.pbxproj",
           projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
         }
+#endif
 #if UNITY_2019_3_OR_NEWER
         var project = new PBXProject();
         project.ReadFromString(System.IO.File.ReadAllText(projectPath));
