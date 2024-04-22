@@ -5,7 +5,6 @@
 using AppleAuth.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
-
 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
 using UnityEditor.iOS.Xcode;
 #endif
