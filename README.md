@@ -132,7 +132,7 @@ openupm add com.lupidan.apple-signin-unity
 
 ![Import detail](./Img/ImportPlugin.png)
 
-## Plugin setup (iOS/tvOS/visionOS)
+## Plugin setup (iOS/tvOS)
 
 To be able to use Apple's platform and framework for Authenticating with an Apple ID, we need to set up our Xcode project. Two different options are available to set up the entitlements required to enable Apple ID authentication with the iOS SDK.
 
@@ -148,51 +148,32 @@ The provided extension method is `AddSignInWithAppleWithCompatibility`. It accep
 
 Sample code:
 ```csharp
-#if UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS
-#define UNITY_XCODE_EXTENSIONS_AVAILABLE
-#endif
-
 using AppleAuth.Editor;
-using UnityEditor;
-using UnityEditor.Callbacks;
-using UnityEngine;
-#if UNITY_XCODE_EXTENSIONS_AVAILABLE
-using UnityEditor.iOS.Xcode;
-#endif
 
-namespace AppleAuthSample.Editor {
-  public static class SignInWithApplePostprocessor {
-    private const int CallOrder = 1;
+public static class SignInWithApplePostprocessor
+{
+    [PostProcessBuild(1)]
+    public static void OnPostProcessBuild(BuildTarget target, string path)
+    {
+        if (target != BuildTarget.iOS)
+            return;
 
-    [PostProcessBuild(CallOrder)]
-    public static void OnPostProcessBuild(BuildTarget target, string path) {
-      if (target == BuildTarget.iOS || target == BuildTarget.tvOS || target == BuildTarget.VisionOS) {
-#if UNITY_XCODE_EXTENSIONS_AVAILABLE
-        string projectPath = PBXProject.GetPBXProjectPath(path);
-        if (target == BuildTarget.VisionOS) {
-          // Unity's bug:
-          // After switch to VisionOS platform the projectPath is still "xx/Unity-iPhone.xcodeproj/project.pbxproj",
-          // while the expected path is "xx/Unity-VisionOS.xcodeproj/project.pbxproj",
-          // temporary fix:
-          projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
-        }
+        var projectPath = PBXProject.GetPBXProjectPath(path);
+        
+        // Adds entitlement depending on the Unity version used
 #if UNITY_2019_3_OR_NEWER
-        var project = new PBXProject();
-        project.ReadFromString(System.IO.File.ReadAllText(projectPath));
-        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-        manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
-        manager.WriteToFile();
+            var project = new PBXProject();
+            project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+            manager.WriteToFile();
 #else
-                        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-                        manager.AddSignInWithAppleWithCompatibility();
-                        manager.WriteToFile();
+            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+            manager.AddSignInWithAppleWithCompatibility();
+            manager.WriteToFile();
 #endif
-#endif
-      }
     }
-  }
 }
-
 ```
 
 ### Manual entitlements setup
@@ -234,6 +215,16 @@ There is also a [Getting Started site](https://developer.apple.com/sign-in-with-
 The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
 The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+
+## Plugin setup (visionOS)
+
+On visionOS, the setup is pretty much the same as the iOS/tvOS setup.
+However, due to how Unity's visionOS project is exported, you need to adapt the Postprocess code to find the proper xcode project filename:
+
+if (target == BuildTarget.VisionOS)
+{
+    projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
+}
 
 ## Plugin setup (macOS)
 
