@@ -27,8 +27,8 @@
 
 #pragma mark - AppleAuthManager Implementation
 
-// IOS/TVOS 13.0 | MACOS 10.15
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
+// IOS/TVOS 13.0 | MACOS 10.15 | VISIONOS 1.0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500 || __VISION_OS_VERSION_MAX_ALLOWED >= 10000
 #define AUTHENTICATION_SERVICES_AVAILABLE true
 #import <AuthenticationServices/AuthenticationServices.h>
 #endif
@@ -45,7 +45,7 @@
 @end
 
 #if AUTHENTICATION_SERVICES_AVAILABLE
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
 @interface AppleAuthManager () <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 @property (nonatomic, strong) ASAuthorizationAppleIDProvider *appleIdProvider;
 @property (nonatomic, strong) ASAuthorizationPasswordProvider *passwordProvider;
@@ -74,7 +74,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
     if (self)
     {
 #if AUTHENTICATION_SERVICES_AVAILABLE
-        if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+        if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
         {
             _appleIdProvider = [[ASAuthorizationAppleIDProvider alloc] init];
             _passwordProvider = [[ASAuthorizationPasswordProvider alloc] init];
@@ -90,7 +90,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 - (void) quickLogin:(uint)requestId withNonce:(NSString *)nonce andState:(NSString *)state
 {
 #if AUTHENTICATION_SERVICES_AVAILABLE
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
     {
         ASAuthorizationAppleIDRequest *appleIDRequest = [[self appleIdProvider] createRequest];
         [appleIDRequest setNonce:nonce];
@@ -117,7 +117,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 - (void) loginWithAppleId:(uint)requestId withOptions:(AppleAuthManagerLoginOptions)options nonce:(NSString *)nonce andState:(NSString *)state
 {
 #if AUTHENTICATION_SERVICES_AVAILABLE
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
     {
         ASAuthorizationAppleIDRequest *request = [[self appleIdProvider] createRequest];
         NSMutableArray *scopes = [NSMutableArray array];
@@ -152,7 +152,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 - (void) getCredentialStateForUser:(NSString *)userId withRequestId:(uint)requestId
 {
 #if AUTHENTICATION_SERVICES_AVAILABLE
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
     {
         [[self appleIdProvider] getCredentialStateForUserID:userId completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
             NSNumber *credentialStateNumber = nil;
@@ -185,7 +185,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 - (void) registerCredentialsRevokedCallbackForRequestId:(uint)requestId
 {
 #if AUTHENTICATION_SERVICES_AVAILABLE
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
     {
         if ([self credentialsRevokedObserver])
         {
@@ -265,7 +265,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 #if AUTHENTICATION_SERVICES_AVAILABLE
 
 - (void) performAuthorizationRequestsForController:(ASAuthorizationController *)authorizationController withRequestId:(uint)requestId
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:authorizationController];
     [[self authorizationsInProgress] setObject:@(requestId) forKey:authControllerAsKey];
@@ -278,7 +278,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 #pragma mark ASAuthorizationControllerDelegate protocol implementation
 
 - (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
@@ -306,7 +306,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 }
 
 - (void) authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
 {
     NSValue *authControllerAsKey = [NSValue valueWithNonretainedObject:controller];
     NSNumber *requestIdNumber = [[self authorizationsInProgress] objectForKey:authControllerAsKey];
@@ -326,9 +326,10 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 #pragma mark ASAuthorizationControllerPresentationContextProviding protocol implementation
 
 - (ASPresentationAnchor) presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller
-API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
+API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
 {
-    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000
+    
+    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 || __TV_OS_VERSION_MAX_ALLOWED >= 130000 || __VISION_OS_VERSION_MAX_ALLOWED >= 10000
         return [[[UIApplication sharedApplication] delegate] window];
     #elif __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
         return [[NSApplication sharedApplication] mainWindow];
@@ -345,7 +346,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0))
 
 bool AppleAuth_IsCurrentPlatformSupported()
 {
-    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, *))
+    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
     {
         return true;
     }

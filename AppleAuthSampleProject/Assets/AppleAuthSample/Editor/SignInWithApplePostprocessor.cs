@@ -1,4 +1,4 @@
-#if UNITY_IOS || UNITY_TVOS
+#if UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS
 #define UNITY_XCODE_EXTENSIONS_AVAILABLE
 #endif
 
@@ -22,6 +22,7 @@ namespace AppleAuthSample.Editor
             {
                 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
                     var projectPath = PBXProject.GetPBXProjectPath(path);
+               
                     #if UNITY_2019_3_OR_NEWER
                         var project = new PBXProject();
                         project.ReadFromString(System.IO.File.ReadAllText(projectPath));
@@ -39,6 +40,26 @@ namespace AppleAuthSample.Editor
             {
                 AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier(target, path);
             }
+
+           #if UNITY_2022_3_OR_NEWER
+                if (target == BuildTarget.VisionOS) 
+                {
+                    #if UNITY_XCODE_EXTENSIONS_AVAILABLE
+                    var projectPath = PBXProject.GetPBXProjectPath(path);
+
+                    // This is a temporary fix for the Unity Editor's bug:
+                    // After switch to VisionOS platform the projectPath is still "xx/Unity-iPhone.xcodeproj/project.pbxproj",
+                    // while the expected path is "xx/Unity-VisionOS.xcodeproj/project.pbxproj",
+                    projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
+
+                    var project = new PBXProject();
+                    project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+                    var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+                    manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+                    manager.WriteToFile();
+                    #endif
+                }
+            #endif
         }
     }
 }
