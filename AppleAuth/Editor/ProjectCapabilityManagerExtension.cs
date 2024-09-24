@@ -51,7 +51,11 @@ namespace AppleAuth.Editor
             if (project != null)
             {
                 var mainTargetGuid = targetGuidField.GetValue(manager) as string;
+#if UNITY_6000_0_OR_NEWER
+                var capabilityType = constructorInfo.Invoke(new object[] { true, string.Empty, true }) as PBXCapabilityType;
+#else
                 var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.developer.applesignin.custom", true, string.Empty, true }) as PBXCapabilityType;
+#endif
 
                 var targetGuidToAddFramework = unityFrameworkTargetGuid;
                 if (targetGuidToAddFramework == null)
@@ -66,11 +70,19 @@ namespace AppleAuth.Editor
         
         private static ConstructorInfo GetPBXCapabilityTypeConstructor(BindingFlags flags)
         {
+#if UNITY_6000_0_OR_NEWER
+            return typeof(PBXCapabilityType).GetConstructor(
+                flags,
+                null,
+                new[] {typeof(bool), typeof(string), typeof(bool)},
+                null);
+#else
             return typeof(PBXCapabilityType).GetConstructor(
                 flags,
                 null,
                 new[] {typeof(string), typeof(bool), typeof(string), typeof(bool)},
                 null);
+#endif
         }
     }
 }
