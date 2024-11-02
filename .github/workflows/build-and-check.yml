@@ -1,6 +1,6 @@
 name: Build and Check
 
-on: [workflow_dispatch,push]
+on: workflow_dispatch
 
 jobs:
   Build-And-Check:
@@ -21,7 +21,8 @@ jobs:
           unityVersion: 6000.0.23f1
 
       - name: Upload Xcode artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 6000_0_3f1_XcodeBuild
           path: build
+          
