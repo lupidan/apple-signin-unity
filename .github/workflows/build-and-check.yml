@@ -18,4 +18,4 @@ jobs:
         with:
           projectPath: ./AppleAuthSampleProject
           targetPlatform: iOS
-          unityVersion: 6000.0.0f1
+          unityVersion: 6000.0.23f1
