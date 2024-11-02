@@ -39,7 +39,7 @@ namespace AppleAuth.Editor
             }
 
             var project = (PBXProject) projectField.GetValue(manager);
-            var emptyCapability = GetEmptyCapabilityForUnity6000() ?? GetEmptyCapabilityWithReflection();
+            var emptyCapability = GetEmptyCapabilityWithReflection();
             
             var mainTargetGuid = (string)targetGuidField.GetValue(manager);
 #if UNITY_2019_3_OR_NEWER
@@ -51,32 +51,38 @@ namespace AppleAuth.Editor
             project.AddFrameworkToProject(frameworkTargetGuid, "AuthenticationServices.framework", true);
             project.AddCapability(mainTargetGuid, emptyCapability, entitlementFilePath);
         }
-
-        private static PBXCapabilityType GetEmptyCapabilityForUnity6000()
-        {
-#if UNITY_6000_0_OR_NEWER
-            return new PBXCapabilityType(requiresEntitlements: true);
-#else
-            return null;
-#endif
-        }
-
+        
         private static PBXCapabilityType GetEmptyCapabilityWithReflection()
         {
+            // For Unity version >= 6000.0.23f1
             var constructorInfo = typeof(PBXCapabilityType)
+                .GetConstructor(
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, 
+                    null, 
+                    new[] {typeof(bool), typeof(string), typeof(bool)}, 
+                    null);
+
+            if (constructorInfo != null)
+            {
+                return (PBXCapabilityType) constructorInfo
+                    .Invoke(new object[] {true, string.Empty, true});
+            }
+            
+            // For Unity version < 6000.0.23f1
+            constructorInfo = typeof(PBXCapabilityType)
                 .GetConstructor(
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, 
                     null, 
                     new[] {typeof(string), typeof(bool), typeof(string), typeof(bool)}, 
                     null);
 
-            if (constructorInfo == null)
+            if (constructorInfo != null)
             {
-                throw new Exception("Can't create empty capability in this Unity version.");
+                return (PBXCapabilityType) constructorInfo
+                    .Invoke(new object[] {"com.lupidan.apple-signin-unity.empty", true, string.Empty, true});
             }
 
-            return (PBXCapabilityType) constructorInfo
-                .Invoke(new object[] {"com.lupidan.apple-signin-unity.empty", true, string.Empty, true});
+            throw new Exception("Can't create empty capability in this Unity version.");
         }
     }
 }
