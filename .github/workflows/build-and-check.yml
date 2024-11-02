@@ -1,6 +1,6 @@
 name: Build and Check
 
-on: [workflow_dispatch]
+on: [workflow_dispatch,push]
 
 jobs:
   Build-And-Check:
