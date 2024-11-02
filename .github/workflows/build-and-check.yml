@@ -1,0 +1,27 @@
+name: Build and Check
+
+on: [workflow_dispatch,push]
+
+jobs:
+  Build-And-Check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ./AppleAuthSampleProject
+          targetPlatform: iOS
+          unityVersion: 6000.0.23f1
+
+      - name: Upload Xcode artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 6000_0_3f1_XcodeBuild
+          path: build
