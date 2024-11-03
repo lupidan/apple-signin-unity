@@ -70,6 +70,7 @@ This plugin supports the following platforms:
 * **iOS**
 * **macOS** Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
 * **tvOS** (Experimental)
+* **visionOS** (Experimental)
 
 The main purpose for this plugin is to expose Apple's newest feature, Sign in with Apple, to the Unity game engine.
 
@@ -82,6 +83,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 - Support for iOS
 - Support for macOS: Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
 - Support for tvOS (Experimental)
+- Support for visionOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
 - Supports Get Credential status (Authorized, Revoked and Not Found).
 - Supports Quick login (including iTunes Keychain credentials).
@@ -95,7 +97,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 
 ## Installation
 
-> Current stable version is v1.4.3
+> Current stable version is v1.4.4
 
 There are two options available to install this plugin. Either using the Unity Package Manager, or the traditional `.unitypackage` file.
 
@@ -103,13 +105,13 @@ There are two options available to install this plugin. Either using the Unity P
 
 #### Install via Git URL
 
-Available starting from Unity 2018.3.
+Available starting from Unity 2020.3.
 
 Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.4.3",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.4.4",
 }
 ```
 
@@ -142,7 +144,7 @@ This plugin **provides an extension method** for `ProjectCapabilityManager` ([do
 
 Simply create a Post Processing build script ([more info](https://docs.unity3d.com/ScriptReference/Callbacks.PostProcessBuildAttribute.html)) that performs the call. If you already have a post process build script, it should be simple to add to your code.
 
-The provided extension method is `AddSignInWithAppleWithCompatibility`. It accepts an optional argument for Unity 2019.3 to indicate the UnityFramework target Guid.
+The provided extension method is `AddSignInWithAppleWithCompatibility`.
 
 Sample code:
 ```csharp
@@ -157,19 +159,11 @@ public static class SignInWithApplePostprocessor
             return;
 
         var projectPath = PBXProject.GetPBXProjectPath(path);
-        
-        // Adds entitlement depending on the Unity version used
-#if UNITY_2019_3_OR_NEWER
-            var project = new PBXProject();
-            project.ReadFromString(System.IO.File.ReadAllText(projectPath));
-            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
-            manager.WriteToFile();
-#else
-            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-            manager.AddSignInWithAppleWithCompatibility();
-            manager.WriteToFile();
-#endif
+        var project = new PBXProject();
+        project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+        manager.AddSignInWithAppleWithCompatibility();
+        manager.WriteToFile();
     }
 }
 ```
@@ -212,7 +206,17 @@ There is also a [Getting Started site](https://developer.apple.com/sign-in-with-
 
 The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
-The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2020.x, 2021.x, 2022.x and 6000.0. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+
+## Plugin setup (visionOS)
+
+On visionOS, the setup is pretty much the same as the iOS/tvOS setup.
+However, due to how Unity's visionOS project is exported, you need to adapt the Postprocess code to find the proper xcode project filename:
+
+if (target == BuildTarget.VisionOS)
+{
+    projectPath = projectPath.Replace("Unity-iPhone.xcodeproj", "Unity-VisionOS.xcodeproj");
+}
 
 ## Plugin setup (macOS)
 

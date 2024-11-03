@@ -1,4 +1,4 @@
-#if UNITY_IOS || UNITY_TVOS
+#if UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS
 
 using System;
 using System.Reflection;
@@ -8,69 +8,81 @@ namespace AppleAuth.Editor
 {
     public static class ProjectCapabilityManagerExtension
     {
-        private const string EntitlementsArrayKey = "com.apple.developer.applesignin";
-        private const string DefaultAccessLevel = "Default";
-        private const string AuthenticationServicesFramework = "AuthenticationServices.framework";
-        private const BindingFlags NonPublicInstanceBinding = BindingFlags.NonPublic | BindingFlags.Instance;
-        private const BindingFlags PublicInstanceBinding = BindingFlags.Public | BindingFlags.Instance;
-
         /// <summary>
         /// Extension method for ProjectCapabilityManager to add the Sign In With Apple capability in compatibility mode.
         /// In particular, adds the AuthenticationServices.framework as an Optional framework, preventing crashes in
         /// iOS versions previous to 13.0
         /// </summary>
         /// <param name="manager">The manager for the main target to use when adding the Sign In With Apple capability.</param>
-        /// <param name="unityFrameworkTargetGuid">The GUID for the UnityFramework target. If null, it will use the main target GUID.</param>
-        public static void AddSignInWithAppleWithCompatibility(this ProjectCapabilityManager manager, string unityFrameworkTargetGuid = null)
+        public static void AddSignInWithAppleWithCompatibility(this ProjectCapabilityManager manager)
         {
+            const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             var managerType = typeof(ProjectCapabilityManager);
             
-            var projectField = managerType.GetField("project", NonPublicInstanceBinding);
-            var targetGuidField = managerType.GetField("m_TargetGuid", NonPublicInstanceBinding);
-            var entitlementFilePathField = managerType.GetField("m_EntitlementFilePath", NonPublicInstanceBinding);
-            var getOrCreateEntitlementDocMethod = managerType.GetMethod("GetOrCreateEntitlementDoc", NonPublicInstanceBinding);
-
-            // in old unity versions PBXCapabilityType had internal ctor; that was changed to public afterwards - try both
-            var constructorInfo = GetPBXCapabilityTypeConstructor(PublicInstanceBinding) ??
-                                  GetPBXCapabilityTypeConstructor(NonPublicInstanceBinding);
-            
-            if (projectField == null || targetGuidField == null  || entitlementFilePathField == null ||
-                getOrCreateEntitlementDocMethod == null || constructorInfo == null)
-                throw new Exception("Can't Add Sign In With Apple programatically in this Unity version");
+            var projectField = managerType.GetField("project", bindingFlags);
+            var entitlementFilePathField = managerType.GetField("m_EntitlementFilePath", bindingFlags);
+            var targetGuidField = managerType.GetField("m_TargetGuid", bindingFlags);
+            var getOrCreateEntitlementDocMethod = managerType.GetMethod("GetOrCreateEntitlementDoc", bindingFlags);
+            if (projectField == null ||
+                entitlementFilePathField == null ||
+                targetGuidField == null ||
+                getOrCreateEntitlementDocMethod == null)
+                throw new Exception("Can't Add Sign In With Apple programatically in this Unity version.");
             
             var entitlementFilePath = entitlementFilePathField.GetValue(manager) as string;
-            var entitlementDoc = getOrCreateEntitlementDocMethod.Invoke(manager, new object[] { }) as PlistDocument;
+            var entitlementDoc = (PlistDocument) getOrCreateEntitlementDocMethod.Invoke(manager, new object[] { });
             if (entitlementDoc != null)
             {
                 var plistArray = new PlistElementArray();
-                plistArray.AddString(DefaultAccessLevel);
-                entitlementDoc.root[EntitlementsArrayKey] = plistArray;
+                plistArray.AddString("Default");
+                entitlementDoc.root["com.apple.developer.applesignin"] = plistArray;
             }
 
-            var project = projectField.GetValue(manager) as PBXProject;
-            if (project != null)
-            {
-                var mainTargetGuid = targetGuidField.GetValue(manager) as string;
-                var capabilityType = constructorInfo.Invoke(new object[] { "com.apple.developer.applesignin.custom", true, string.Empty, true }) as PBXCapabilityType;
-
-                var targetGuidToAddFramework = unityFrameworkTargetGuid;
-                if (targetGuidToAddFramework == null)
-                {
-                    targetGuidToAddFramework = mainTargetGuid;
-                }
-
-                project.AddFrameworkToProject(targetGuidToAddFramework, AuthenticationServicesFramework, true);
-                project.AddCapability(mainTargetGuid, capabilityType, entitlementFilePath, false);
-            }
+            var project = (PBXProject) projectField.GetValue(manager);
+            var emptyCapability = GetEmptyCapabilityWithReflection();
+            
+            var mainTargetGuid = (string)targetGuidField.GetValue(manager);
+#if UNITY_2019_3_OR_NEWER
+            var frameworkTargetGuid = project.GetUnityFrameworkTargetGuid();
+#else
+            var frameworkTargetGuid = mainTargetGuid;
+#endif
+            
+            project.AddFrameworkToProject(frameworkTargetGuid, "AuthenticationServices.framework", true);
+            project.AddCapability(mainTargetGuid, emptyCapability, entitlementFilePath);
         }
         
-        private static ConstructorInfo GetPBXCapabilityTypeConstructor(BindingFlags flags)
+        private static PBXCapabilityType GetEmptyCapabilityWithReflection()
         {
-            return typeof(PBXCapabilityType).GetConstructor(
-                flags,
-                null,
-                new[] {typeof(string), typeof(bool), typeof(string), typeof(bool)},
-                null);
+            // For Unity version >= 6000.0.23f1
+            var constructorInfo = typeof(PBXCapabilityType)
+                .GetConstructor(
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, 
+                    null, 
+                    new[] {typeof(bool), typeof(string), typeof(bool)}, 
+                    null);
+
+            if (constructorInfo != null)
+            {
+                return (PBXCapabilityType) constructorInfo
+                    .Invoke(new object[] {true, string.Empty, true});
+            }
+            
+            // For Unity version < 6000.0.23f1
+            constructorInfo = typeof(PBXCapabilityType)
+                .GetConstructor(
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, 
+                    null, 
+                    new[] {typeof(string), typeof(bool), typeof(string), typeof(bool)}, 
+                    null);
+
+            if (constructorInfo != null)
+            {
+                return (PBXCapabilityType) constructorInfo
+                    .Invoke(new object[] {"com.lupidan.apple-signin-unity.empty", true, string.Empty, true});
+            }
+
+            throw new Exception("Can't create empty capability in this Unity version.");
         }
     }
 }

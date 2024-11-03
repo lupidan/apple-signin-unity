@@ -5,6 +5,14 @@ on: workflow_dispatch
 jobs:
   Build-And-Check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        unity-version:
+          - "6000.0.23f1"
+          - "2022.3.51f1"
+          - "2021.3.45f1"
+          - "2020.3.48f1"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -18,11 +26,11 @@ jobs:
         with:
           projectPath: ./AppleAuthSampleProject
           targetPlatform: iOS
-          unityVersion: 6000.0.23f1
+          unityVersion: ${{ matrix.unity-version }}
 
       - name: Upload Xcode artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 6000_0_3f1_XcodeBuild
+          name: "${{ matrix.unity-version }}_XcodeBuild"
           path: build
           

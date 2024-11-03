@@ -1,4 +1,10 @@
 # Changelog
+## [1.4.4] - 2024-11-03
+### Changed
+- Updates `AddSignInWithAppleWithCompatibility` to support new public constructor for `PBXCapabilityType` introduced in Unity 6000.0.23f1
+- Updates `AddSignInWithAppleWithCompatibility` to automatically handle the target to add the compatibility and add the framework. It´s no longer required to provide manually the Unity Framework target.
+- Added basic support for visionOS
+- Increased minimum Unity Version to 2020.3.48f1
 
 ## [1.4.3] - 2023-09-30
 ### Changed
@@ -109,7 +115,8 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.3...HEAD
+[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.4...HEAD
+[1.4.4]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.0...v1.4.1
