@@ -12,7 +12,7 @@ namespace AppleAuth
     {
         static AppleAuthManager()
         {
-            const string versionMessage = "Using Sign in with Apple Unity Plugin - v1.4.3";
+            const string versionMessage = "Using Sign in with Apple Unity Plugin - v1.4.4";
 #if APPLE_AUTH_MANAGER_NATIVE_IMPLEMENTATION_AVAILABLE
             PInvoke.AppleAuth_LogMessage(versionMessage);
 #else
