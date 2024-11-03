@@ -344,7 +344,7 @@ API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0), visionos(1.0))
 
 #pragma mark - Native C Calls
 
-bool AppleAuth_IsCurrentPlatformSupported()
+bool AppleAuth_IsCurrentPlatformSupported(void)
 {
     if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, visionOS 1.0, *))
     {
