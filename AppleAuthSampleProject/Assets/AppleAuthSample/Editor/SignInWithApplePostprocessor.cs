@@ -22,18 +22,11 @@ namespace AppleAuthSample.Editor
             {
                 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
                     var projectPath = PBXProject.GetPBXProjectPath(path);
-               
-                    #if UNITY_2019_3_OR_NEWER
-                        var project = new PBXProject();
-                        project.ReadFromString(System.IO.File.ReadAllText(projectPath));
-                        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-                        manager.AddSignInWithAppleWithCompatibility();
-                        manager.WriteToFile();
-                    #else
-                        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-                        manager.AddSignInWithAppleWithCompatibility();
-                        manager.WriteToFile();
-                    #endif
+                    var project = new PBXProject();
+                    project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+                    var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+                    manager.AddSignInWithAppleWithCompatibility();
+                    manager.WriteToFile();
                 #endif
             }
             else if (target == BuildTarget.StandaloneOSX)

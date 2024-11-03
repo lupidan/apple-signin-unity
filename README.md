@@ -105,7 +105,7 @@ There are two options available to install this plugin. Either using the Unity P
 
 #### Install via Git URL
 
-Available starting from Unity 2018.3.
+Available starting from Unity 2020.3.
 
 Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
@@ -144,7 +144,7 @@ This plugin **provides an extension method** for `ProjectCapabilityManager` ([do
 
 Simply create a Post Processing build script ([more info](https://docs.unity3d.com/ScriptReference/Callbacks.PostProcessBuildAttribute.html)) that performs the call. If you already have a post process build script, it should be simple to add to your code.
 
-The provided extension method is `AddSignInWithAppleWithCompatibility`. It accepts an optional argument for Unity 2019.3 to indicate the UnityFramework target Guid.
+The provided extension method is `AddSignInWithAppleWithCompatibility`.
 
 Sample code:
 ```csharp
@@ -159,19 +159,11 @@ public static class SignInWithApplePostprocessor
             return;
 
         var projectPath = PBXProject.GetPBXProjectPath(path);
-        
-        // Adds entitlement depending on the Unity version used
-#if UNITY_2019_3_OR_NEWER
-            var project = new PBXProject();
-            project.ReadFromString(System.IO.File.ReadAllText(projectPath));
-            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-            manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
-            manager.WriteToFile();
-#else
-            var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
-            manager.AddSignInWithAppleWithCompatibility();
-            manager.WriteToFile();
-#endif
+        var project = new PBXProject();
+        project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+        manager.AddSignInWithAppleWithCompatibility();
+        manager.WriteToFile();
     }
 }
 ```
@@ -214,7 +206,7 @@ There is also a [Getting Started site](https://developer.apple.com/sign-in-with-
 
 The `AuthenticationServices.framework` should be added as Optional, to support previous iOS versions, avoiding crashes at startup.
 
-The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2018.x and 2019.x. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
+The provided extension method uses reflection to integrate with the current tools Unity provides. It has been tested with Unity 2020.x, 2021.x, 2022.x and 6000.0. But if it fails on your particular Unity version, feel free to open a issue, specifying the Unity version.
 
 ## Plugin setup (visionOS)
 
