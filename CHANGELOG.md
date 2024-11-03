@@ -4,7 +4,7 @@
 - Updates `AddSignInWithAppleWithCompatibility` to support new public constructor for `PBXCapabilityType` introduced in Unity 6000.0.23f1
 - Updates `AddSignInWithAppleWithCompatibility` to automatically handle the target to add the compatibility and add the framework. It´s no longer required to provide manually the Unity Framework target.
 - Added basic support for visionOS
-- Increases minimum target for the macOS bundle to 10.13
+- Increased minimum Unity Version to 2020.3.48f1
 
 ## [1.4.3] - 2023-09-30
 ### Changed
