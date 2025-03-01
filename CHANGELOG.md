@@ -2,6 +2,8 @@
 ## [Unreleased]
 ### Changed
 - Reworked package structure and folders to more closely resemble Unity guidelines for packages.
+- Updates MacOS Xcode project file references to the new structure.
+- Removes `.meta` files inside the `MacOSAppleAuthManager.bundle`
 
 ## [1.4.4] - 2024-11-03
 ### Changed
