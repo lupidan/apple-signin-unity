@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		900B92F22454CC0B006DABD8 /* AppleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */; };
-		900B92F32454CC0B006DABD8 /* AppleAuthSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */; };
-		900B92F42454CC0B006DABD8 /* PersonNameComponentsFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = 900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */; };
 		900B92F82454DD51006DABD8 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 900B92F72454DD51006DABD8 /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C22C43C22D7361990050EBAD /* PersonNameComponentsFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = C22C43C12D7361990050EBAD /* PersonNameComponentsFormatting.m */; };
+		C22C43C32D7361990050EBAD /* AppleAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C22C43BE2D7361990050EBAD /* AppleAuthManager.m */; };
+		C22C43C42D7361990050EBAD /* AppleAuthSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = C22C43C02D7361990050EBAD /* AppleAuthSerializer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		900B92E42454CBAD006DABD8 /* MacOSAppleAuthManager.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacOSAppleAuthManager.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		900B92E72454CBAD006DABD8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppleAuthManager.m; path = ../../AppleAuth/Native/iOS/AppleAuthManager.m; sourceTree = "<group>"; };
-		900B92EE2454CC0B006DABD8 /* AppleAuthManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleAuthManager.h; path = ../../AppleAuth/Native/iOS/AppleAuthManager.h; sourceTree = "<group>"; };
-		900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppleAuthSerializer.m; path = ../../AppleAuth/Native/iOS/AppleAuthSerializer.m; sourceTree = "<group>"; };
-		900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PersonNameComponentsFormatting.m; path = ../../AppleAuth/Native/iOS/PersonNameComponentsFormatting.m; sourceTree = "<group>"; };
-		900B92F12454CC0B006DABD8 /* AppleAuthSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppleAuthSerializer.h; path = ../../AppleAuth/Native/iOS/AppleAuthSerializer.h; sourceTree = "<group>"; };
 		900B92F72454DD51006DABD8 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		C22C43BD2D7361990050EBAD /* AppleAuthManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppleAuthManager.h; path = ../Runtime/Native/iOS/AppleAuthManager.h; sourceTree = SOURCE_ROOT; };
+		C22C43BE2D7361990050EBAD /* AppleAuthManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppleAuthManager.m; path = ../Runtime/Native/iOS/AppleAuthManager.m; sourceTree = SOURCE_ROOT; };
+		C22C43BF2D7361990050EBAD /* AppleAuthSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppleAuthSerializer.h; path = ../Runtime/Native/iOS/AppleAuthSerializer.h; sourceTree = SOURCE_ROOT; };
+		C22C43C02D7361990050EBAD /* AppleAuthSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppleAuthSerializer.m; path = ../Runtime/Native/iOS/AppleAuthSerializer.m; sourceTree = SOURCE_ROOT; };
+		C22C43C12D7361990050EBAD /* PersonNameComponentsFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PersonNameComponentsFormatting.m; path = ../Runtime/Native/iOS/PersonNameComponentsFormatting.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,11 +56,11 @@
 		900B92E62454CBAD006DABD8 /* MacOSAppleAuthManager */ = {
 			isa = PBXGroup;
 			children = (
-				900B92EE2454CC0B006DABD8 /* AppleAuthManager.h */,
-				900B92ED2454CC0B006DABD8 /* AppleAuthManager.m */,
-				900B92F12454CC0B006DABD8 /* AppleAuthSerializer.h */,
-				900B92EF2454CC0B006DABD8 /* AppleAuthSerializer.m */,
-				900B92F02454CC0B006DABD8 /* PersonNameComponentsFormatting.m */,
+				C22C43BD2D7361990050EBAD /* AppleAuthManager.h */,
+				C22C43BE2D7361990050EBAD /* AppleAuthManager.m */,
+				C22C43BF2D7361990050EBAD /* AppleAuthSerializer.h */,
+				C22C43C02D7361990050EBAD /* AppleAuthSerializer.m */,
+				C22C43C12D7361990050EBAD /* PersonNameComponentsFormatting.m */,
 				900B92E72454CBAD006DABD8 /* Info.plist */,
 			);
 			path = MacOSAppleAuthManager;
@@ -153,7 +153,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -r $SOURCE_ROOT/../AppleAuth/Native/macOS/$FULL_PRODUCT_NAME\ncp -r $CODESIGNING_FOLDER_PATH $SOURCE_ROOT/../AppleAuth/Native/macOS/$FULL_PRODUCT_NAME\n";
+			shellScript = "rm -r $SOURCE_ROOT/../Runtime/Native/macOS/$FULL_PRODUCT_NAME\ncp -r $CODESIGNING_FOLDER_PATH $SOURCE_ROOT/../Runtime/Native/macOS/$FULL_PRODUCT_NAME\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -162,9 +162,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				900B92F42454CC0B006DABD8 /* PersonNameComponentsFormatting.m in Sources */,
-				900B92F32454CC0B006DABD8 /* AppleAuthSerializer.m in Sources */,
-				900B92F22454CC0B006DABD8 /* AppleAuthManager.m in Sources */,
+				C22C43C22D7361990050EBAD /* PersonNameComponentsFormatting.m in Sources */,
+				C22C43C32D7361990050EBAD /* AppleAuthManager.m in Sources */,
+				C22C43C42D7361990050EBAD /* AppleAuthSerializer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
