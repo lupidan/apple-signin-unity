@@ -1,4 +1,8 @@
 # Changelog
+## [Unreleased]
+### Changed
+- Reworked package structure and folders to more closely resemble Unity guidelines for packages.
+
 ## [1.4.4] - 2024-11-03
 ### Changed
 - Updates `AddSignInWithAppleWithCompatibility` to support new public constructor for `PBXCapabilityType` introduced in Unity 6000.0.23f1

@@ -22,19 +22,5 @@
         "native",
         "unity"
     ],
-    "category": "Unity",
-    "files": [
-        "/LICENSE",
-        "/LICENSE.meta",
-        "/README.md",
-        "/README.md.meta",
-        "/CHANGELOG.md",
-        "/CHANGELOG.md.meta",
-        "/package.json",
-        "/package.json.meta",
-        "/AppleAuth",
-        "/AppleAuth.meta",
-        "/docs",
-        "/docs.meta"
-    ]
+    "category": "Unity"
 }
