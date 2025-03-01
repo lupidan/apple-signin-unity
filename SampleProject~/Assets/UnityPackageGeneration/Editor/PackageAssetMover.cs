@@ -41,14 +41,14 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
                 if (string.IsNullOrEmpty(parentFolder))
                 {
                     throw new Exception(
-                        $"[{nameof(CreateUnityPackage)}] Can't determine parent folder from {destinationFolder}");
+                        $"[{nameof(PackageAssetMover)}] Can't determine parent folder from {destinationFolder}");
                 }
 
                 var newFolderName = Path.GetFileName(destinationFolder);
                 if (string.IsNullOrEmpty(newFolderName))
                 {
                     throw new Exception(
-                        $"[{nameof(CreateUnityPackage)}] Can't determine folder name from {destinationFolder}");
+                        $"[{nameof(PackageAssetMover)}] Can't determine folder name from {destinationFolder}");
                 }
 
                 var directoryGuid = AssetDatabase.CreateFolder(
@@ -57,7 +57,7 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
 
                 if (string.IsNullOrEmpty(directoryGuid))
                 {
-                    throw new Exception($"[{nameof(CreateUnityPackage)}] Couldn't create {destinationFolder}");
+                    throw new Exception($"[{nameof(PackageAssetMover)}] Couldn't create {destinationFolder}");
                 }
             }
 
@@ -70,7 +70,7 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
                 if (!string.IsNullOrEmpty(error))
                 {
                     throw new Exception(
-                        $"[{nameof(CreateUnityPackage)}] Couldn't move {assetToMove} from {originalFolder} to {destinationFolder} due to:\n{error}");
+                        $"[{nameof(PackageAssetMover)}] Couldn't move {assetToMove} from {originalFolder} to {destinationFolder} due to:\n{error}");
                 }
             }
         }
