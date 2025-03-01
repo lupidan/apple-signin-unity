@@ -2,38 +2,41 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[Serializable]
-public class LoginMenuHandler
+namespace AppleAuthSample
 {
-    public GameObject Parent;
-    public GameObject SignInWithAppleParent;
-    public Button SignInWithAppleButton;
-    public GameObject LoadingMessageParent;
-    public Transform LoadingIconTransform;
-    public Text LoadingMessageLabel;
-
-    public void SetVisible(bool visible)
+    [Serializable]
+    public class LoginMenuHandler
     {
-        this.Parent.SetActive(visible);
-    }
+        public GameObject Parent;
+        public GameObject SignInWithAppleParent;
+        public Button SignInWithAppleButton;
+        public GameObject LoadingMessageParent;
+        public Transform LoadingIconTransform;
+        public Text LoadingMessageLabel;
 
-    public void SetLoadingMessage(bool visible,  string message)
-    {
-        this.LoadingMessageParent.SetActive(visible);
-        this.LoadingMessageLabel.text = message;
-    }
+        public void SetVisible(bool visible)
+        {
+            this.Parent.SetActive(visible);
+        }
 
-    public void SetSignInWithAppleButton(bool visible, bool enabled)
-    {
-        this.SignInWithAppleParent.SetActive(visible);
-        this.SignInWithAppleButton.enabled = enabled;
-    }
+        public void SetLoadingMessage(bool visible,  string message)
+        {
+            this.LoadingMessageParent.SetActive(visible);
+            this.LoadingMessageLabel.text = message;
+        }
 
-    public void UpdateLoadingMessage(float deltaTime)
-    {
-        if (!this.LoadingMessageParent.activeSelf)
-            return;
+        public void SetSignInWithAppleButton(bool visible, bool enabled)
+        {
+            this.SignInWithAppleParent.SetActive(visible);
+            this.SignInWithAppleButton.enabled = enabled;
+        }
+
+        public void UpdateLoadingMessage(float deltaTime)
+        {
+            if (!this.LoadingMessageParent.activeSelf)
+                return;
         
-        this.LoadingIconTransform.Rotate(0.0f, 0.0f, -360.0f * deltaTime);
+            this.LoadingIconTransform.Rotate(0.0f, 0.0f, -360.0f * deltaTime);
+        }
     }
 }
