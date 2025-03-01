@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace UnityPackageGeneration.Editor
+namespace AppleAuthSample.UnityPackageGeneration.Editor
 {
     public static class CreateUnityPackage
     {

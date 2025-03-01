@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEditor;
 
-namespace UnityPackageGeneration.Editor
+namespace AppleAuthSample.UnityPackageGeneration.Editor
 {
     internal class PackageAssetMover
     {

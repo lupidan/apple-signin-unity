@@ -1,6 +1,6 @@
 using System;
 
-namespace UnityPackageGeneration.Editor
+namespace AppleAuthSample.UnityPackageGeneration.Editor
 {
     internal class ActionDisposable : IDisposable
     {
