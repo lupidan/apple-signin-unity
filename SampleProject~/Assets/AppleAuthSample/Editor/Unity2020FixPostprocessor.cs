@@ -4,6 +4,7 @@
 
 #if UNITY_2020_3
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -36,6 +37,23 @@ namespace AppleAuthSample.Editor
                 "OTHER_CFLAGS",
                 Array.Empty<string>(),
                 new[] {"-mno-thumb"});
+
+            if (target == BuildTarget.tvOS)
+            {
+                // Fix for tvOS
+                var unityViewControllerBaseFilePath = Path.Combine(
+                    path,
+                    "Classes",
+                    "UI",
+                    "UnityViewControllerBase.h");
+                
+                var unityViewControllerBaseFileContents = File.ReadAllText(unityViewControllerBaseFilePath);
+                unityViewControllerBaseFileContents = unityViewControllerBaseFileContents.Replace(
+                    "#import <GameController/GCController.h>",
+                    "#import <GameController/GCEventViewController.h>");
+
+                File.WriteAllText(unityViewControllerBaseFilePath, unityViewControllerBaseFileContents);
+            }
             
             project.WriteToFile(projectPath);
         }
