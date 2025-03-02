@@ -429,15 +429,15 @@ PlayerSettings:
       m_Kind: 0
       m_SubKind: 
     - m_Textures:
-      - {fileID: 2800000, guid: cc9b143ccf1c24c11bcb7d31390b7f69, type: 3}
       - {fileID: 2800000, guid: 1cd4584ac52954185ab952092e105aa7, type: 3}
+      - {fileID: 2800000, guid: cc9b143ccf1c24c11bcb7d31390b7f69, type: 3}
       m_Width: 800
       m_Height: 480
       m_Kind: 0
       m_SubKind: 
     - m_Textures:
-      - {fileID: 2800000, guid: 133f41e3f2c3845c991787af67bfda22, type: 3}
       - {fileID: 2800000, guid: d60a0188d906e4f08bca6326b1a7de53, type: 3}
+      - {fileID: 2800000, guid: 133f41e3f2c3845c991787af67bfda22, type: 3}
       m_Width: 400
       m_Height: 240
       m_Kind: 0
