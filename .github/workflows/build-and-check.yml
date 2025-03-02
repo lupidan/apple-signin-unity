@@ -8,14 +8,14 @@ jobs:
     strategy:
       matrix:
         unity-version:
-          - "6000.0.23f1"
-          - "2022.3.51f1"
+          - "6000.0.40f1"
+          - "2022.3.59f1"
           - "2021.3.45f1"
           - "2020.3.48f1"
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4
@@ -24,7 +24,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: ./AppleAuthSampleProject
+          projectPath: ./SampleProject~/
           targetPlatform: iOS
           unityVersion: ${{ matrix.unity-version }}
 
