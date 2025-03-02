@@ -51,23 +51,36 @@ namespace AppleAuth.Editor
 
         private static string GetInfoPlistPath(string path)
         {
-            var possibleInfoPlistPaths = new[]
-            {
-                Path.Combine(path, "Contents", "Plugins", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
-                Path.Combine(path, "Contents", "PlugIns", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
-                Path.Combine($"{path}.app", "Contents", "Plugins", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
-                Path.Combine($"{path}.app", "Contents", "PlugIns", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
-            };
+            var bundleDirectories = Directory.GetDirectories(
+                path,
+                "MacOSAppleAuthManager.bundle",
+                SearchOption.AllDirectories);
 
-            foreach (var possibleInfoPlistPath in possibleInfoPlistPaths)
+            if (bundleDirectories.Length == 0)
             {
-                if (File.Exists(possibleInfoPlistPath))
-                {
-                    return possibleInfoPlistPath;
-                }
+                throw new Exception(GetMessage("Can't locate any MacOSAppleAuthManager.bundle"));
+            }
+
+            if (bundleDirectories.Length > 1)
+            {
+                var allPaths = string.Join("\n", bundleDirectories);
+                throw new Exception(GetMessage($"Located multiple MacOSAppleAuthManager.bundle!\n{allPaths}"));
             }
             
-            throw new Exception(GetMessage("Can't locate MacOSAppleAuthManager.bundle info plist"));
+            var bundlePath = bundleDirectories[0];
+            var infoPlistPath = Path.Combine(
+                bundlePath,
+                "Contents",
+                "Info.plist");
+
+            if (!File.Exists(infoPlistPath))
+            {
+                throw new Exception(GetMessage("Can't locate MacOSAppleAuthManager's Info.plist"));
+            }
+            
+            Debug.Log(GetMessage($"Located Info.plist at {infoPlistPath}"));
+            
+            return infoPlistPath;
         }
     }
 }
