@@ -9,11 +9,11 @@ jobs:
       matrix:
         unity-version-and-platform:
           #- "6000.0.40f1,iOS"
-          - "2022.3.59f1,iOS"
+          #- "2022.3.59f1,iOS"
           #- "2022.3.59f1,visionOS"
           #- "2021.3.45f1,iOS"
           #- "2020.3.48f1,StandaloneOSX"
-          #- "2020.3.48f1,tvOS"
+          - "2020.3.48f1,tvOS"
           #- "2020.3.48f1,iOS"
 
     steps:
@@ -29,7 +29,7 @@ jobs:
           echo "target_platform=${UNITY_VERSION_AND_PLATFORM##*,}" >> $GITHUB_OUTPUT
 
       - name: Build Unity Project
-        uses: lupidan/unity-builder@main
+        uses: lupidan/unity-builder@feature/support-tvos
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
