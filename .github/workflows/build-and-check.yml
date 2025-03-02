@@ -7,15 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        unity-version:
-          - "6000.0.40f1"
-          - "2022.3.59f1"
-          - "2021.3.45f1"
-          - "2020.3.48f1"
+        unity-version-and-platform:
+          #- "6000.0.40f1,iOS"
+          #- "2022.3.59f1,iOS"
+          #- "2021.3.45f1,iOS"
+          #- "2020.3.48f1,tvOS"
+          - "2020.3.48f1,iOS"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Split Unity Version and Platform
+        id: split
+        run: |
+          UNITY_VERSION="${{ matrix.unity-version-and-platform%%,* }}"
+          PLATFORM="${{ matrix.unity-version-and-platform##*, }}"
+          echo "UNITY_VERSION=$UNITY_VERSION" >> $GITHUB_ENV
+          echo "PLATFORM=$PLATFORM" >> $GITHUB_ENV
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4
@@ -25,8 +34,8 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: ./SampleProject~/
-          targetPlatform: iOS
-          unityVersion: ${{ matrix.unity-version }}
+          targetPlatform: ${{ env.PLATFORM }}
+          unityVersion: ${{ env.UNITY_VERSION }}
 
       - name: Upload Xcode artifact
         uses: actions/upload-artifact@v4
