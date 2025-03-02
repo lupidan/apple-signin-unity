@@ -20,15 +20,17 @@ jobs:
 
       - name: Split Unity Version and Platform
         id: split
+        env:
+          UNITY_VERSION_AND_PLATFORM: ${{ matrix.unity-version-and-platform }}
         run: |
-          UNITY_VERSION="${{ matrix.unity-version-and-platform%%,* }}"
-          PLATFORM="${{ matrix.unity-version-and-platform##*, }}"
-          echo "UNITY_VERSION=$UNITY_VERSION" >> $GITHUB_ENV
-          echo "PLATFORM=$PLATFORM" >> $GITHUB_ENV
+          echo "UNITY_VERSION=${UNITY_VERSION_AND_PLATFORM%%*,}" >> $GITHUB_OUTPUT
+          echo "PLATFORM=${UNITY_VERSION_AND_PLATFORM##*,}" >> $GITHUB_OUTPUT
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4
         env:
+          UNITY_VERSION: ${{ env.UNITY_VERSION }}
+          PLATFORM: ${{ env.PLATFORM }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -39,7 +41,9 @@ jobs:
 
       - name: Upload Xcode artifact
         uses: actions/upload-artifact@v4
+        env:
+          UNITY_VERSION: ${{ env.UNITY_VERSION }}
         with:
-          name: "${{ matrix.unity-version }}_XcodeBuild"
+          name: "${{ env.UNITY_VERSION }}_XcodeBuild"
           path: build
           
