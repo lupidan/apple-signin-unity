@@ -6,6 +6,7 @@
 - Updates MacOS Xcode project file references to the new structure.
 - Improves code that generates the `.unitypackage`.
 - Updates sample project's code with proper namespaces.
+- Added Github Action to generate builds for iOS, macOS and tvOS using Game-CI.
 
 ### Added
 - Adds code to ease upgrading the plugin version in required files.
