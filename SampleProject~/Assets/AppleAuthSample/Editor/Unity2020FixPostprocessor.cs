@@ -2,15 +2,13 @@
 #define UNITY_XCODE_EXTENSIONS_AVAILABLE
 #endif
 
-#if UNITY_2020_3
+#if UNITY_2020_3 && UNITY_XCODE_EXTENSIONS_AVAILABLE
 using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-#if UNITY_XCODE_EXTENSIONS_AVAILABLE
 using UnityEditor.iOS.Xcode;
-#endif
 
 namespace AppleAuthSample.Editor
 {
