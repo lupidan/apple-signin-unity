@@ -55,6 +55,8 @@ namespace AppleAuth.Editor
             {
                 Path.Combine(path, "Contents", "Plugins", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
                 Path.Combine(path, "Contents", "PlugIns", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
+                Path.Combine($"{path}.app", "Contents", "Plugins", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
+                Path.Combine($"{path}.app", "Contents", "PlugIns", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
             };
 
             foreach (var possibleInfoPlistPath in possibleInfoPlistPaths)
