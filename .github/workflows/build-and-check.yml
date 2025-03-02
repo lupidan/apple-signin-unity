@@ -3,7 +3,7 @@ name: Ubuntu Build
 on: workflow_dispatch
 
 jobs:
-  Build-And-Check:
+  Ubuntu-Build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,6 +19,50 @@ jobs:
 
           - "2020.3.48f1,StandaloneOSX"
           - "2020.3.48f1,iOS"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Split Unity Version and Platform
+        id: split
+        env:
+          UNITY_VERSION_AND_PLATFORM: ${{ matrix.unity-version-and-platform }}
+        run: |
+          echo "unity_version=${UNITY_VERSION_AND_PLATFORM%%,*}" >> $GITHUB_OUTPUT
+          echo "target_platform=${UNITY_VERSION_AND_PLATFORM##*,}" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ./SampleProject~/Library/
+          key: Library-${{ steps.split.outputs.target_platform }}-${{ steps.split.outputs.unity_version }}
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4.3.0
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ./SampleProject~/
+          targetPlatform: ${{ steps.split.outputs.target_platform }}
+          unityVersion: ${{ steps.split.outputs.unity_version }}
+
+      - name: Upload Xcode artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ steps.split.outputs.target_platform }}_${{ steps.split.outputs.unity_version }}_BuildOutput"
+          path: build
+
+  Windows-Build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        unity-version-and-platform:
+          - "6000.0.40f1,tvOS"
+          - "2022.3.59f1,tvOS"
+          - "2021.3.45f1,tvOS"
+          - "2020.3.48f1,tvOS"
 
     steps:
       - name: Checkout repository
