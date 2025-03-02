@@ -55,7 +55,12 @@ namespace AppleAuth.Editor
         {
             const string bundleName = "MacOSAppleAuthManager.bundle";
             
-            var possibleRootPaths = new List<string> {path};
+            var possibleRootPaths = new List<string>();
+            if (Directory.Exists(path))
+            {
+                possibleRootPaths.Add(path);
+            }
+            
             if (Directory.Exists($"{path}.app"))
             {
                 possibleRootPaths.Add($"{path}.app");
