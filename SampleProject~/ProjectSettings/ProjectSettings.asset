@@ -155,14 +155,14 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.lupidan.testappleauth
-    Standalone: com.DefaultCompany.AppleSignInForUnity
-    iPhone: com.DefaultCompany.AppleSignInForUnity
-    tvOS: com.DefaultCompany.AppleSignInForUnity
+    Standalone: com.lupidan.testappleauth
+    iPhone: com.lupidan.testappleauth
+    tvOS: com.lupidan.testappleauth
   buildNumber:
     Standalone: 0
     iPhone: 0
     tvOS: 0
-  overrideDefaultApplicationIdentifier: 0
+  overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
