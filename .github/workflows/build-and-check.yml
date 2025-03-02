@@ -1,9 +1,10 @@
-name: Ubuntu Build
+name: Builds
 
 on: workflow_dispatch
 
 jobs:
   Ubuntu-Build:
+    name: Ubuntu Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,6 +56,7 @@ jobs:
           path: build
 
   Windows-Build:
+    name: Windows Build
     runs-on: windows-latest
     strategy:
       matrix:

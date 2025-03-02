@@ -24,14 +24,7 @@ namespace AppleAuth.Editor
 
             try
             {
-                var macosAppleAuthManagerInfoPlistPath = Path.Combine(
-                    path,
-                    "Contents",
-                    "Plugins",
-                    "MacOSAppleAuthManager.bundle",
-                    "Contents",
-                    "Info.plist");
-                
+                var macosAppleAuthManagerInfoPlistPath = GetInfoPlistPath(path);
                 var macosAppleAuthManagerInfoPlist = File.ReadAllText(macosAppleAuthManagerInfoPlistPath);
                 var regex = new Regex(@"\<key\>CFBundleIdentifier\<\/key\>\s*\<string\>(com\.lupidan)\.MacOSAppleAuthManager\<\/string\>");
                 var match = regex.Match(macosAppleAuthManagerInfoPlist);
@@ -55,5 +48,24 @@ namespace AppleAuth.Editor
         }
 
         private static string GetMessage(string message) => $"{nameof(AppleAuthMacosPostprocessorHelper)}: {message}";
+
+        private static string GetInfoPlistPath(string path)
+        {
+            var possibleInfoPlistPaths = new[]
+            {
+                Path.Combine(path, "Contents", "Plugins", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
+                Path.Combine(path, "Contents", "PlugIns", "MacOSAppleAuthManager.bundle", "Contents", "Info.plist"),
+            };
+
+            foreach (var possibleInfoPlistPath in possibleInfoPlistPaths)
+            {
+                if (File.Exists(possibleInfoPlistPath))
+                {
+                    return possibleInfoPlistPath;
+                }
+            }
+            
+            throw new Exception(GetMessage("Can't locate MacOSAppleAuthManager.bundle info plist"));
+        }
     }
 }
