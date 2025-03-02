@@ -2,9 +2,11 @@
 ## [1.5.0] - TBD
 ### Changed
 - Reworked package structure and folders to more closely resemble Unity guidelines for packages.
+- Updated macOS helper method in `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` for a more robust code and execution.
 - Updates MacOS Xcode project file references to the new structure.
 - Improves code that generates the `.unitypackage`.
 - Updates sample project's code with proper namespaces.
+- Added Github Action to generate builds for iOS, macOS and tvOS using Game-CI.
 
 ### Added
 - Adds code to ease upgrading the plugin version in required files.

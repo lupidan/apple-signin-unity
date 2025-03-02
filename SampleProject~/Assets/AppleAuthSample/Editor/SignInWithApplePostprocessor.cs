@@ -2,22 +2,25 @@
 #define UNITY_XCODE_EXTENSIONS_AVAILABLE
 #endif
 
+using System;
 using AppleAuth.Editor;
 using UnityEditor;
-using UnityEditor.Callbacks;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
 using UnityEditor.iOS.Xcode;
 #endif
 
 namespace AppleAuthSample.Editor
 {
-    public static class SignInWithApplePostprocessor
+    public class SignInWithApplePostprocessor : IPostprocessBuildWithReport
     {
-        private const int CallOrder = 1;
-
-        [PostProcessBuild(CallOrder)]
-        public static void OnPostProcessBuild(BuildTarget target, string path)
+        public int callbackOrder => 1;
+        public void OnPostprocessBuild(BuildReport report)
         {
+            var target = report.summary.platform;
+            var path = report.summary.outputPath;
+                
             if (target == BuildTarget.iOS || target == BuildTarget.tvOS)
             {
                 #if UNITY_XCODE_EXTENSIONS_AVAILABLE
@@ -31,7 +34,14 @@ namespace AppleAuthSample.Editor
             }
             else if (target == BuildTarget.StandaloneOSX)
             {
-                AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier(target, path);
+                try
+                {
+                    AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier(target, path);
+                }
+                catch (Exception exception)
+                {
+                    throw new BuildFailedException(exception);
+                }
             }
 
            #if UNITY_2022_3_OR_NEWER
