@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -51,23 +53,35 @@ namespace AppleAuth.Editor
 
         private static string GetInfoPlistPath(string path)
         {
-            var bundleDirectories = Directory.GetDirectories(
-                path,
-                "MacOSAppleAuthManager.bundle",
-                SearchOption.AllDirectories);
+            const string bundleName = "MacOSAppleAuthManager.bundle";
+            
+            var possibleRootPaths = new List<string> {path};
+            if (Directory.Exists($"{path}.app"))
+            {
+                possibleRootPaths.Add($"{path}.app");
+            }
+
+            var bundleDirectories = possibleRootPaths
+                .SelectMany(possibleRootPath => Directory.GetDirectories(
+                    possibleRootPath,
+                    bundleName,
+                    SearchOption.AllDirectories))
+                .ToArray();
 
             if (bundleDirectories.Length == 0)
             {
-                throw new Exception(GetMessage("Can't locate any MacOSAppleAuthManager.bundle"));
+                throw new Exception(GetMessage($"Can't locate any {bundleName}"));
             }
 
             if (bundleDirectories.Length > 1)
             {
                 var allPaths = string.Join("\n", bundleDirectories);
-                throw new Exception(GetMessage($"Located multiple MacOSAppleAuthManager.bundle!\n{allPaths}"));
+                throw new Exception(GetMessage($"Located multiple {bundleName}!\n{allPaths}"));
             }
             
             var bundlePath = bundleDirectories[0];
+            Debug.Log(GetMessage($"Located {bundleName} at {bundlePath}"));
+            
             var infoPlistPath = Path.Combine(
                 bundlePath,
                 "Contents",
