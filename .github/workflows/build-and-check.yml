@@ -23,27 +23,23 @@ jobs:
         env:
           UNITY_VERSION_AND_PLATFORM: ${{ matrix.unity-version-and-platform }}
         run: |
-          echo "UNITY_VERSION=${UNITY_VERSION_AND_PLATFORM%%*,}" >> $GITHUB_OUTPUT
-          echo "PLATFORM=${UNITY_VERSION_AND_PLATFORM##*,}" >> $GITHUB_OUTPUT
+          echo "unity_version=${UNITY_VERSION_AND_PLATFORM%%,*}" >> $GITHUB_OUTPUT
+          echo "target_platform=${UNITY_VERSION_AND_PLATFORM##*,}" >> $GITHUB_OUTPUT
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_VERSION: ${{ env.UNITY_VERSION }}
-          PLATFORM: ${{ env.PLATFORM }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: ./SampleProject~/
-          targetPlatform: ${{ env.PLATFORM }}
-          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: ${{ steps.split.outputs.target_platform }}
+          unityVersion: ${{ steps.split.outputs.unity_version }}
 
       - name: Upload Xcode artifact
         uses: actions/upload-artifact@v4
-        env:
-          UNITY_VERSION: ${{ env.UNITY_VERSION }}
         with:
-          name: "${{ env.UNITY_VERSION }}_XcodeBuild"
+          name: "${{ steps.split.outputs.unity_version }}_XcodeBuild"
           path: build
           
