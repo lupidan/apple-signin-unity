@@ -21,9 +21,11 @@ PluginImporter:
         Exclude Linux64: 1
         Exclude LinuxUniversal: 1
         Exclude OSXUniversal: 1
+        Exclude VisionOS: 0
         Exclude Win: 1
         Exclude Win64: 1
         Exclude iOS: 0
+        Exclude tvOS: 0
   - first:
       Any: 
     second:
@@ -79,6 +81,11 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
+  - first:
+      VisionOS: VisionOS
+    second:
+      enabled: 1
+      settings: {}
   - first:
       iPhone: iOS
     second:
