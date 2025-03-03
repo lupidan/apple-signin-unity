@@ -1,8 +1,8 @@
 # Changelog
 ## [1.5.0] - TBD
 ### Changed
-- Fixed native files not being included in visionOS builds.
-- Fixed header files not being included in tvOS builds.
+- Fixed issue with native files not being included in visionOS builds.
+- Fixed issue with header files not being included in tvOS builds.
 - Reworked package structure and folders to more closely resemble Unity guidelines for packages.
 - Updated macOS helper method in `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` to easier locate the bundle for both `.app` and `xcodeproj` generation.
 
