@@ -1,16 +1,10 @@
 # Changelog
 ## [1.5.0] - TBD
 ### Changed
-- Fixed header files not being included in tvOS builds
+- Fixed native files not being included in visionOS builds.
+- Fixed header files not being included in tvOS builds.
 - Reworked package structure and folders to more closely resemble Unity guidelines for packages.
 - Updated macOS helper method in `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` to easier locate the bundle for both `.app` and `xcodeproj` generation.
-- Updates MacOS Xcode project file references to the new structure.
-- Improves code that generates the `.unitypackage`.
-- Updates sample project's code with proper namespaces.
-- Added Github Action to generate builds for iOS, macOS and tvOS using Game-CI.
-
-### Added
-- Adds code to ease upgrading the plugin version in required files.
 
 ### Removed
 - Removes `.meta` files inside the `MacOSAppleAuthManager.bundle`.
