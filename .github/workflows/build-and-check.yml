@@ -1,4 +1,4 @@
-name: Builds
+name: Build Sample Project
 
 on: workflow_dispatch
 
@@ -9,15 +9,19 @@ jobs:
     strategy:
       matrix:
         unity-version-and-platform:
-          - "6000.0.40f1,StandaloneOSX"
-          - "2022.3.59f1,StandaloneOSX"
-          - "2020.3.48f1,StandaloneOSX"
-          - "2021.3.45f1,StandaloneOSX"
+          #- "6000.0.40f1,StandaloneOSX"
+          #- "2022.3.59f1,StandaloneOSX"
+          #- "2020.3.48f1,StandaloneOSX"
+          #- "2021.3.45f1,StandaloneOSX"
 
           - "6000.0.40f1,iOS"
           - "2022.3.59f1,iOS"
           - "2021.3.45f1,iOS"
           - "2020.3.48f1,iOS"
+
+    outputs:
+      unity_version: ${{ steps.split.outputs.unity_version }}
+      target_platform: ${{ steps.split.outputs.target_platform }}
 
     steps:
       - name: Checkout repository
@@ -53,50 +57,79 @@ jobs:
           name: "${{ steps.split.outputs.target_platform }}_${{ steps.split.outputs.unity_version }}_BuildOutput"
           path: build
 
-  Windows-Build:
-    name: Windows Build
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        unity-version-and-platform:
-          - "6000.0.40f1,tvOS"
-          - "2022.3.59f1,tvOS"
-          - "2021.3.45f1,tvOS"
-          - "2020.3.48f1,tvOS"
+  # Windows-Build:
+  #   name: Windows Build
+  #   runs-on: windows-latest
+  #   strategy:
+  #     matrix:
+  #       unity-version-and-platform:
+  #         - "6000.0.40f1,tvOS"
+  #         - "2022.3.59f1,tvOS"
+  #         - "2021.3.45f1,tvOS"
+  #         - "2020.3.48f1,tvOS"
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Split Unity Version and Platform (Windows)
+  #       id: split
+  #       env:
+  #         UNITY_VERSION_AND_PLATFORM: ${{ matrix.unity-version-and-platform }}
+  #       shell: pwsh
+  #       run: |
+  #         $values = "${{ env.UNITY_VERSION_AND_PLATFORM }}" -split ","
+  #         echo "unity_version=$($values[0])" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+  #         echo "target_platform=$($values[1])" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+  #     - uses: actions/cache@v4
+  #       with:
+  #         path: ./SampleProject~/Library/
+  #         key: Library-${{ steps.split.outputs.target_platform }}-${{ steps.split.outputs.unity_version }}
+
+  #     - name: Build Unity Project
+  #       uses: game-ci/unity-builder@v4.3.0
+  #       env:
+  #         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #       with:
+  #         projectPath: ./SampleProject~/
+  #         targetPlatform: ${{ steps.split.outputs.target_platform }}
+  #         unityVersion: ${{ steps.split.outputs.unity_version }}
+
+  #     - name: Upload build artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: "${{ steps.split.outputs.target_platform }}_${{ steps.split.outputs.unity_version }}_BuildOutput"
+  #         path: build
+
+  iOS-Build-and-Upload:
+    name: iOS Build and Upload
+    runs-on: macos-latest
+    needs: Ubuntu-Build
+    if: needs.Ubuntu-Build.outputs.target_platform == 'iOS'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Download Unity iOS Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_BuildOutput"
+          path: build
 
-      - name: Split Unity Version and Platform (Windows)
-        id: split
-        env:
-          UNITY_VERSION_AND_PLATFORM: ${{ matrix.unity-version-and-platform }}
-        shell: pwsh
+      - name: Build IPA with Fastlane
         run: |
-          $values = "${{ env.UNITY_VERSION_AND_PLATFORM }}" -split ","
-          echo "unity_version=$($values[0])" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          echo "target_platform=$($values[1])" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          cd build
+          fastlane gym \
+            --scheme "Unity-iPhone" \
+            --export_method app-store \
+            --output_directory "../IPA" \
+            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa"
 
-      - uses: actions/cache@v4
-        with:
-          path: ./SampleProject~/Library/
-          key: Library-${{ steps.split.outputs.target_platform }}-${{ steps.split.outputs.unity_version }}
-
-      - name: Build Unity Project
-        uses: game-ci/unity-builder@v4.3.0
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          projectPath: ./SampleProject~/
-          targetPlatform: ${{ steps.split.outputs.target_platform }}
-          unityVersion: ${{ steps.split.outputs.unity_version }}
-
-      - name: Upload build artifact
+      - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ steps.split.outputs.target_platform }}_${{ steps.split.outputs.unity_version }}_BuildOutput"
+          name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_IPA_Artifact"
           path: build
+      
           
