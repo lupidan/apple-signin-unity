@@ -111,6 +111,37 @@ jobs:
     if: needs.Ubuntu-Build.outputs.target_platform == 'iOS'
 
     steps:
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
+          APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+          
+        run: |
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH=$RUNNER_TEMP/AppleDistribution.p12
+          IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH=$RUNNER_TEMP/IosDistribution.mobileprovision
+          MACOS_KEYCHAIN_PATH=$RUNNER_TEMP/AppSigning.keychain-db
+
+          # Import certificate and provisioning profile
+          echo -n "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o $APPLE_DISTRIBUTION_CERTIFICATE_PATH
+          echo -n "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o $IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH
+
+          # Create temporary keychain
+          security create-keychain -p "$MACOS_KEYCHAIN_PASSWORD" $MACOS_KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $MACOS_KEYCHAIN_PATH
+          security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" $MACOS_KEYCHAIN_PATH
+
+          # Import certificate to keychain
+          security import $APPLE_DISTRIBUTION_CERTIFICATE_PATH -P "$APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $MACOS_KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$MACOS_KEYCHAIN_PASSWORD" $MACOS_KEYCHAIN_PATH
+          security list-keychain -d user -s $MACOS_KEYCHAIN_PATH
+
+          # Apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+
       - name: Download Unity iOS Artifact
         uses: actions/download-artifact@v4
         with:
