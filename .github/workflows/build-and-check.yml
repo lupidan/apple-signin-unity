@@ -14,9 +14,9 @@ jobs:
           #- "2020.3.48f1,StandaloneOSX"
           #- "2021.3.45f1,StandaloneOSX"
 
-          - "6000.0.40f1,iOS"
-          - "2022.3.59f1,iOS"
-          - "2021.3.45f1,iOS"
+          # - "6000.0.40f1,iOS"
+          # - "2022.3.59f1,iOS"
+          # - "2021.3.45f1,iOS"
           - "2020.3.48f1,iOS"
 
     outputs:
@@ -124,7 +124,8 @@ jobs:
             --scheme "Unity-iPhone" \
             --export_method app-store \
             --output_directory "../IPA" \
-            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa"
+            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa" \
+            --non-interactive
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
