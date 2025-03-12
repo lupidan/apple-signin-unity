@@ -118,14 +118,15 @@ jobs:
           path: build
 
       - name: Build IPA with Fastlane
+        env:
+          FASTLANE_SKIP_INTERACTIVE: true
         run: |
           cd build
           fastlane gym \
             --scheme "Unity-iPhone" \
             --export_method app-store \
             --output_directory "../IPA" \
-            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa" \
-            --non-interactive
+            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
