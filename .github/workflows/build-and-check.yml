@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.split.outputs.target_platform }}_${{ steps.split.outputs.unity_version }}_BuildOutput"
-          path: build
+          path: ./build/iOS/iOS/
 
   # Windows-Build:
   #   name: Windows Build
@@ -115,23 +115,23 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_BuildOutput"
-          path: build
+          path: ./iOS-Xcodeproj
 
       - name: Build IPA with Fastlane
         env:
           FASTLANE_SKIP_INTERACTIVE: true
         run: |
-          cd build
+          cd ./iOS-Xcodeproj
           fastlane gym \
             --scheme "Unity-iPhone" \
             --export_method app-store \
-            --output_directory "../IPA" \
+            --output_directory "../iOS-IPA" \
             --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_IPA_Artifact"
-          path: build
+          path: ./iOS-IPA
       
           
