@@ -157,7 +157,8 @@ jobs:
             --scheme "Unity-iPhone" \
             --export_method app-store \
             --output_directory "../iOS-IPA" \
-            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa"
+            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa" \
+            --verbose
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
