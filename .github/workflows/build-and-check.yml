@@ -149,18 +149,33 @@ jobs:
 
       - name: Select Xcode version
         run: sudo xcode-select -s '/Applications/Xcode_16.2.app/Contents/Developer'
+
+      - name: Create Gymfile
+        run: |
+          echo 'project "Unity-iPhone.xcodeproj"' > Gymfile
+          echo 'scheme "Unity-iPhone"' >> Gymfile
+          echo 'output_directory "../iOS-IPA"' >> Gymfile
+          echo 'output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa"' >> Gymfile
+          echo 'export_method "app-store"' >> Gymfile
+          echo 'export_team_id "HMPT8TH7MM"' >> Gymfile
+          echo 'codesigning_identity "Apple Distribution: Daniel Lupianez Casares (HMPT8TH7MM)"' >> Gymfile
+          echo 'clean true' >> Gymfile
+          echo 'include_bitcode false' >> Gymfile
+          echo 'include_symbols true' >> Gymfile
+          echo 'silent false' >> Gymfile
+          echo 'export_options({' >> Gymfile
+          echo '  provisioningProfiles: {' >> Gymfile
+          echo '    "com.lupidan.testappleauth" => "91c38691-711a-4d00-8399-5c8b4c9e6e32"' >> Gymfile
+          echo '  },' >> Gymfile
+          echo '  version: "1.0.2",' >> Gymfile
+          echo '  build_number: "11"' >> Gymfile
+          echo '})' >> Gymfile
+          mv ./Gymfile ./iOS-Xcodeproj/Gymfile
     
       - name: Build IPA with Fastlane
-        env:
-          FASTLANE_SKIP_INTERACTIVE: true
         run: |
           cd ./iOS-Xcodeproj
-          fastlane gym \
-            --scheme "Unity-iPhone" \
-            --export_method app-store \
-            --output_directory "../iOS-IPA" \
-            --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa" \
-            --verbose
+          fastlane gym
 
       - name: Upload Xcode Log
         uses: actions/upload-artifact@v4
