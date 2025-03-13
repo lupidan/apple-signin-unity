@@ -148,6 +148,9 @@ jobs:
           name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_BuildOutput"
           path: ./iOS-Xcodeproj
 
+      - name: Select Xcode version
+        run: sudo xcode-select -s '/Applications/Xcode_16.2.app/Contents/Developer'
+    
       - name: Build IPA with Fastlane
         env:
           FASTLANE_SKIP_INTERACTIVE: true
