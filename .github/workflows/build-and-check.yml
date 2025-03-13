@@ -160,10 +160,28 @@ jobs:
             --output_name "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}.ipa" \
             --verbose
 
+      - name: Upload Xcode Log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_Log"
+          path: "/Users/runner/Library/Logs/gym/AppleSignInForUnity-Unity-iPhone.log"
+
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: "${{ needs.Ubuntu-Build.outputs.target_platform }}_${{ needs.Ubuntu-Build.outputs.unity_version }}_IPA_Artifact"
           path: ./iOS-IPA
       
+      - name: Cleanup Keychain and files
+        env:
+          APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
+          APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+        run: |
+          MACOS_KEYCHAIN_PATH=$RUNNER_TEMP/AppSigning.keychain-db
+          security delete-keychain $MACOS_KEYCHAIN_PATH
+          rm -f $APPLE_DISTRIBUTION_CERTIFICATE_PATH $IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH
+
           
