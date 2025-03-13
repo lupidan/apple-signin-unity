@@ -15,9 +15,9 @@ jobs:
           #- "2021.3.45f1,StandaloneOSX"
 
           # - "6000.0.40f1,iOS"
-          # - "2022.3.59f1,iOS"
+          - "2022.3.59f1,iOS"
           # - "2021.3.45f1,iOS"
-          - "2020.3.48f1,iOS"
+          #- "2020.3.48f1,iOS"
 
     outputs:
       unity_version: ${{ steps.split.outputs.unity_version }}
