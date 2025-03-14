@@ -165,7 +165,7 @@ jobs:
           echo 'silent false' >> Gymfile
           echo 'export_options({' >> Gymfile
           echo '  provisioningProfiles: {' >> Gymfile
-          echo '    "com.lupidan.testappleauth" => "91c38691-711a-4d00-8399-5c8b4c9e6e32"' >> Gymfile
+          echo '    "com.lupidan.testappleauth" => "IosDistribution"' >> Gymfile
           echo '  },' >> Gymfile
           echo '  version: "1.0.2",' >> Gymfile
           echo '  build_number: "11"' >> Gymfile
