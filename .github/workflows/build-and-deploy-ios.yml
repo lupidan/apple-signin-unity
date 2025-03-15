@@ -30,6 +30,7 @@ on:
 
 jobs:
   build:
+    name: Build and Deploy ${{ inputs.unity_version }} (iOS)
     runs-on: macos-latest
 
     steps:
@@ -94,5 +95,3 @@ jobs:
                 keychain_password=${{ secrets.KEYCHAIN_PASSWORD }}
         
             echo "Fastlane build finished"
-        
-        
