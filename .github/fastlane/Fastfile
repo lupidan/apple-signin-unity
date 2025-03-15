@@ -14,6 +14,7 @@ fastlane_version "2.226.0"
 
 platform :ios do
   before_all do |options|
+    puts "Fastlane options received: #{options.inspect}"
     certificate_path = options[:certificate_path]
     certificate_password = options[:certificate_password]
     keychain_name = options[:keychain_name]
