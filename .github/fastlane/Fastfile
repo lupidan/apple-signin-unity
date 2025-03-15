@@ -48,6 +48,8 @@ platform :ios do
       code_signing_identity: "Apple Distribution: Daniel Lupianez Casares"
     )
 
+    increment_build_number(xcodeproj: "YourApp.xcodeproj")
+
     gym(
       project: "Unity-iPhone.xcodeproj",
       scheme: "Unity-iPhone",
@@ -56,6 +58,9 @@ platform :ios do
       export_method: "app-store",
       codesigning_identity: "Apple Distribution: Daniel Lupianez Casares"
     )
+
+    upload_to_testflight
+    
   end
 
   def cleanup

@@ -27,6 +27,9 @@ on:
       KEYCHAIN_PASSWORD:
         description: "Password for the keychain where the Certificate will be imported"
         required: true
+      APP_STORE_AUTH_KEY:
+        description: "Base64-Encoded App Store Auth Key (.p8)"
+        required: true
 
 jobs:
   build:
@@ -40,19 +43,21 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: ./iOS-Xcodeproj
 
-      - name: Use iteration Fastfile
+      - name: Use Fastfile from Repository variables
         env:
           IOS_FASTFILE: ${{ vars.IOS_FASTFILE }}
         run: |
           rm ./iOS-Xcodeproj/fastlane/Fastfile
           echo "$IOS_FASTFILE" > ./iOS-Xcodeproj/fastlane/Fastfile
 
-      - name: Download certificate and provisioning profile
+      - name: Download certificate, provisioning profile, and App Store API key
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
           IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
           IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+          APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
+          APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
             
         run: |
           if ! printf "%s" "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o "$APPLE_DISTRIBUTION_CERTIFICATE_PATH"; then
@@ -65,6 +70,11 @@ jobs:
             exit 1
           fi
 
+          if ! printf "%s" "$APP_STORE_AUTH_KEY" | base64 --decode -o "$APP_STORE_AUTH_KEY_PATH"; then
+            echo "Failed to decode App Store Auth Key" >&2
+            exit 1
+          fi
+
       - name: Build Xcode Project using Fastlane
         env:
           FASTLANE_OUTPUT_NAME: AppleAuth_${{ inputs.unity_version }}.ipa
@@ -73,6 +83,7 @@ jobs:
           IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
           KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
     
         run: |
             echo "Moving to iOS-Xcodeproj"
