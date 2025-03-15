@@ -47,7 +47,7 @@ platform :ios do
 
     gym(
       project: "Unity-iPhone.xcodeproj",
-      scheme: ,
+      scheme: "Unity-iPhone",
       clean: true,
       output_name: output_name,
       export_method: "app-store",
