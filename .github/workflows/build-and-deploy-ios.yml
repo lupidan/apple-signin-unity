@@ -1,0 +1,73 @@
+name: Build And Deploy iOS
+
+on:
+  workflow_call:
+    inputs:
+      unity_version:
+        description: "Unity version used for the build"
+        required: true
+        type: string
+      artifact_name:
+        description: "The artifact to download"
+        required: true
+        type: string
+    secrets:
+      APPLE_DISTRIBUTION_CERTIFICATE:
+        description: "Base64-encoded Apple Distribution Certificate (.p12)"
+        required: true
+      APPLE_CERTIFICATE_PASSWORD:
+        description: "Password for the Apple Distribution Certificate"
+        required: true
+      IOS_DISTRIBUTION_PROVISIONING_PROFILE:
+        description: "Base64-encoded Provisioning Profile (.mobileprovision)"
+        required: true
+      KEYCHAIN_NAME:
+        description: "Name of the keychain where the Certificate will be imported"
+        required: true
+      KEYCHAIN_PASSWORD:
+        description: "Password for the keychain where the Certificate will be imported"
+        required: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Download Unity iOS Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ./iOS-Xcodeproj
+
+      - name: Download certificate and provisioning profile
+        env:
+          APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
+          IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
+          IOS_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+            
+        run: |
+          if ! printf "%s" "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o "$APPLE_DISTRIBUTION_CERTIFICATE_PATH"; then
+            echo "Failed to decode Distribution Certificate" >&2
+            exit 1
+          fi
+
+          if ! printf "%s" "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o "$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"; then
+            echo "Failed to decode Provisioning Profile" >&2
+            exit 1
+          fi
+
+      - name: Build Xcode Project using fastlane
+        env:
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
+          IOS_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+
+        run: |
+          cd ./iOS-Xcodeproj
+          fastlane ios build \
+            output_name:"AppleAuth_${{ inputs.unity_version }}.ipa" \
+            certificate_path:"$APPLE_DISTRIBUTION_CERTIFICATE_PATH" \
+            certificate_password:"${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            provisioning_profile_path:"$IOS_PROVISIONING_PROFILE_PATH" \
+            keychain_name:"${{ secrets.KEYCHAIN_NAME }}" \
+            keychain_password:"${{ secrets.KEYCHAIN_PASSWORD }}"
