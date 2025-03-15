@@ -62,6 +62,9 @@ jobs:
         env:
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
           IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+          APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
     
         run: |
             echo "Moving to iOS-Xcodeproj"
@@ -89,9 +92,9 @@ jobs:
             fastlane ios build --verbose \
                 output_name=AppleAuth_${{ inputs.unity_version }}.ipa \
                 certificate_path=$APPLE_DISTRIBUTION_CERTIFICATE_PATH \
-                certificate_password=${{ secrets.APPLE_CERTIFICATE_PASSWORD }} \
+                certificate_password=$APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD \
                 provisioning_profile_path=$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH \
-                keychain_name=${{ secrets.KEYCHAIN_NAME }} \
-                keychain_password=${{ secrets.KEYCHAIN_PASSWORD }}
+                keychain_name=$KEYCHAIN_NAME \
+                keychain_password=$KEYCHAIN_PASSWORD
         
             echo "Fastlane build finished"
