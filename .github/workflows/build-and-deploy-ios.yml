@@ -63,7 +63,12 @@ jobs:
           IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
 
         run: |
+          echo "Moving to iOS-Xcodeproj"
+
           cd ./iOS-Xcodeproj
+
+          echo "Starting fastlane build"
+
           fastlane ios build \
             output_name:"AppleAuth_${{ inputs.unity_version }}.ipa" \
             certificate_path:"$APPLE_DISTRIBUTION_CERTIFICATE_PATH" \
@@ -71,3 +76,5 @@ jobs:
             provisioning_profile_path:"$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH" \
             keychain_name:"${{ secrets.KEYCHAIN_NAME }}" \
             keychain_password:"${{ secrets.KEYCHAIN_PASSWORD }}"
+
+          echo "fastlane build finished"
