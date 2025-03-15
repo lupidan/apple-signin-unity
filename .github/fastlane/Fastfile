@@ -38,15 +38,22 @@ platform :ios do
     provisioning_profile_path = ENV["IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
     keychain_name = ENV["KEYCHAIN_NAME"]
 
+    export_options = {
+      method: "app-store",
+      signingStyle: "manual",
+      provisioningProfiles: {
+        "com.lupidan.testappleauth" => provisioning_profile_path
+      }
+    }
+
     gym(
       project: "Unity-iPhone.xcodeproj",
       scheme: "Unity-iPhone",
       clean: true,
       output_name: output_name,
-      export_method: "app-store",
       codesigning_identity: "Apple Distribution",
-      provisioning_profile_path: provisioning_profile_path,
-      keychain_name: keychain_name
+      keychain_name: keychain_name,
+      export_options: export_options
     )
   end
 
