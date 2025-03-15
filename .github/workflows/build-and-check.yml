@@ -42,6 +42,7 @@ jobs:
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4.3.0
+        id: unity_build
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -50,6 +51,15 @@ jobs:
           projectPath: ./SampleProject~/
           targetPlatform: ${{ steps.split.outputs.target_platform }}
           unityVersion: ${{ steps.split.outputs.unity_version }}
+
+      - name: Setup fastlane files
+        run: |
+          if [ -d "./build/iOS/iOS/fastlane" ]; then
+            echo "Error: fastlane directory already exists in ./build/iOS/iOS!" >&2
+            exit 1
+          fi
+          
+          cp -r ./.github/fastlane ./build/iOS/iOS/fastlane
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
