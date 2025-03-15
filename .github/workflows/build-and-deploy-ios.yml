@@ -47,8 +47,8 @@ jobs:
           IOS_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
             
         run: |
-          printf "%s" "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o "$APPLE_DISTRIBUTION_CERTIFICATE_PATH"
-          printf "%s" "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o "$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"
+          echo -n "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o $APPLE_DISTRIBUTION_CERTIFICATE_PATH
+          echo -n "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o $IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH
 
       - name: Build Xcode Project using fastlane
         env:
