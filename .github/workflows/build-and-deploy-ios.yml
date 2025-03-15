@@ -57,26 +57,42 @@ jobs:
             exit 1
           fi
 
-      - name: Build Xcode Project using fastlane
+      - name: Build Xcode Project using Fastlane
         env:
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
           IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
-
+    
         run: |
-          echo "Moving to iOS-Xcodeproj"
-
-          cd ./iOS-Xcodeproj
-
-          echo "Starting fastlane build"
-
-          fastlane --version
-
-          fastlane ios build \
-            output_name:"AppleAuth_${{ inputs.unity_version }}.ipa" \
-            certificate_path:"$APPLE_DISTRIBUTION_CERTIFICATE_PATH" \
-            certificate_password:"${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}" \
-            provisioning_profile_path:"$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH" \
-            keychain_name:"${{ secrets.KEYCHAIN_NAME }}" \
-            keychain_password:"${{ secrets.KEYCHAIN_PASSWORD }}"
-
-          echo "fastlane build finished"
+            echo "Moving to iOS-Xcodeproj"
+            
+            # Ensure directory exists before moving
+            if [ ! -d "./iOS-Xcodeproj" ]; then
+                echo "Error: ./iOS-Xcodeproj directory does not exist!" >&2
+                exit 1
+            fi
+        
+            cd ./iOS-Xcodeproj
+        
+            echo "Starting fastlane build"
+        
+            # Check Fastlane installation
+            if ! command -v fastlane &> /dev/null; then
+                echo "Fastlane is not installed! Installing..."
+                gem install fastlane
+            fi
+        
+            fastlane --version
+            fastlane env
+        
+            # Run Fastlane build with correct argument formatting
+            fastlane ios build --verbose \
+                output_name=AppleAuth_${{ inputs.unity_version }}.ipa \
+                certificate_path=$APPLE_DISTRIBUTION_CERTIFICATE_PATH \
+                certificate_password=${{ secrets.APPLE_CERTIFICATE_PASSWORD }} \
+                provisioning_profile_path=$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH \
+                keychain_name=${{ secrets.KEYCHAIN_NAME }} \
+                keychain_password=${{ secrets.KEYCHAIN_PASSWORD }}
+        
+            echo "Fastlane build finished"
+        
+        
