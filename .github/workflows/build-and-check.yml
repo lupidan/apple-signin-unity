@@ -54,6 +54,13 @@ jobs:
 
       - name: Setup fastlane files
         run: |
+          if [ ! -d "./build/iOS/iOS" ]; then
+            echo "Error: Destination directory ./build/iOS/iOS does not exist!" >&2
+            exit 1
+          fi
+
+          stat ./build/iOS/iOS
+          
           if [ -d "./build/iOS/iOS/fastlane" ]; then
             echo "Error: fastlane directory already exists in ./build/iOS/iOS!" >&2
             exit 1
