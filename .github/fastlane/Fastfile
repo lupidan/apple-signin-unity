@@ -51,8 +51,7 @@ platform :ios do
       clean: true,
       output_name: output_name,
       export_method: "app-store",
-      codesigning_identity: "Apple Distribution",
-      export_options: export_options
+      codesigning_identity: "Apple Distribution"
     )
   end
 

@@ -40,6 +40,13 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: ./iOS-Xcodeproj
 
+      - name: Use iteration Fastfile
+        env:
+          IOS_FASTFILE: ${{ vars.IOS_FASTFILE }}
+        run: |
+          rm ./iOS-Xcodeproj/fastlane/Fastfile
+          echo "$IOS_FASTFILE" > ./iOS-Xcodeproj/fastlane/Fastfile
+
       - name: Download certificate and provisioning profile
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
