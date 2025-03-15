@@ -69,6 +69,8 @@ jobs:
 
           echo "Starting fastlane build"
 
+          fastlane --version
+
           fastlane ios build \
             output_name:"AppleAuth_${{ inputs.unity_version }}.ipa" \
             certificate_path:"$APPLE_DISTRIBUTION_CERTIFICATE_PATH" \
