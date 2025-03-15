@@ -1,0 +1,62 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  before_all do |options|
+    certificate_path = options[:certificate_path]
+    certificate_password = options[:certificate_password]
+    keychain_name = options[:keychain_name]
+    keychain_password = options[:keychain_password]
+    provisioning_profile_path = options[:provisioning_profile_path]
+    
+    create_keychain(
+      name: keychain_name,
+      password: keychain_password,
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600
+    )
+    
+    import_certificate(
+      certificate_path: certificate_path,
+      certificate_password: certificate_password,
+      keychain_name: keychain_name
+    )
+    
+    install_provisioning_profile(
+      path: provisioning_profile_path
+    )
+  end
+
+  lane :build do |options|
+    gym(
+      project: "Unity-iPhone.xcodeproj",
+      scheme: "Unity-iPhone",
+      clean: true,
+      output_name: options[:output_name],
+      export_method: "app-store",
+      codesigning_identity: "Apple Distribution",
+      provisioning_profile_path: options[:provisioning_profile_path],
+      keychain_name: options[:keychain_name]
+    )
+  end
+
+  after_all do |options|
+    sh "rm -f #{options[:provisioning_profile_path]}"
+    delete_keychain(name: options[:keychain_name])
+  end
+end
