@@ -26,11 +26,14 @@ platform :ios do
       certificate_path: certificate_path,
       certificate_password: certificate_password,
       keychain_name: keychain_name
+      keychain_password: keychain_password
     )
     
     install_provisioning_profile(
       path: provisioning_profile_path
     )
+
+    xcode_select("/Applications/Xcode_16.1.app")
   end
 
   lane :build do
@@ -39,10 +42,10 @@ platform :ios do
 
     update_project_provisioning(
       xcodeproj: "Unity-iPhone.xcodeproj",
-      profile: provisioning_profile_path,
       target_filter: "Unity-iPhone",
+      profile: provisioning_profile_path,
       build_configuration: "Release",
-      code_signing_identity: "Apple Distribution"
+      code_signing_identity: "Apple Distribution: Daniel Lupianez Casares"
     )
 
     gym(
@@ -51,7 +54,7 @@ platform :ios do
       clean: true,
       output_name: output_name,
       export_method: "app-store",
-      codesigning_identity: "Apple Distribution"
+      codesigning_identity: "Apple Distribution: Daniel Lupianez Casares"
     )
   end
 
