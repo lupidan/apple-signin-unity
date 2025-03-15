@@ -37,19 +37,20 @@ platform :ios do
     output_name = ENV["FASTLANE_OUTPUT_NAME"]
     provisioning_profile_path = ENV["IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
 
-    export_options = {
-      method: "app-store",
-      signingStyle: "manual",
-      provisioningProfiles: {
-        "com.lupidan.testappleauth" => provisioning_profile_path
-      }
-    }
+    update_project_provisioning(
+      xcodeproj: "Unity-iPhone.xcodeproj",
+      profile: provisioning_profile_path,
+      target_filter: "Unity-iPhone",
+      build_configuration: "Release",
+      code_signing_identity: "Apple Distribution"
+    )
 
     gym(
       project: "Unity-iPhone.xcodeproj",
-      scheme: "Unity-iPhone",
+      scheme: ,
       clean: true,
       output_name: output_name,
+      export_method: "app-store",
       codesigning_identity: "Apple Distribution",
       export_options: export_options
     )
