@@ -59,14 +59,12 @@ jobs:
             exit 1
           fi
 
-          stat ./build/iOS/iOS
-          
           if [ -d "./build/iOS/iOS/fastlane" ]; then
             echo "Error: fastlane directory already exists in ./build/iOS/iOS!" >&2
             exit 1
           fi
           
-          cp -r ./.github/fastlane ./build/iOS/iOS/fastlane
+          sudo cp -r ./.github/fastlane ./build/iOS/iOS/fastlane
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
