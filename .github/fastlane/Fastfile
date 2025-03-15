@@ -25,7 +25,7 @@ platform :ios do
     import_certificate(
       certificate_path: certificate_path,
       certificate_password: certificate_password,
-      keychain_name: keychain_name
+      keychain_name: keychain_name,
       keychain_password: keychain_password
     )
     
