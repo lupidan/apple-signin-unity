@@ -15,7 +15,7 @@ on:
       APPLE_DISTRIBUTION_CERTIFICATE:
         description: "Base64-encoded Apple Distribution Certificate (.p12)"
         required: true
-      APPLE_CERTIFICATE_PASSWORD:
+      APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD:
         description: "Password for the Apple Distribution Certificate"
         required: true
       IOS_DISTRIBUTION_PROVISIONING_PROFILE:
@@ -67,7 +67,7 @@ jobs:
           fastlane ios build \
             output_name:"AppleAuth_${{ inputs.unity_version }}.ipa" \
             certificate_path:"$APPLE_DISTRIBUTION_CERTIFICATE_PATH" \
-            certificate_password:"${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            certificate_password:"${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}" \
             provisioning_profile_path:"$IOS_PROVISIONING_PROFILE_PATH" \
             keychain_name:"${{ secrets.KEYCHAIN_NAME }}" \
             keychain_password:"${{ secrets.KEYCHAIN_PASSWORD }}"
