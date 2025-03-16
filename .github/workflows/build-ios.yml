@@ -48,7 +48,7 @@ on:
         required: true
 
 jobs:
-  build_and_deploy:
+  ios-build:
     name: iOS (${{ matrix.unity_version }})
     runs-on: ubuntu-latest
     strategy:
@@ -73,4 +73,4 @@ jobs:
         uses: ./.github/workflows/xcode-ios.yml
         with:
           unity_version: ${{ matrix.unity_version }}
-          artifact_name: ${{ steps.unity-build.outputs. }}
+          artifact_name: "iOS_${{ matrix.unity_version }}_BuildOutput"
