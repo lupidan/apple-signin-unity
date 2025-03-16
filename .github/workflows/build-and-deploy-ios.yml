@@ -7,28 +7,43 @@ on:
         description: "Unity version used for the build"
         required: true
         type: string
+
       artifact_name:
         description: "The artifact to download"
         required: true
         type: string
+
     secrets:
       APPLE_DISTRIBUTION_CERTIFICATE:
         description: "Base64-encoded Apple Distribution Certificate (.p12)"
         required: true
+
       APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD:
         description: "Password for the Apple Distribution Certificate"
         required: true
+
       IOS_DISTRIBUTION_PROVISIONING_PROFILE:
         description: "Base64-encoded Provisioning Profile (.mobileprovision)"
         required: true
+
       KEYCHAIN_NAME:
         description: "Name of the keychain where the Certificate will be imported"
         required: true
+
       KEYCHAIN_PASSWORD:
         description: "Password for the keychain where the Certificate will be imported"
         required: true
+
       APP_STORE_AUTH_KEY:
         description: "Base64-Encoded App Store Auth Key (.p8)"
+        required: true
+
+      APP_STORE_ISSUER_ID:
+        description: "App Store Auth Key Issuer ID"
+        required: true
+
+      APP_STORE_KEY_ID:
+        description: "App Store Auth Key ID"
         required: true
 
 jobs:
@@ -49,8 +64,9 @@ jobs:
         run: |
           rm ./iOS-Xcodeproj/fastlane/Fastfile
           echo "$IOS_FASTFILE" > ./iOS-Xcodeproj/fastlane/Fastfile
+          echo "::warning This step for the fastfile should be removed"
 
-      - name: Download certificate, provisioning profile, and App Store API key
+      - name: Download certificate, provisioning profile, and App Store Auth Key
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
@@ -58,7 +74,6 @@ jobs:
           IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
           APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
           APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
-            
         run: |
           if ! printf "%s" "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o "$APPLE_DISTRIBUTION_CERTIFICATE_PATH"; then
             echo "Failed to decode Distribution Certificate" >&2
@@ -84,29 +99,12 @@ jobs:
           KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
-    
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
         run: |
-            echo "Moving to iOS-Xcodeproj"
-            
-            # Ensure directory exists before moving
-            if [ ! -d "./iOS-Xcodeproj" ]; then
-                echo "Error: ./iOS-Xcodeproj directory does not exist!" >&2
-                exit 1
-            fi
-        
             cd ./iOS-Xcodeproj
-        
-            echo "Starting fastlane build"
-        
-            # Check Fastlane installation
-            if ! command -v fastlane &> /dev/null; then
-                echo "Fastlane is not installed! Installing..."
-                gem install fastlane
-            fi
-        
             fastlane --version
             fastlane env
-        
             fastlane ios build --verbose
         
             echo "Fastlane build finished"

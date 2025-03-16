@@ -133,6 +133,6 @@ jobs:
       KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
-    
-
+      APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+      APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           
