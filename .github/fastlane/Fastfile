@@ -49,13 +49,15 @@ platform :ios do
     target = "Unity-iPhone"
     certificate_name = "Apple Distribution: Daniel Lupianez Casares"
 
-    unity_version_numeric = unity_version.match(/\d+\.\d+\.\d+/)[0].gsub(".", "")
     original_version = get_version_number(
       xcodeproj: xcodeproj,
       target: target
     )
 
-    app_version = "#{original_version}.#{unity_version_numeric}"
+    # Sets an app_version: f.ex. original_version="1.4.5" and unity_version="2021.3.45f1" => app_version="1.4.2021345"
+    original_major_minor_version = original_version.match(/^\d+\.\d+/)[0] 
+    unity_version_numeric = unity_version.match(/\d+\.\d+\.\d+/)[0].gsub(".", "")
+    app_version = "#{original_major_minor_version}.#{unity_version_numeric}"
 
     increment_version_number(
       version_number: app_version,
