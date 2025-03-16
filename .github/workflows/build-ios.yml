@@ -60,6 +60,9 @@ jobs:
           - "2020.3.48f1,iOS"
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Ensure repo is checked out first
+
       - name: ${{ matrix.unity_version }} Build
         id: unity-build
         uses: ./.github/workflows/unity-build.yml
@@ -68,6 +71,7 @@ jobs:
           target_platform: iOS
           unity_version: ${{ matrix.unity_version }}
           output_path: ./build/iOS/iOS/
+
 
       - name: Run Xcode iOS Build Workflow
         uses: ./.github/workflows/xcode-ios.yml
