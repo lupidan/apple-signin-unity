@@ -58,14 +58,6 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: ./iOS-Xcodeproj
 
-      - name: Use Fastfile from Repository variables
-        env:
-          IOS_FASTFILE: ${{ vars.IOS_FASTFILE }}
-        run: |
-          rm ./iOS-Xcodeproj/fastlane/Fastfile
-          echo "$IOS_FASTFILE" > ./iOS-Xcodeproj/fastlane/Fastfile
-          echo "::warning This step for the fastfile should be removed"
-
       - name: Download certificate, provisioning profile, and App Store Auth Key
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
