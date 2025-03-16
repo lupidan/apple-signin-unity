@@ -48,33 +48,50 @@ on:
         required: true
 
 jobs:
-  ios-build:
-    name: iOS (${{ matrix.unity_version }})
-    runs-on: ubuntu-latest
+  ios-unity-build:
     strategy:
       matrix:
         unity_version:
-          #- "6000.0.40f1,iOS"
-          #- "2022.3.59f1,iOS"
-          - "2021.3.45f1,iOS"
-          #- "2020.3.48f1,iOS"
+          #- "6000.0.40f1"
+          #- "2022.3.59f1"
+          - "2021.3.45f1"
+          #- "2020.3.48f1"
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4  # Ensure repo is checked out first
+    name: iOS (${{ matrix.unity_version }})
+    uses: ./.github/workflows/unity-build.yml
+    with:
+      runner_image: ubuntu-latest
+      target_platform: iOS
+      unity_version: ${{ matrix.unity_version }}
+      output_path: ./build/iOS/iOS/
 
-      - name: ${{ matrix.unity_version }} Build
-        id: unity-build
-        uses: ./.github/workflows/unity-build.yml
-        with:
-          runner_image: ubuntu-latest
-          target_platform: iOS
-          unity_version: ${{ matrix.unity_version }}
-          output_path: ./build/iOS/iOS/
+    secrets:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
+  ios-xcode-build:
+    needs: ios-unity-build
+    strategy:
+      matrix:
+        unity_version:
+          #- "6000.0.40f1"
+          #- "2022.3.59f1"
+          - "2021.3.45f1"
+          #- "2020.3.48f1"
 
-      - name: Run Xcode iOS Build Workflow
-        uses: ./.github/workflows/xcode-ios.yml
-        with:
-          unity_version: ${{ matrix.unity_version }}
-          artifact_name: "iOS_${{ matrix.unity_version }}_BuildOutput"
+    name: iOS (${{ matrix.unity_version }})
+    uses: ./.github/workflows/xcode-ios.yml
+    with:
+      unity_version: ${{ matrix.unity_version }}
+      artifact_name: "iOS_${{ matrix.unity_version }}_BuildOutput"
+
+    secrets:
+      APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
+      APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+      IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+      KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
+      APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+      APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
