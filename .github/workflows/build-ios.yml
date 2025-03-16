@@ -57,7 +57,7 @@ jobs:
           - "2021.3.45f1"
           - "2020.3.48f1"
 
-    name: iOS (${{ matrix.unity_version }})
+    name: Unity ${{ matrix.unity_version }}
     uses: ./.github/workflows/unity-build.yml
     with:
       runner_image: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
           - "2021.3.45f1"
           - "2020.3.48f1"
 
-    name: iOS (${{ matrix.unity_version }})
+    name: Xcode for ${{ matrix.unity_version }}
     uses: ./.github/workflows/xcode-ios.yml
     with:
       unity_version: ${{ matrix.unity_version }}
