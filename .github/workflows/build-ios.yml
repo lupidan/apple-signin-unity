@@ -2,6 +2,12 @@ name: Build and Deploy iOS for Multiple Unity Versions
 
 on:
   workflow_call:
+    inputs:
+      unity_version:
+        description: "Unity version used for the build"
+        required: true
+        type: string
+
     secrets:
       UNITY_LICENSE:
         description: "Unity license of the account to use"
@@ -49,20 +55,12 @@ on:
 
 jobs:
   ios-unity-build:
-    strategy:
-      matrix:
-        unity_version:
-          - "6000.0.40f1"
-          - "2022.3.59f1"
-          - "2021.3.45f1"
-          - "2020.3.48f1"
-
-    name: Unity ${{ matrix.unity_version }}
+    name: Unity ${{ inputs.unity_version }}
     uses: ./.github/workflows/unity-build.yml
     with:
       runner_image: ubuntu-latest
       target_platform: iOS
-      unity_version: ${{ matrix.unity_version }}
+      unity_version: ${{ inputs.unity_version }}
       output_path: ./build/iOS/iOS/
 
     secrets:
@@ -72,19 +70,11 @@ jobs:
 
   ios-xcode-build:
     needs: ios-unity-build
-    strategy:
-      matrix:
-        unity_version:
-          - "6000.0.40f1"
-          - "2022.3.59f1"
-          - "2021.3.45f1"
-          - "2020.3.48f1"
-
-    name: Xcode for ${{ matrix.unity_version }}
+    name: Xcode for ${{ inputs.unity_version }}
     uses: ./.github/workflows/xcode-ios.yml
     with:
-      unity_version: ${{ matrix.unity_version }}
-      artifact_name: "iOS_${{ matrix.unity_version }}_BuildOutput"
+      unity_version: ${{ inputs.unity_version }}
+      artifact_name: "iOS_${{ inputs.unity_version }}_BuildOutput"
 
     secrets:
       APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
