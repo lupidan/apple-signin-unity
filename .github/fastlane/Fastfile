@@ -103,10 +103,10 @@ platform :ios do
       duration: 1200,
     )
 
-    #upload_to_testflight(
-    #  api_key: api_key,
-    #  ipa: output_name
-    #)
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: output_name
+    )
 
   end
 
