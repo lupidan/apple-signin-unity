@@ -1,0 +1,76 @@
+name: Build and Deploy iOS for Multiple Unity Versions
+
+on:
+  workflow_call:
+    secrets:
+      UNITY_LICENSE:
+        description: "Unity license of the account to use"
+        required: true
+
+      UNITY_EMAIL:
+        description: "Unity email of the account to use"
+        required: true
+
+      UNITY_PASSWORD:
+        description: "Unity password of the account to use"
+        required: true
+
+      APPLE_DISTRIBUTION_CERTIFICATE:
+        description: "Base64-encoded Apple Distribution Certificate (.p12)"
+        required: true
+
+      APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD:
+        description: "Password for the Apple Distribution Certificate"
+        required: true
+
+      IOS_DISTRIBUTION_PROVISIONING_PROFILE:
+        description: "Base64-encoded Provisioning Profile (.mobileprovision)"
+        required: true
+
+      KEYCHAIN_NAME:
+        description: "Name of the keychain where the Certificate will be imported"
+        required: true
+
+      KEYCHAIN_PASSWORD:
+        description: "Password for the keychain where the Certificate will be imported"
+        required: true
+
+      APP_STORE_AUTH_KEY:
+        description: "Base64-Encoded App Store Auth Key (.p8)"
+        required: true
+
+      APP_STORE_ISSUER_ID:
+        description: "App Store Auth Key Issuer ID"
+        required: true
+
+      APP_STORE_KEY_ID:
+        description: "App Store Auth Key ID"
+        required: true
+
+jobs:
+  build_and_deploy:
+    name: iOS (${{ matrix.unity_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        unity_version:
+          - "6000.0.40f1,iOS"
+          - "2022.3.59f1,iOS"
+          - "2021.3.45f1,iOS"
+          - "2020.3.48f1,iOS"
+
+    steps:
+      - name: ${{ matrix.unity_version }} Build
+        id: unity-build
+        uses: ./.github/workflows/unity-build.yml
+        with:
+          runner_image: ubuntu-latest
+          target_platform: iOS
+          unity_version: ${{ matrix.unity_version }}
+          output_path: ./build/iOS/iOS/
+
+      - name: Run Xcode iOS Build Workflow
+        uses: ./.github/workflows/xcode-ios.yml
+        with:
+          unity_version: ${{ matrix.unity_version }}
+          artifact_name: ${{ steps.unity-build.outputs. }}
