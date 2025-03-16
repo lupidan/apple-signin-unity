@@ -5,6 +5,7 @@ on: workflow_dispatch
 jobs:
   ios-builds:
     strategy:
+      fail-fast: false
       matrix:
         unity_version:
           - "6000.0.40f1"
@@ -16,7 +17,7 @@ jobs:
     uses: ./.github/workflows/build-ios.yml
     with:
       unity_version: ${{ matrix.unity_version }}
-      
+
     secrets:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
