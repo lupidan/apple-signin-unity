@@ -1,6 +1,6 @@
 fastlane_version "2.226.0"
 
-platform :tvos do
+platform :tvOS do
   before_all do
     certificate_path = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PATH"]
     certificate_password = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD"]
