@@ -78,7 +78,7 @@ jobs:
             exit 1
           fi
             
-          sudo cp -r ./.github/fastlane ${{ inputs.output_path }}/fastlane
+          sudo cp -r ./.github/${{ inputs.target_platform }}/fastlane ${{ inputs.output_path }}/fastlane
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
