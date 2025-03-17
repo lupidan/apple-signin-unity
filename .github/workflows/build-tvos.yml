@@ -1,4 +1,4 @@
-name: Build and Deploy iOS
+name: Build and Deploy tvOS
 
 on:
   workflow_call:
@@ -63,29 +63,29 @@ on:
         required: true
 
 jobs:
-  ios-unity-build:
+  tvos-unity-build:
     name: Unity ${{ inputs.unity_version }}
     uses: ./.github/workflows/unity-build.yml
     with:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ inputs.artifact_name }}
-      runner_image: ubuntu-latest
-      target_platform: iOS
-      output_path: ./build/iOS/iOS/
+      runner_image: windows-latest
+      target_platform: tvos
+      output_path: ./build/tvOS/tvOS/
 
     secrets:
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
-  ios-xcode-build:
-    needs: ios-unity-build
+  tvos-xcode-build:
+    needs: tvos-unity-build
     name: Xcode for ${{ inputs.unity_version }}
     uses: ./.github/workflows/xcode-ios.yml
     with:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ inputs.artifact_name }}
-      target_platform: iOS
+      target_platform: tvOS
 
     secrets:
       APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
