@@ -4,7 +4,7 @@ platform :ios do
   before_all do
     certificate_path = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PATH"]
     certificate_password = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD"]
-    provisioning_profile_path = ENV["IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
     keychain_name = ENV["KEYCHAIN_NAME"]
     keychain_password = ENV["KEYCHAIN_PASSWORD"]
     
@@ -38,7 +38,7 @@ platform :ios do
 
   lane :build do
     output_name = ENV["FASTLANE_OUTPUT_NAME"]
-    provisioning_profile_path = ENV["IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
     app_store_auth_key_path = ENV["APP_STORE_AUTH_KEY_PATH"]
     app_store_issuer_id = ENV["APP_STORE_ISSUER_ID"]
     app_store_key_id = ENV["APP_STORE_KEY_ID"]
@@ -113,7 +113,7 @@ platform :ios do
   end
 
   def cleanup
-    provisioning_profile_path = ENV["IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
     keychain_name = ENV["KEYCHAIN_NAME"]
     
     sh "rm -f #{provisioning_profile_path}"

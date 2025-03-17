@@ -17,6 +17,7 @@ jobs:
     uses: ./.github/workflows/build-ios.yml
     with:
       unity_version: ${{ matrix.unity_version }}
+      artifact_name: "iOS_${{ matrix.unity_version }}_BuildOutput"
 
     secrets:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}

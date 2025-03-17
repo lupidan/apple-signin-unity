@@ -8,6 +8,11 @@ on:
         required: true
         type: string
 
+      artifact_name:
+        description: "Name of the artifact containing the Unity build"
+        required: true
+        type: string
+
     secrets:
       UNITY_LICENSE:
         description: "Unity license of the account to use"
@@ -29,7 +34,7 @@ on:
         description: "Password for the Apple Distribution Certificate"
         required: true
 
-      IOS_DISTRIBUTION_PROVISIONING_PROFILE:
+      DISTRIBUTION_PROVISIONING_PROFILE:
         description: "Base64-encoded Provisioning Profile (.mobileprovision)"
         required: true
 
@@ -58,9 +63,10 @@ jobs:
     name: Unity ${{ inputs.unity_version }}
     uses: ./.github/workflows/unity-build.yml
     with:
+      unity_version: ${{ inputs.unity_version }}
+      artifact_name: ${{ inputs.artifact_name }}
       runner_image: ubuntu-latest
       target_platform: iOS
-      unity_version: ${{ inputs.unity_version }}
       output_path: ./build/iOS/iOS/
 
     secrets:
@@ -74,12 +80,12 @@ jobs:
     uses: ./.github/workflows/xcode-ios.yml
     with:
       unity_version: ${{ inputs.unity_version }}
-      artifact_name: "iOS_${{ inputs.unity_version }}_BuildOutput"
+      artifact_name: ${{ inputs.artifact_name }}
 
     secrets:
       APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
       APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-      IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+      DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
       KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}

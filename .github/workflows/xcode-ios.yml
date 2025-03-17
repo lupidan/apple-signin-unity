@@ -9,7 +9,7 @@ on:
         type: string
 
       artifact_name:
-        description: "The artifact to download"
+        description: "Name of the artifact containing the Unity build"
         required: true
         type: string
 
@@ -22,7 +22,7 @@ on:
         description: "Password for the Apple Distribution Certificate"
         required: true
 
-      IOS_DISTRIBUTION_PROVISIONING_PROFILE:
+      DISTRIBUTION_PROVISIONING_PROFILE:
         description: "Base64-encoded Provisioning Profile (.mobileprovision)"
         required: true
 
@@ -48,7 +48,7 @@ on:
 
 jobs:
   build:
-    name: Build and Deploy ${{ inputs.unity_version }} (iOS)
+    name: Xcode iOS ${{ inputs.unity_version }}
     runs-on: macos-latest
 
     steps:
@@ -62,8 +62,8 @@ jobs:
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
-          IOS_DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
-          IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+          DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.DISTRIBUTION_PROVISIONING_PROFILE }}
+          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
           APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
           APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
         run: |
@@ -72,7 +72,7 @@ jobs:
             exit 1
           fi
 
-          if ! printf "%s" "$IOS_DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o "$IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH"; then
+          if ! printf "%s" "$DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o "$DISTRIBUTION_PROVISIONING_PROFILE_PATH"; then
             echo "Failed to decode Provisioning Profile" >&2
             exit 1
           fi
@@ -87,7 +87,7 @@ jobs:
           FASTLANE_OUTPUT_NAME: AppleAuth_${{ inputs.unity_version }}.ipa
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
           APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-          IOS_DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
           KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
