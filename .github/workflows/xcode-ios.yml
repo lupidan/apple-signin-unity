@@ -61,9 +61,9 @@ jobs:
       - name: Download certificate, provisioning profile, and App Store Auth Key
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
-          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/AppleDistributionCertificate.p12
           DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.DISTRIBUTION_PROVISIONING_PROFILE }}
-          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/DistributionProvisioningProfile.mobileprovision
           APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
           APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
         run: |
@@ -85,9 +85,9 @@ jobs:
       - name: Build Xcode Project using Fastlane
         env:
           FASTLANE_OUTPUT_NAME: AppleAuth_${{ inputs.unity_version }}.ipa
-          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/DanielLupianezCasaresAppleDistribution.p12
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/AppleDistributionCertificate.p12
           APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/91c38691-711a-4d00-8399-5c8b4c9e6e32.mobileprovision
+          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/DistributionProvisioningProfile.mobileprovision
           KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
