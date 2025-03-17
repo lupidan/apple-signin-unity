@@ -1,5 +1,3 @@
-name: Build and Deploy iOS
-
 on:
   workflow_call:
     inputs:
@@ -64,7 +62,6 @@ on:
 
 jobs:
   ios-unity-build:
-    name: Unity ${{ inputs.unity_version }}
     uses: ./.github/workflows/unity-build.yml
     with:
       unity_version: ${{ inputs.unity_version }}
@@ -80,7 +77,6 @@ jobs:
 
   ios-xcode-build:
     needs: ios-unity-build
-    name: Xcode for ${{ inputs.unity_version }}
     uses: ./.github/workflows/xcode-ios.yml
     with:
       unity_version: ${{ inputs.unity_version }}

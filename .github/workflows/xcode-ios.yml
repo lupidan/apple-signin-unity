@@ -1,5 +1,3 @@
-name: Build And Deploy iOS
-
 on:
   workflow_call:
     inputs:
@@ -57,11 +55,11 @@ on:
 
 jobs:
   build:
-    name: Xcode iOS ${{ inputs.unity_version }}
+    name: Build ${{ inputs.target_platform }} with Xcode
     runs-on: macos-latest
 
     steps:
-      - name: Download Unity iOS Artifact
+      - name: Download Unity Artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}

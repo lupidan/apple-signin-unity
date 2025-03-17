@@ -1,5 +1,3 @@
-name: Unity Build
-
 on:
   workflow_call:
     inputs:
@@ -43,7 +41,7 @@ on:
 
 jobs:
   unity-build:
-    name: (${{ inputs.target_platform }}) ${{ inputs.unity_version }}
+    name: Build ${{ inputs.target_platform }} with Unity
     runs-on: ${{ inputs.runner_image }}
 
     steps:
