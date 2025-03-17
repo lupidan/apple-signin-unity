@@ -1,0 +1,130 @@
+fastlane_version "2.226.0"
+
+platform :tvos do
+  before_all do
+    certificate_path = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PATH"]
+    certificate_password = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD"]
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    keychain_name = ENV["KEYCHAIN_NAME"]
+    keychain_password = ENV["KEYCHAIN_PASSWORD"]
+    
+    raise "Missing certificate path" unless certificate_path && !certificate_path.empty?
+    raise "Missing certificate password" unless certificate_password && !certificate_password.empty?
+    raise "Missing provisioning profile path" unless provisioning_profile_path && !provisioning_profile_path.empty?
+    raise "Missing keychain name" unless keychain_name && !keychain_name.empty?
+    raise "Missing keychain password" unless keychain_password && !keychain_password.empty?
+    
+    create_keychain(
+      name: keychain_name,
+      password: keychain_password,
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600
+    )
+    
+    import_certificate(
+      certificate_path: certificate_path,
+      certificate_password: certificate_password,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password
+    )
+    
+    install_provisioning_profile(
+      path: provisioning_profile_path
+    )
+
+    xcode_select("/Applications/Xcode_16.1.app")
+  end
+
+  lane :build do
+    certificate_name = ENV["APPLE_DISTRIBUTION_CERTIFICATE_NAME"]
+    output_name = ENV["FASTLANE_OUTPUT_NAME"]
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    app_store_auth_key_path = ENV["APP_STORE_AUTH_KEY_PATH"]
+    app_store_issuer_id = ENV["APP_STORE_ISSUER_ID"]
+    app_store_key_id = ENV["APP_STORE_KEY_ID"]
+    unity_version = ENV["UNITY_VERSION"]
+    github_run_number = ENV["GITHUB_RUN_NUMBER"]
+    github_run_attempt = ENV["GITHUB_RUN_ATTEMPT"]
+    xcodeproj = "Unity-iPhone.xcodeproj"
+    target = "Unity-iPhone"
+
+    original_version = get_version_number(
+      xcodeproj: xcodeproj,
+      target: target
+    )
+
+    # Sets an app_version: f.ex. original_version="1.4.5" and unity_version="2021.3.45f1" => app_version="1.4.2021345"
+    original_major_minor_version = original_version.match(/^\d+\.\d+/)[0] 
+    unity_version_numeric = unity_version.match(/\d+\.\d+\.\d+/)[0].gsub(".", "")
+    app_version = "#{original_major_minor_version}.#{unity_version_numeric}"
+
+    increment_version_number(
+      version_number: app_version,
+      xcodeproj: xcodeproj
+    )
+
+    puts "✅ Updated App Version: #{app_version}"
+
+    update_project_provisioning(
+      xcodeproj: xcodeproj,
+      target_filter: target,
+      profile: provisioning_profile_path,
+      build_configuration: "Release",
+      code_signing_identity: certificate_name
+    )
+
+    run_number = github_run_number.to_i
+    attempt_number = github_run_attempt.to_i
+    if attempt_number < 1 || attempt_number > 99
+      UI.user_error!("ERROR: Attempt number #{attempt_number} is out of range (must be between 1 and 99 in GitHub Actions).")
+    end
+
+    build_number = (run_number * 100) + attempt_number
+
+    increment_build_number(
+      build_number: build_number,
+      xcodeproj: xcodeproj
+    )
+
+    puts "✅ Updated Build Number: #{build_number}"
+
+    gym(
+      project: xcodeproj,
+      scheme: target,
+      clean: true,
+      output_name: output_name,
+      export_method: "app-store",
+      codesigning_identity: certificate_name
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id: app_store_key_id,
+      issuer_id: app_store_issuer_id,
+      key_filepath: app_store_auth_key_path,
+      duration: 1200,
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: output_name
+    )
+
+  end
+
+  def cleanup
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    keychain_name = ENV["KEYCHAIN_NAME"]
+    
+    sh "rm -f #{provisioning_profile_path}"
+    delete_keychain(name: keychain_name)
+  end
+
+  after_all do
+    cleanup
+  end
+
+  error do
+    cleanup
+  end
+end
