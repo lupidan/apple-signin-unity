@@ -70,7 +70,7 @@ jobs:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ inputs.artifact_name }}
       runner_image: windows-latest
-      target_platform: tvos
+      target_platform: tvOS
       output_path: ./build/tvOS/tvOS/
 
     secrets:
