@@ -44,7 +44,7 @@ jobs:
           - "2020.3.48f1"
 
     name: tvOS Builds
-    uses: ./.github/workflows/build-tvOS.yml
+    uses: ./.github/workflows/build-tvos.yml
     with:
       unity_version: ${{ matrix.unity_version }}
       artifact_name: "tvOS_${{ matrix.unity_version }}_BuildOutput"
