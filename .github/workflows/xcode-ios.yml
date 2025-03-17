@@ -22,6 +22,10 @@ on:
         description: "Password for the Apple Distribution Certificate"
         required: true
 
+      APPLE_DISTRIBUTION_CERTIFICATE_NAME:
+        description: "Name for the Apple Distribution Certificate"
+        required: true
+
       DISTRIBUTION_PROVISIONING_PROFILE:
         description: "Base64-encoded Provisioning Profile (.mobileprovision)"
         required: true
@@ -84,6 +88,7 @@ jobs:
 
       - name: Build Xcode Project using Fastlane
         env:
+          APPLE_DISTRIBUTION_CERTIFICATE_NAME: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_NAME }}
           FASTLANE_OUTPUT_NAME: AppleAuth_${{ inputs.unity_version }}.ipa
           APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/AppleDistributionCertificate.p12
           APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}

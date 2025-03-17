@@ -37,6 +37,7 @@ platform :ios do
   end
 
   lane :build do
+    certificate_name = ENV["APPLE_DISTRIBUTION_CERTIFICATE_NAME"]
     output_name = ENV["FASTLANE_OUTPUT_NAME"]
     provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
     app_store_auth_key_path = ENV["APP_STORE_AUTH_KEY_PATH"]
@@ -47,7 +48,6 @@ platform :ios do
     github_run_attempt = ENV["GITHUB_RUN_ATTEMPT"]
     xcodeproj = "Unity-iPhone.xcodeproj"
     target = "Unity-iPhone"
-    certificate_name = "Apple Distribution: Daniel Lupianez Casares"
 
     original_version = get_version_number(
       xcodeproj: xcodeproj,
