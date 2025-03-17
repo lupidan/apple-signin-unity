@@ -13,6 +13,11 @@ on:
         required: true
         type: string
 
+      target_platform:
+        description: "Target platform to build"
+        required: true
+        type: string
+
     secrets:
       APPLE_DISTRIBUTION_CERTIFICATE:
         description: "Base64-encoded Apple Distribution Certificate (.p12)"
@@ -60,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
-          path: ./iOS-Xcodeproj
+          path: ./Xcodeproj
 
       - name: Download certificate, provisioning profile, and App Store Auth Key
         env:
@@ -102,9 +107,9 @@ jobs:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
           GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
-            cd ./iOS-Xcodeproj
+            cd ./Xcodeproj
             fastlane --version
             fastlane env
-            fastlane ios build --verbose
+            fastlane ${{ inputs.target_platform }} build --verbose
         
             echo "Fastlane build finished"

@@ -85,6 +85,7 @@ jobs:
     with:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ inputs.artifact_name }}
+      target_platform: iOS
 
     secrets:
       APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
