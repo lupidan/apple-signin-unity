@@ -63,6 +63,7 @@ jobs:
           projectPath: ./SampleProject~/
           targetPlatform: ${{ inputs.target_platform }}
           unityVersion: ${{ inputs.unity_version }}
+          versioning: None
 
       - name: Setup fastlane files (macOS/Linux)
         if: runner.os == 'macOS' || runner.os == 'Linux'
