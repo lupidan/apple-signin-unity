@@ -109,7 +109,8 @@ platform :iOS do
 
     upload_to_testflight(
       api_key: api_key,
-      ipa: output_name
+      ipa: output_name,
+      skip_waiting_for_build_processing: true
     )
   end
 
