@@ -123,8 +123,6 @@ platform :iOS do
       UI.message("🔧 Executing special action for Unity 2020: Checking `OTHER_CFLAGS` for `-mno-thumb` in target #{target}")
   
       require 'xcodeproj'
-  
-      # Temporarily change directory to the project root
 
       fastlane_dir = File.dirname(File.expand_path(__FILE__))
       project_root = File.expand_path("..", fastlane_dir)
@@ -172,7 +170,7 @@ platform :iOS do
         else
           UI.message("ℹ️ No changes were necessary.")
         end
-      end # Ends `Dir.chdir` block
+      end
     else
       UI.message("ℹ️ Unity version is not 2020. No modifications needed.")
     end
