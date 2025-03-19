@@ -64,6 +64,7 @@ jobs:
           targetPlatform: ${{ inputs.target_platform }}
           unityVersion: ${{ inputs.unity_version }}
           versioning: None
+          runAsHostUser: true
 
       - name: Setup fastlane files (macOS/Linux)
         if: runner.os == 'macOS' || runner.os == 'Linux'
@@ -78,7 +79,7 @@ jobs:
             exit 1
           fi
             
-          sudo cp -r ./.github/${{ inputs.target_platform }}/fastlane ${{ inputs.output_path }}/fastlane
+          cp -r ./.github/${{ inputs.target_platform }}/fastlane ${{ inputs.output_path }}/fastlane
 
       - name: Setup fastlane files (Windows)
         if: runner.os == 'Windows'
