@@ -11,7 +11,6 @@ jobs:
           - "6000.0.40f1"
           - "2022.3.59f1"
           - "2021.3.45f1"
-          - "2020.3.48f1"
 
     name: iOS Builds
     uses: ./.github/workflows/build-ios.yml
@@ -41,7 +40,6 @@ jobs:
           - "6000.0.40f1"
           - "2022.3.59f1"
           - "2021.3.45f1"
-          - "2020.3.48f1"
 
     name: tvOS Builds
     uses: ./.github/workflows/build-tvos.yml
