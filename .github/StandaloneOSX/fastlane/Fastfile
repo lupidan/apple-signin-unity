@@ -47,11 +47,13 @@ platform :macOS do
       end
 
       UI.message("🔏 Replacing signature: #{path_to_codesign}")
+      sh("codesign --remove-signature \"#{executable}\"")
       sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" \"#{executable}\"")
       UI.success("✅ Signature replaced: #{path_to_codesign}")
     end
 
     UI.message("🔏 Replacing signature [With entitlements]: #{app_path} [#{entitlements_file_path}]")
+    sh("codesign --remove-signature \"#{app_file_path}\"")
     sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{app_file_path}\"")
     UI.success("✅ Signature replaced [With entitlements]: #{app_path} [#{entitlements_file_path}]")
 
