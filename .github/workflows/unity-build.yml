@@ -66,8 +66,17 @@ jobs:
           versioning: None
           runAsHostUser: true
 
+      - name: List contents of SampleProject (if exists)
+        shell: bash
+        run: |
+          if [ -d "build" ]; then
+            ls -la build
+          else
+            echo "Directory 'SampleProject' does not exist."
+          fi
+
       - name: Setup fastlane files (macOS/Linux)
-        if: runner.os == 'macOS' || runner.os == 'Linux'
+        shell: bash
         run: |
           if [ ! -d "${{ inputs.output_path }}" ]; then
             echo "Error: Destination directory ${{ inputs.output_path }} does not exist!" >&2
@@ -80,22 +89,6 @@ jobs:
           fi
             
           cp -r ./.github/${{ inputs.target_platform }}/fastlane ${{ inputs.output_path }}/fastlane
-
-      - name: Setup fastlane files (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          if (-Not (Test-Path "${{ inputs.output_path }}")) {
-            Write-Error "Error: Destination directory ${{ inputs.output_path }} does not exist!"
-            exit 1
-          }
-      
-          if (Test-Path "${{ inputs.output_path }}/fastlane") {
-            Write-Error "Error: fastlane directory already exists in ${{ inputs.output_path }}!"
-            exit 1
-          }
-      
-          Copy-Item -Recurse -Path ".github/${{ inputs.target_platform }}/fastlane" -Destination "${{ inputs.output_path }}/fastlane"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
