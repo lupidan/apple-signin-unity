@@ -66,13 +66,13 @@ jobs:
           versioning: None
           runAsHostUser: true
 
-      - name: List contents of SampleProject (if exists)
+      - name: Recursively list all files and folders (bash-compatible)
         shell: bash
         run: |
           if [ -d "build" ]; then
-            ls -la build
+            ls -laR build
           else
-            echo "Directory 'SampleProject' does not exist."
+            echo "Directory 'build' does not exist."
           fi
 
       - name: Setup fastlane files (macOS/Linux)
