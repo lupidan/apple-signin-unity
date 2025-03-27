@@ -113,69 +113,6 @@ platform :iOS do
       skip_waiting_for_build_processing: true
     )
   end
-
-  def execute_unity_2020_action(unity_version, xcodeproj, target)
-    if unity_version.nil? || unity_version.empty?
-      UI.important("⚠️ UNITY_VERSION is not set or is empty. Skipping Unity 2020 specific modifications.")
-      return
-    end
-  
-    if unity_version.start_with?("2020")
-      UI.message("🔧 Executing special action for Unity 2020: Checking `OTHER_CFLAGS` for `-mno-thumb` in target #{target}")
-  
-      require 'xcodeproj'
-
-      fastlane_dir = File.dirname(File.expand_path(__FILE__))
-      project_root = File.expand_path("..", fastlane_dir)
-
-      Dir.chdir(project_root) do
-        project = Xcodeproj::Project.open(xcodeproj)
-  
-        modified = false
-  
-        project.targets.each do |t|
-          next unless t.name == target
-  
-          t.build_configurations.each do |config|
-            other_cflags = config.build_settings["OTHER_CFLAGS"]
-  
-            if other_cflags.nil? || other_cflags.empty?
-              UI.message("⚠️ No OTHER_CFLAGS found in #{config.name} configuration. Skipping modification.")
-              next
-            end
-  
-            UI.verbose("📄 Current OTHER_CFLAGS for #{config.name}: #{other_cflags.inspect}")
-  
-            updated_cflags = if other_cflags.is_a?(String)
-              other_cflags.split(" ").reject { |flag| flag == "-mno-thumb" }.join(" ")
-            elsif other_cflags.is_a?(Array)
-              other_cflags.reject { |flag| flag == "-mno-thumb" }
-            else
-              other_cflags
-            end
-  
-            if updated_cflags == other_cflags
-              UI.message("✅ `-mno-thumb` was not found in #{config.name}. No changes made.")
-            else
-              UI.message("🛠️ Removing `-mno-thumb` from #{config.name}")
-              UI.verbose("🔄 Updated OTHER_CFLAGS: #{updated_cflags.inspect}")
-              config.build_settings["OTHER_CFLAGS"] = updated_cflags
-              modified = true
-            end
-          end
-        end
-  
-        if modified
-          project.save
-          UI.message("✅ Successfully updated `OTHER_CFLAGS` in target #{target}")
-        else
-          UI.message("ℹ️ No changes were necessary.")
-        end
-      end
-    else
-      UI.message("ℹ️ Unity version is not 2020. No modifications needed.")
-    end
-  end
   
 
   def cleanup
