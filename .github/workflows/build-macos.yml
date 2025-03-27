@@ -68,7 +68,7 @@ jobs:
       artifact_name: ${{ inputs.artifact_name }}
       runner_image: macos-latest
       target_platform: StandaloneOSX
-      output_path: ./build/StandaloneOSX/StandaloneOSX/
+      output_path: ./build/StandaloneOSX/
 
     secrets:
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
