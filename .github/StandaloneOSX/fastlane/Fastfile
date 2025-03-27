@@ -1,1 +1,76 @@
-# EMPTY
+fastlane_version "2.226.0"
+
+platform :macOS do
+  lane :build do
+
+    app_file_path = ENV["MACOS_APP_FILEPATH"]
+    certificate_name = ENV["APPLE_DISTRIBUTION_CERTIFICATE_NAME"]
+    provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+    entitlements_file_path = ENV["ENTITLEMENTS_FILE_PATH"]
+    app_store_auth_key_path = ENV["APP_STORE_AUTH_KEY_PATH"]
+    app_store_issuer_id = ENV["APP_STORE_ISSUER_ID"]
+    app_store_key_id = ENV["APP_STORE_KEY_ID"]
+
+
+    Dir.chdir("../")
+
+    app_path = File.expand_path("./#{app_file_path}")
+    executables = sh("find #{app_path} -type f \\( -name \"*.dylib\" -or -perm +111 \\)").split("\n")
+
+    executables.each do |executable|
+      missing_architectures = []
+      unless system("lipo \"#{executable}\" -verify_arch x86_64 > /dev/null 2>&1")
+        missing_architectures << "x86_64"
+      end
+      unless system("lipo \"#{executable}\" -verify_arch arm64 > /dev/null 2>&1")
+        missing_architectures << "arm64"
+      end
+
+      if missing_architectures.empty?
+        UI.success("✅ All required architectures are present in #{executable}")
+      else
+        UI.error("❌ Missing architectures in #{executable}: #{missing_architectures.join(', ')}")
+      end
+    end
+
+    UI.message("🧹 Removing extended attributes for #{app_path}")
+    sh("xattr -crs #{app_path}")
+
+    executables.each do |executable|
+      if executable.include?(".app/Contents/MacOS/")
+        next
+      end
+
+      path_to_codesign = executable
+      if match = executable.match(%r{(.*\.bundle)/Contents/MacOS/})
+        path_to_codesign = match[1]
+      end
+
+      UI.message("🔏 Replacing signature: #{path_to_codesign}")
+      sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" \"#{executable}\"")
+      UI.success("✅ Signature replaced: #{path_to_codesign}")
+    end
+
+    UI.message("🔏 Replacing signature [With entitlements]: #{app_path} [#{entitlements_file_path}]")
+    sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{app_file_path}\"")
+    UI.success("✅ Signature replaced [With entitlements]: #{app_path} [#{entitlements_file_path}]")
+
+    provisioning_profile_source_path = provisioning_profile_path
+    provisioning_profile_target_path = File.expand_path("#{app_file_path}/Contents/embedded.provisionprofile")
+    if File.exist?(provisioning_profile_path)
+      FileUtils.cp(provisioning_profile_path, provisioning_profile_target_path)
+      UI.success("📄 Provisioning profile copied to #{provisioning_profile_target_path}")
+    else
+      UI.error("❌ Provisioning profile not found at #{provisioning_profile_path}")
+    end
+  
+    sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_file_path}.zip\"")
+
+    sh("xcrun notarytool submit \"#{app_file_path}.zip\" --apple-id \"lupidan@gmail.com\" --password \"#{apple_password}\" --team-id \"HMPT8TH7MM\" --wait")
+
+    sh("xcrun stapler staple \"#{app_file_path}\"")
+    
+    UI.success("✅ All done!")
+
+  end
+end
