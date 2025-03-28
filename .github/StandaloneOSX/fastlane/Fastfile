@@ -5,12 +5,12 @@ platform :macOS do
 
     app_file_path = ENV["MACOS_APP_FILEPATH"]
     certificate_name = ENV["APPLE_DISTRIBUTION_CERTIFICATE_NAME"]
+    installer_certificate_name = ENV["INSTALLER_DISTRIBUTION_CERTIFICATE_NAME"]
     provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
     entitlements_file_path = ENV["ENTITLEMENTS_FILE_PATH"]
     app_store_auth_key_path = ENV["APP_STORE_AUTH_KEY_PATH"]
     app_store_issuer_id = ENV["APP_STORE_ISSUER_ID"]
     app_store_key_id = ENV["APP_STORE_KEY_ID"]
-
 
     Dir.chdir("../")
 
@@ -36,6 +36,15 @@ platform :macOS do
     UI.message("🧹 Removing extended attributes for #{app_path}")
     sh("xattr -crs #{app_path}")
 
+    provisioning_profile_source_path = provisioning_profile_path
+    provisioning_profile_target_path = File.expand_path("#{app_file_path}/Contents/embedded.provisionprofile")
+    if File.exist?(provisioning_profile_path)
+      FileUtils.cp(provisioning_profile_path, provisioning_profile_target_path)
+      UI.success("📄 Provisioning profile copied to #{provisioning_profile_target_path}")
+    else
+      UI.error("❌ Provisioning profile not found at #{provisioning_profile_path}")
+    end
+
     executables.each do |executable|
       if executable.include?(".app/Contents/MacOS/")
         next
@@ -57,20 +66,27 @@ platform :macOS do
     sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{app_file_path}\"")
     UI.success("✅ Signature replaced [With entitlements]: #{app_path} [#{entitlements_file_path}]")
 
-    provisioning_profile_source_path = provisioning_profile_path
-    provisioning_profile_target_path = File.expand_path("#{app_file_path}/Contents/embedded.provisionprofile")
-    if File.exist?(provisioning_profile_path)
-      FileUtils.cp(provisioning_profile_path, provisioning_profile_target_path)
-      UI.success("📄 Provisioning profile copied to #{provisioning_profile_target_path}")
-    else
-      UI.error("❌ Provisioning profile not found at #{provisioning_profile_path}")
-    end
+    app_pkg_path = "#{app_path}.pkg"
+    UI.message("📦 Generating installer package")
+    sh("productbuild --sign \"#{installer_certificate_name}\" --component \"#{app_path}\" \"#{app_pkg_path}\"")
+    UI.success("📦 Generated installer \"#{app_pkg_path}\"")
   
-    sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_file_path}.zip\"")
+    # sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_file_path}.zip\"")
+    # sh("xcrun notarytool submit \"#{app_file_path}.zip\" --apple-id \"lupidan@gmail.com\" --password \"#{apple_password}\" --team-id \"HMPT8TH7MM\" --wait")
+    # sh("xcrun stapler staple \"#{app_file_path}\"")
 
-    sh("xcrun notarytool submit \"#{app_file_path}.zip\" --apple-id \"lupidan@gmail.com\" --password \"#{apple_password}\" --team-id \"HMPT8TH7MM\" --wait")
+    api_key = app_store_connect_api_key(
+      key_id: app_store_key_id,
+      issuer_id: app_store_issuer_id,
+      key_filepath: app_store_auth_key_path,
+      duration: 1200,
+    )
 
-    sh("xcrun stapler staple \"#{app_file_path}\"")
+    upload_to_testflight(
+      api_key: api_key,
+      pkg: app_pkg_path,
+      skip_waiting_for_build_processing: true
+    )
     
     UI.success("✅ All done!")
 
