@@ -1993,12 +1993,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LoginMenu:
-    Parent: {fileID: 0}
-    SignInWithAppleParent: {fileID: 0}
-    SignInWithAppleButton: {fileID: 0}
-    LoadingMessageParent: {fileID: 0}
-    LoadingIconTransform: {fileID: 0}
-    LoadingMessageLabel: {fileID: 0}
+    Parent: {fileID: 1057093046}
+    SignInWithAppleParent: {fileID: 1528511534}
+    SignInWithAppleButton: {fileID: 1528511536}
+    LoadingMessageParent: {fileID: 985611610}
+    LoadingIconTransform: {fileID: 846297119}
+    LoadingMessageLabel: {fileID: 1942013982}
   GameMenu:
     Parent: {fileID: 1437970510}
     AppleUserIdLabel: {fileID: 380728730}
