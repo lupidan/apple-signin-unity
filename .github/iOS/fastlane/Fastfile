@@ -49,8 +49,6 @@ platform :iOS do
     xcodeproj = "Unity-iPhone.xcodeproj"
     target = "Unity-iPhone"
 
-    execute_unity_2020_action(unity_version, xcodeproj, target)
-
     original_version = get_version_number(
       xcodeproj: xcodeproj,
       target: target
