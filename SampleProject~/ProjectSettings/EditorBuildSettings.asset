@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/AppleAuthSample/SampleScene.unity
     guid: 6f48e3993e1264b21b0fc1e486a1641e
-  - enabled: 0
+  - enabled: 1
     path: Assets/AppleAuthSample/LandscapeSampleScene.unity
     guid: 68da1cf4dda854c5887ef4c16bad630f
   m_configObjects: {}
