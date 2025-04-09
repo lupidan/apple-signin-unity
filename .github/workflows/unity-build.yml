@@ -93,6 +93,7 @@ jobs:
 
       - name: Get artifact name
         id: get_artifact_name
+        shell: bash
         run: echo "artifact_name=${{ inputs.target_platform }}_${{ inputs.unity_version }}_BuildOutput" >> "$GITHUB_OUTPUT"
 
       - name: Upload build artifact
