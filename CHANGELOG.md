@@ -1,4 +1,9 @@
 # Changelog
+## [Unreleased]
+### Added
+### Changed
+### Removed
+
 ## [1.5.0] - TBD
 ### Changed
 - Fixed issue with native files not being included in visionOS builds.
@@ -125,7 +130,7 @@
 - Added support to listen to Revoked Credentials notifications
 - Solved possible crashes that could happen when trying to execute a callback in the Native Message Handler, if the callback was to throw an exception, the application would crash.
 
-[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/lupidan/apple-signin-unity/compare/1.5.0...HEAD
 [1.5.0]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.5...1.5.0
 [1.4.4]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/lupidan/apple-signin-unity/compare/v1.4.2...v1.4.3
