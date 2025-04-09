@@ -6,11 +6,6 @@ on:
         required: true
         type: string
 
-      artifact_name:
-        description: "Name of the artifact containing the Unity build"
-        required: true
-        type: string
-
       runner_image:
         description: "Runner image to use"
         required: true
