@@ -41,53 +41,13 @@ end
 
 platform :ios do
   lane :build_and_upload do
-    sample_project_version = get_sample_project_version()
-    unity_version = get_unity_version()
-    distribution_certificate_name = get_distribution_certificate_name()
-    distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
-    github_run_number = get_github_run_number()
-    github_run_attempt = get_github_run_attempt()
+    build_xcodeproj_and_upload()
+  end
+end
 
-    xcodeproj = "Unity-iPhone.xcodeproj"
-    target = "Unity-iPhone"
-    build_configuration = "Release"
-
-    app_version = get_app_version(sample_project_version, unity_version)
-    build_number = get_build_number(github_run_number, github_run_attempt)
-    set_app_version_in_xcodeproj(app_version, xcodeproj)
-    set_app_build_number_in_xcodeproj(build_number, xcodeproj)
-    set_codesign_settings_in_xcodeproj(
-      xcodeproj,
-      target,
-      build_configuration,
-      distribution_provisioning_profile_path,
-      distribution_certificate_name)
-
-    xcode_ouput_name = get_xcode_ouput_name()
-    gym(
-      project: xcodeproj,
-      scheme: target,
-      clean: true,
-      output_name: xcode_ouput_name,
-      export_method: "app-store",
-      codesigning_identity: distribution_certificate_name
-    )
-
-    app_store_auth_key_path = get_app_store_auth_key_path()
-    app_store_issuer_id = get_app_store_issuer_id()
-    app_store_key_id = get_app_store_key_id()
-    api_key = app_store_connect_api_key(
-      key_filepath: app_store_auth_key_path,
-      issuer_id: app_store_issuer_id,
-      key_id: app_store_key_id,
-      duration: 1200,
-    )
-    
-    upload_to_testflight(
-      api_key: api_key,
-      ipa: xcode_ouput_name,
-      skip_waiting_for_build_processing: true
-    )
+platform :tvos do
+  lane :build_and_upload do
+    build_xcodeproj_and_upload()
   end
 end
 
@@ -193,6 +153,58 @@ def get_xcode_ouput_name
   xcode_output_name = ENV["XCODE_OUTPUT_NAME"]
   raise "Missing Xcode output name" unless xcode_output_name && !xcode_output_name.empty?
   xcode_output_name
+end
+
+def build_xcodeproj_and_upload
+  xcodeproj = "Unity-iPhone.xcodeproj"
+  target = "Unity-iPhone"
+  build_configuration = "Release"
+
+  sample_project_version = get_sample_project_version()
+  unity_version = get_unity_version()
+  app_version = get_app_version(sample_project_version, unity_version)
+
+  github_run_number = get_github_run_number()
+  github_run_attempt = get_github_run_attempt()
+  build_number = get_build_number(github_run_number, github_run_attempt)
+
+  set_app_version_in_xcodeproj(app_version, xcodeproj)
+  set_app_build_number_in_xcodeproj(build_number, xcodeproj)
+
+  distribution_certificate_name = get_distribution_certificate_name()
+  distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
+  set_codesign_settings_in_xcodeproj(
+    xcodeproj,
+    target,
+    build_configuration,
+    distribution_provisioning_profile_path,
+    distribution_certificate_name)
+
+  xcode_ouput_name = get_xcode_ouput_name()
+  gym(
+    project: xcodeproj,
+    scheme: target,
+    clean: true,
+    output_name: xcode_ouput_name,
+    export_method: "app-store",
+    codesigning_identity: distribution_certificate_name
+  )
+
+  app_store_auth_key_path = get_app_store_auth_key_path()
+  app_store_issuer_id = get_app_store_issuer_id()
+  app_store_key_id = get_app_store_key_id()
+  api_key = app_store_connect_api_key(
+    key_filepath: app_store_auth_key_path,
+    issuer_id: app_store_issuer_id,
+    key_id: app_store_key_id,
+    duration: 1200,
+  )
+  
+  upload_to_testflight(
+    api_key: api_key,
+    ipa: xcode_ouput_name,
+    skip_waiting_for_build_processing: true
+  )
 end
 
 def cleanup
