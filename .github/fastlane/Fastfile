@@ -220,8 +220,8 @@ def build_xcodeproj_and_upload
 end
 
 def codesign_app_and_upload
-  app_file_path = File.expand_path("../#{app_file_path}")
-  entitlements_file_path = File.expand_path("../#{app_file_path}")
+  app_file_path = File.expand_path("../StandaloneOSX.app")
+  entitlements_file_path = File.expand_path("./StandaloneOSX.entitlements")
   
   executables = find_executables_in_app_file(app_absolute_path)
   
