@@ -342,7 +342,7 @@ end
 def set_version_in_app_file(app_version, app_file_path)
   UI.header("Step: set_version_in_app_file")
   update_plist(
-    plist_path: "#{app_file_path}/Info.plist",
+    plist_path: "#{app_file_path}/Contents/Info.plist",
     block: proc do |plist|
       plist[:CFBundleShortVersionString] = app_version
     end
@@ -354,7 +354,7 @@ end
 def set_build_number_in_app_file(build_number, app_file_path)
   UI.header("Step: set_build_number_in_app_file")
   update_plist(
-    plist_path: "#{app_file_path}/Info.plist",
+    plist_path: "#{app_file_path}/Contents/Info.plist",
     block: proc do |plist|
       plist[:CFBundleVersion] = build_number
     end
