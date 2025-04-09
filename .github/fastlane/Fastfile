@@ -89,6 +89,12 @@ def get_distribution_certificate_password
   distribution_certificate_password
 end
 
+def get_installer_certificate_name
+  installer_certificate_name = ENV["INSTALLER_DISTRIBUTION_CERTIFICATE_NAME"]
+  raise "Missing installer certificate name" unless installer_certificate_name && !installer_certificate_name.empty?
+  installer_certificate_name
+end
+
 def get_installer_certificate_path
   installer_certificate_path = ENV["INSTALLER_DISTRIBUTION_CERTIFICATE_PATH"]
   raise "Missing installer certificate path" unless installer_certificate_path && !installer_certificate_path.empty?

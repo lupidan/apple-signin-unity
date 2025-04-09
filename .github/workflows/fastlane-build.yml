@@ -1,0 +1,148 @@
+on:
+  workflow_call:
+    inputs:
+      unity_version:
+        description: "Unity version used for the build"
+        required: true
+        type: string
+
+      artifact_name:
+        description: "Name of the artifact containing the Unity build"
+        required: true
+        type: string
+
+      fastlane_platform:
+        description: "Platform to build in fastlane"
+        required: true
+        type: string
+
+      xcode_output_name:
+        description: "The ouput name for the Xcode build"
+        required: false
+        type: string
+
+    secrets:
+      KEYCHAIN_NAME:
+        description: "Name of the keychain where the Certificates will be imported"
+        required: true
+
+      KEYCHAIN_PASSWORD:
+        description: "Password for the keychain where the Certificates will be imported"
+        required: true
+
+      APPLE_DISTRIBUTION_CERTIFICATE:
+        description: "Base64-encoded Apple Distribution Certificate (.p12)"
+        required: true
+
+      APPLE_DISTRIBUTION_CERTIFICATE_NAME:
+        description: "Name for the Apple Distribution Certificate"
+        required: true
+
+      APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD:
+        description: "Password for the Apple Distribution Certificate"
+        required: true
+
+      INSTALLER_DISTRIBUTION_CERTIFICATE:
+        description: "Base64-encoded 3rd Party Mac Developer Installer Certificate (.p12)"
+        required: true
+  
+      INSTALLER_DISTRIBUTION_CERTIFICATE_NAME:
+        description: "Name for the 3rd Party Mac Developer Installer Certificate"
+        required: true
+  
+      INSTALLER_DISTRIBUTION_CERTIFICATE_PASSWORD:
+        description: "Password for the 3rd Party Mac Developer Installer Certificate"
+        required: true
+
+      DISTRIBUTION_PROVISIONING_PROFILE:
+        description: "Base64-encoded Provisioning Profile (.mobileprovision)"
+        required: true
+
+      APP_STORE_AUTH_KEY:
+        description: "Base64-Encoded App Store Auth Key (.p8)"
+        required: true
+
+      APP_STORE_ISSUER_ID:
+        description: "App Store Auth Key Issuer ID"
+        required: true
+
+      APP_STORE_KEY_ID:
+        description: "App Store Auth Key ID"
+        required: true
+
+jobs:
+  build:
+    name: Build ${{ inputs.fastlane_platform }} with Fastlane
+    runs-on: macos-latest
+
+    steps:
+      - name: Download Unity Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ./Build
+
+      - name: Download certificates, provisioning profile, and App Store Auth Key
+        env:
+          APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/AppleDistributionCertificate.p12
+          INSTALLER_DISTRIBUTION_CERTIFICATE: ${{ secrets.INSTALLER_DISTRIBUTION_CERTIFICATE }}
+          INSTALLER_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/InstallerDistributionCertificate.p12
+          DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.DISTRIBUTION_PROVISIONING_PROFILE }}
+          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/DistributionProvisioningProfile.mobileprovision
+          APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
+          APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
+          
+        run: |
+          if ! printf "%s" "$APPLE_DISTRIBUTION_CERTIFICATE" | base64 --decode -o "$APPLE_DISTRIBUTION_CERTIFICATE_PATH"; then
+            echo "Failed to decode Apple Distribution Certificate" >&2
+            exit 1
+          fi
+
+          if ! printf "%s" "$INSTALLER_DISTRIBUTION_CERTIFICATE" | base64 --decode -o "$INSTALLER_DISTRIBUTION_CERTIFICATE_PATH"; then
+            echo "Failed to decode 3rd Party Mac Developer Installer Certificate" >&2
+            exit 1
+          fi
+
+          if ! printf "%s" "$DISTRIBUTION_PROVISIONING_PROFILE" | base64 --decode -o "$DISTRIBUTION_PROVISIONING_PROFILE_PATH"; then
+            echo "Failed to decode Provisioning Profile" >&2
+            exit 1
+          fi
+
+          if ! printf "%s" "$APP_STORE_AUTH_KEY" | base64 --decode -o "$APP_STORE_AUTH_KEY_PATH"; then
+            echo "Failed to decode App Store Auth Key" >&2
+            exit 1
+          fi
+
+      - name: Build and Upload with Fastlane
+        env:
+          KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          APPLE_DISTRIBUTION_CERTIFICATE_NAME: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_NAME }}
+          APPLE_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/AppleDistributionCertificate.p12
+          APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          INSTALLER_DISTRIBUTION_CERTIFICATE_NAME: ${{ secrets.INSTALLER_DISTRIBUTION_CERTIFICATE_NAME }}
+          INSTALLER_DISTRIBUTION_CERTIFICATE_PATH: ${{ runner.temp }}/InstallerDistributionCertificate.p12
+          INSTALLER_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.INSTALLER_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          DISTRIBUTION_PROVISIONING_PROFILE_PATH: ${{ runner.temp }}/DistributionProvisioningProfile.mobileprovision
+          APP_STORE_AUTH_KEY_PATH: ${{ runner.temp }}/AppStoreAuthKey.p8
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+          SAMPLE_PROJECT_VERSION: "1.5.0"
+          UNITY_VERSION: ${{ inputs.unity_version }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+          XCODE_OUTPUT_NAME: ${{ inputs.xcode_output_name }}
+
+        run: |
+          cd ./Build
+          echo "Running fastlane for platform: ${{ inputs.fastlane_platform }}"
+          fastlane ${{ inputs.fastlane_platform }} build_and_upload_${{ inputs.fastlane_platform }} || { echo "Fastlane failed"; exit 1; }
+          echo "Fastlane build finished"
+
+      - name: Upload Fastlane Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastlane-logs-${{ inputs.artifact_name }}
+          path: ~/Library/Logs/fastlane
