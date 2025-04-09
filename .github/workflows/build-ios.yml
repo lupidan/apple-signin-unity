@@ -88,7 +88,7 @@ jobs:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ needs.ios-unity-build.outputs.artifact_name }}
       fastlane_platform: ios
-      xcode_output_name: SampleProject.ipa
+      xcode_output_name: SampleProject_iOS.ipa
 
     secrets:
       KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
