@@ -40,13 +40,13 @@ before_all do
 end
 
 platform :ios do
-  lane :build_and_upload do
+  lane :build_and_upload_ios do
     build_xcodeproj_and_upload()
   end
 end
 
 platform :tvos do
-  lane :build_and_upload do
+  lane :build_and_upload_tvos do
     build_xcodeproj_and_upload()
   end
 end
@@ -217,30 +217,30 @@ end
 
 def get_app_version(sample_project_version, unity_version)
   UI.header("Step: Get App Version")
-  puts "✅ Sample Project version: #{sample_project_version}"
-  puts "✅ Unity Version: #{unity_version}"
+  UI.message("✅ Sample Project version: #{sample_project_version}")
+  UI.message("✅ Unity Version: #{unity_version}")
 
   # Sets an app_version combining both sample app version, and unity version
   # f.ex. original_version="1.4.5", unity_version="2021.3.45f1" => app_version="1.4.2021345"
   original_major_minor_version = sample_project_version.match(/^\d+\.\d+/)[0] 
   unity_version_numeric = unity_version.match(/\d+\.\d+\.\d+/)[0].gsub(".", "")
   app_version = "#{original_major_minor_version}.#{unity_version_numeric}"
-  puts "✅ App Version: #{app_version}"
+  UI.message("✅ App Version: #{app_version}")
 
   app_version
 end
 
 def get_build_number(github_run_number, github_run_attempt)
   UI.header("Step: Get Build Number")
-  puts "✅ Github Run Number: #{github_run_number}"
-  puts "✅ Github Run Attempt: #{github_run_attempt}"
+  UI.message("✅ Github Run Number: #{github_run_number}")
+  UI.message("✅ Github Run Attempt: #{github_run_attempt}")
 
   if github_run_attempt < 1 || github_run_attempt > 99
     UI.user_error!("ERROR: Attempt number #{attempt_number} is out of range (must be between 1 and 99 in GitHub Actions).")
   end
 
   build_number = (run_number * 100) + attempt_number
-  puts "✅ Build Number: #{build_number}"
+  UI.message("✅ Build Number: #{build_number}")
 
   build_number
 end
@@ -251,7 +251,7 @@ def set_app_version_in_xcodeproj(app_version, xcodeproj)
     xcodeproj: xcodeproj
   )
 
-  puts "✅ Updated App Version in Xcodeproj: #{app_version}"
+  UI.message("✅ Updated App Version in Xcodeproj: #{app_version}")
 end
 
 def set_app_build_number_in_xcodeproj(build_number, xcodeproj)
@@ -260,7 +260,7 @@ def set_app_build_number_in_xcodeproj(build_number, xcodeproj)
     xcodeproj: xcodeproj
   )
 
-  puts "✅ Updated Build Number in Xcodeproj: #{build_number}"
+  UI.message("✅ Updated Build Number in Xcodeproj: #{build_number}")
 end
 
 def set_codesign_settings_in_xcodeproj(xcodeproj, target, build_configuration, distribution_provisioning_profile_path, distribution_certificate_name)
@@ -272,5 +272,5 @@ def set_codesign_settings_in_xcodeproj(xcodeproj, target, build_configuration, d
     code_signing_identity: distribution_certificate_name
   )
 
-  puts "✅ Updated Codesign settings in Xcodeproj"
+  UI.message("✅ Updated Codesign settings in Xcodeproj")
 end
