@@ -232,20 +232,20 @@ def codesign_app_and_upload
   build_number = get_build_number(github_run_number, github_run_attempt)
   set_build_number_in_app_file(build_number, app_file_path)
   
-  executables = find_executables_in_app_file(app_absolute_path)
+  executables = find_executables_in_app_file(app_file_path)
   
   verify_architectures_in_executables(executables)
   
-  remove_extended_attributes_in_app_file(app_absolute_path)
+  remove_extended_attributes_in_app_file(app_file_path)
 
   distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
-  setup_provisioning_profile_in_app_file(app_absolute_path, distribution_provisioning_profile_path)
+  setup_provisioning_profile_in_app_file(app_file_path, distribution_provisioning_profile_path)
 
   distribution_certificate_name = get_distribution_certificate_name()
-  codesign_executables_in_app_file(app_absolute_path, executables, distribution_certificate_name, entitlements_file_path)
+  codesign_executables_in_app_file(app_file_path, executables, distribution_certificate_name, entitlements_file_path)
 
   installer_certificate_name = get_installer_certificate_name()
-  app_pkg_path = prepare_pkg_file_for_upload(app_absolute_path, installer_certificate_name)
+  app_pkg_path = prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
 
   app_store_auth_key_path = get_app_store_auth_key_path()
   app_store_issuer_id = get_app_store_issuer_id()
