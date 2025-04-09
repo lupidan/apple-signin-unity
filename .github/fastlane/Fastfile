@@ -242,10 +242,10 @@ def get_build_number(github_run_number, github_run_attempt)
   UI.message("✅ Github Run Attempt: #{github_run_attempt}")
 
   if github_run_attempt < 1 || github_run_attempt > 99
-    UI.user_error!("ERROR: Attempt number #{attempt_number} is out of range (must be between 1 and 99 in GitHub Actions).")
+    UI.user_error!("ERROR: Attempt number #{github_run_attempt} is out of range (must be between 1 and 99 in GitHub Actions).")
   end
 
-  build_number = (run_number * 100) + attempt_number
+  build_number = (github_run_number * 100) + github_run_attempt
   UI.message("✅ Build Number: #{build_number}")
 
   build_number
