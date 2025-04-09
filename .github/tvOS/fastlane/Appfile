@@ -1,8 +1,0 @@
-# For more information about the Appfile, see:
-#     https://docs.fastlane.tools/advanced/#appfile
-
-app_identifier("com.lupidan.testappleauth") # The bundle identifier of your app
-apple_id("lupidan@gmail.com") # Your Apple Developer Portal username
-
-itc_team_id("115108802") # App Store Connect Team ID
-team_id("HMPT8TH7MM") # Developer Portal Team ID
