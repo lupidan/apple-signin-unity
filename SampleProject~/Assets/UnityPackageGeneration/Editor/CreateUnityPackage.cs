@@ -21,6 +21,7 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
                 (Filepath: Path.Combine(RootFolder, "package.json"), Regex: new Regex(@"\""version\""\s*:\s*\""([0-9.]*)\""")),
                 (Filepath: Path.Combine(RootFolder, "README.md"), Regex: new Regex(@"Current stable version is (v?[0-9.]*)")),
                 (Filepath: Path.Combine(RootFolder, "README.md"), Regex: new Regex(@"apple-signin-unity\.git#(v?[0-9.]*)")),
+                (Filepath: Path.Combine(RootFolder, ".github", "workflows", "fastlane-build.yml"), Regex: new Regex(@"SAMPLE_PROJECT_VERSION:\s*\""([0-9.]*)\""")),
                 (Filepath: Path.Combine(RootFolder, "CHANGELOG.md"), Regex: new Regex(@"## \[(Unreleased)\]")),
                 (Filepath: Path.Combine(RootFolder, "SampleProject~", "ProjectSettings", "ProjectSettings.asset"), Regex: new Regex(@"bundleVersion:\s*([0-9.]*)")),
                 (Filepath: Path.Combine(RootFolder, "Xcode~", "MacOSAppleAuthManager.xcodeproj", "project.pbxproj"), Regex: new Regex(@"MARKETING_VERSION = ([0-9.]*);")),
