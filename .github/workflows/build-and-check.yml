@@ -91,18 +91,8 @@ jobs:
     uses: ./.github/workflows/build-macos.yml
     with:
       unity_version: ${{ matrix.unity_version }}
-      artifact_name: "macos_${{ matrix.unity_version }}_BuildOutput"
 
     secrets:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-      APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
-      APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-      APPLE_DISTRIBUTION_CERTIFICATE_NAME: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_NAME }}
-      DISTRIBUTION_PROVISIONING_PROFILE: ${{ secrets.TVOS_DISTRIBUTION_PROVISIONING_PROFILE }}
-      KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
-      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-      APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
-      APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
-      APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
