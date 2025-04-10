@@ -323,8 +323,6 @@ def setup_encryption_compliance_in_info_plist(info_plist_file_path)
     UI.user_error!("❌ Info.plist not found at #{info_plist_file_path}")
   end
 
-  sh("base64 -i #{info_plist_file_path}")
-
   set_info_plist_value(
     path: info_plist_file_path,
     key: "ITSAppUsesNonExemptEncryption",
@@ -332,7 +330,7 @@ def setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
   UI.message("✅ Setup ITSAppUsesNonExemptEncryption=false in #{info_plist_file_path}")
 
-  sh("base64 -i #{info_plist_file_path}")
+  sh("cat #{info_plist_file_path}")
 end
 
 def setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
@@ -341,8 +339,6 @@ def setup_version_and_build_number_in_info_plist(app_version, build_number, info
   unless File.exist?(info_plist_file_path)
     UI.user_error!("❌ Info.plist not found at #{info_plist_file_path}")
   end
-
-  sh("base64 -i #{info_plist_file_path}")
 
   set_info_plist_value(
     path: info_plist_file_path,
@@ -357,7 +353,7 @@ def setup_version_and_build_number_in_info_plist(app_version, build_number, info
   UI.message("✅ Setup Version #{app_version} in #{info_plist_file_path}")
   UI.message("✅ Setup Build Number #{build_number} in #{info_plist_file_path}")
 
-  sh("base64 -i #{info_plist_file_path}")
+  sh("cat #{info_plist_file_path}")
 end
 
 def set_app_version_in_xcodeproj(app_version, xcodeproj)
