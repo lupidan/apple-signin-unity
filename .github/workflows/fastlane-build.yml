@@ -90,7 +90,8 @@ jobs:
       - name: Extract artifact from tar
         shell: bash
         run: |
-          tar -xvf "./Build/${{ inputs.tar_name }}"
+          cd ./Build
+          tar -xvf "./${{ inputs.tar_name }}"
 
       - name: Download certificates, provisioning profile, and App Store Auth Key
         env:
