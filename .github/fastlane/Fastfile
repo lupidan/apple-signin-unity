@@ -225,7 +225,7 @@ def codesign_app_and_upload
   app_file_path = File.expand_path("../StandaloneOSX.app")
   entitlements_file_path = File.expand_path("./StandaloneOSX.entitlements")
   info_plist_file_path = "#{app_file_path}/Contents/Info.plist"
-  
+
   setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
   sample_project_version = get_sample_project_version()
@@ -328,7 +328,7 @@ def setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
   UI.message("✅ Setup ITSAppUsesNonExemptEncryption=false in #{info_plist_file_path}")
 
-  sh("cat #{info_plist_file_path}") // TODO: REMOVE
+  sh("cat #{info_plist_file_path}") # TODO: REMOVE
 end
 
 def setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
@@ -345,7 +345,7 @@ def setup_version_and_build_number_in_info_plist(app_version, build_number, info
   UI.message("✅ Setup Version #{app_version} in #{info_plist_file_path}")
   UI.message("✅ Setup Build Number #{build_number} in #{info_plist_file_path}")
 
-  sh("cat #{info_plist_file_path}") // TODO: REMOVE
+  sh("cat #{info_plist_file_path}") # TODO: REMOVE
 end
 
 def set_app_version_in_xcodeproj(app_version, xcodeproj)
