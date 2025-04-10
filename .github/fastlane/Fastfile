@@ -366,13 +366,17 @@ end
 
 def find_executables_in_app_file(app_file_path)
   UI.header("Step: find_executables_in_app_file")
-  executables = sh("find #{app_file_path} -type f \\( -name \"*.dylib\" -or -perm +111 \\)").split("\n")
+  executables = sh("find #{app_file_path} -type f \\( -name \"*.dylib\" +111 \\)").split("\n")
+  executables << "#{app_file_path}/Contents/MacOS/AppleSignInForUnity"
+  executables << "#{app_file_path}/Contents/PlugIns/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager"
+  UI.success("✅ Located #{executables.size} executable(s):")
 
-  if executables.empty?
-    UI.important("⚠️ No executables found in #{app_file_path}")
-  else
-    UI.success("✅ Located #{executables.size} executable(s):")
-    executables.each { |executable| UI.message(" - #{executable}") }
+  executables.each do |executable|
+    if File.exist?(executable)
+      UI.message(" - #{executable}")
+    else
+      UI.important(" - #{executable} ⚠️ Not found!!!")
+    end
   end
 
   return executables
