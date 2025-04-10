@@ -87,6 +87,7 @@ jobs:
     with:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ needs.tvos-unity-build.outputs.artifact_name }}
+      tar_name: ${{ needs.tvos-unity-build.outputs.tar_name }}
       fastlane_platform: tvos
       xcode_output_name: SampleProject_tvOS.ipa
 

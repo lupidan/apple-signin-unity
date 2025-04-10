@@ -87,6 +87,7 @@ jobs:
     with:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ needs.macos-unity-build.outputs.artifact_name }}
+      tar_name: ${{ needs.macos-unity-build.outputs.tar_name }}
       fastlane_platform: mac
 
     secrets:

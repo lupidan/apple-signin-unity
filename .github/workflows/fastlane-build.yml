@@ -11,6 +11,11 @@ on:
         required: true
         type: string
 
+      tar_name:
+        description: "Name of the tar file inside the artifact"
+        required: true
+        type: string
+
       fastlane_platform:
         description: "Platform to build in fastlane"
         required: true
@@ -81,6 +86,11 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: ./Build
+
+      - name: Extract artifact from tar
+        shell: bash
+        run: |
+          tar -xvf "./Build/${{ inputs.tar_name }}"
 
       - name: Download certificates, provisioning profile, and App Store Auth Key
         env:

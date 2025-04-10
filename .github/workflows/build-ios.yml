@@ -87,6 +87,7 @@ jobs:
     with:
       unity_version: ${{ inputs.unity_version }}
       artifact_name: ${{ needs.ios-unity-build.outputs.artifact_name }}
+      tar_name: ${{ needs.ios-unity-build.outputs.tar_name }}
       fastlane_platform: ios
       xcode_output_name: SampleProject_iOS.ipa
 

@@ -25,6 +25,9 @@ on:
       artifact_name:
         value: ${{ jobs.unity-build.outputs.artifact_name }}
 
+      tar_name:
+        value: ${{ jobs.unity-build.outputs.tar_name }}
+
     secrets:
       UNITY_LICENSE:
         description: "Unity license of the account to use"
@@ -43,7 +46,8 @@ jobs:
     name: Build ${{ inputs.target_platform }} with Unity
     runs-on: ${{ inputs.runner_image }}
     outputs:
-      artifact_name: ${{ steps.get_artifact_name.outputs.artifact_name }}
+      artifact_name: ${{ steps.get_outputs.outputs.artifact_name }}
+      tar_name: ${{ steps.get_outputs.outputs.tar_name }}
 
     steps:
       - name: Checkout repository
@@ -91,20 +95,23 @@ jobs:
             
           cp -r ./.github/fastlane ${{ inputs.output_path }}/fastlane
 
-      - name: Get artifact name
-        id: get_artifact_name
+      - name: Get Outputs
+        id: get_outputs
         shell: bash
         run: |
-          echo "artifact_name=${{ inputs.target_platform }}_${{ inputs.unity_version }}_BuildOutput" >> "$GITHUB_OUTPUT"
-
+          artifact_name="${{ inputs.target_platform }}_${{ inputs.unity_version }}_BuildOutput"
+          tar_name="$artifact_name.tar"
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+          echo "tar_name=$tar_name" >> "$GITHUB_OUTPUT"
+      
       - name: Tar build artifact to avoid file permission loss
-        id: get_tar_file
         shell: bash
         run: |
-          tar -cvf "${{ steps.get_artifact_name.outputs.artifact_name }}.tar" "${{ inputs.output_path }}"
-
+          tar -cvf "${{ steps.get_outputs.outputs.tar_name }}" "${{ inputs.output_path }}"
+      
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ steps.get_artifact_name.outputs.artifact_name }}"
-          path: "${{ steps.get_artifact_name.outputs.artifact_name }}.tar"
+          name: "${{ steps.get_outputs.outputs.artifact_name }}"
+          path: "${{ steps.get_outputs.outputs.tar_name }}"
+        
