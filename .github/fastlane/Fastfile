@@ -242,7 +242,7 @@ def codesign_app_and_upload
   setup_provisioning_profile_in_app_file(app_file_path, distribution_provisioning_profile_path)
 
   distribution_certificate_name = get_distribution_certificate_name()
-  codesign_executables_in_app_file(app_file_path, executables, distribution_certificate_name, entitlements_file_path)
+  codesign_executables_in_app_file(executables, distribution_certificate_name, entitlements_file_path)
 
   installer_certificate_name = get_installer_certificate_name()
   keychain_name = get_keychain_name()
@@ -422,26 +422,24 @@ def setup_provisioning_profile_in_app_file(app_file_path, provisioning_profile_s
   end
 end
 
-def codesign_executables_in_app_file(app_file_path, executables, certificate_name, entitlements_file_path)
+def codesign_executables_in_app_file(executables, certificate_name, entitlements_file_path)
   UI.header("Step: codesign_executables_in_app_file")
 
   executables.each do |executable|
-    # Leave main executable last to be codesigned (with entitlements)
+    
+    # Main executable should be codesigned with entitlements
     if executable.include?(".app/Contents/MacOS/")
-      next
+      sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{executable}\"")
+    else
+      sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" \"#{executable}\"")
     end
 
     # Filter out executables inside .bundle files, so we codesign the .bundle directly
-    path_to_codesign = executable
-    if match = executable.match(%r{(.*\.bundle)/Contents/MacOS/})
-      path_to_codesign = match[1]
-    end
-
-    sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" \"#{path_to_codesign}\"")
+    # path_to_codesign = executable
+    # if match = executable.match(%r{(.*\.bundle)/Contents/MacOS/})
+    #  path_to_codesign = match[1]
+    # end    
   end
-
-  # Codesign main app file last
-  sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{app_file_path}\"")
 end
 
 def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
