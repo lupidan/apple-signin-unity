@@ -367,8 +367,8 @@ end
 def find_executables_in_app_file(app_file_path)
   UI.header("Step: find_executables_in_app_file")
   executables = sh("find #{app_file_path} -type f \\( -name \"*.dylib\" \\)").split("\n")
-  executables << "#{app_file_path}/Contents/MacOS/AppleSignInForUnity"
   executables << "#{app_file_path}/Contents/PlugIns/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager"
+  executables << "#{app_file_path}/Contents/MacOS/AppleSignInForUnity" # Last one should be the main executable
   UI.success("✅ Located #{executables.size} executable(s):")
 
   executables.each do |executable|
