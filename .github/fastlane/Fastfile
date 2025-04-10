@@ -444,9 +444,7 @@ def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
   UI.header("Step: prepare_pkg_file_for_upload")
 
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
-  sh("security list-keychains")
-  sh("security find-identity -v")
-  sh("productbuild --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" \"#{app_pkg_path}\"")
+  sh("productbuild --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" /Applications \"#{app_pkg_path}\"")
 
   return app_pkg_path
 end
