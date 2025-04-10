@@ -342,10 +342,11 @@ end
 
 def set_version_and_build_number_in_app_file(app_version, build_number, app_file_path)
   UI.header("Step: set_version_and_build_number_in_app_file")
+
   update_plist(
     plist_path: "#{app_file_path}/Contents/Info.plist",
     block: proc do |plist|
-      plist[:CFBundleShortVersionString] = "#{app_version}",
+      plist[:CFBundleShortVersionString] = "#{app_version}"
       plist[:CFBundleVersion] = "#{build_number}"
     end
   )
