@@ -171,7 +171,7 @@ def build_xcodeproj_and_upload
   xcodeproj = "Unity-iPhone.xcodeproj"
   target = "Unity-iPhone"
   build_configuration = "Release"
-  info_plist_file_path = "Info.plist"
+  info_plist_file_path = File.expand_path("../Info.plist")
 
   setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
@@ -440,19 +440,12 @@ def codesign_executables_in_app_file(executables, certificate_name, entitlements
   UI.header("Step: codesign_executables_in_app_file")
 
   executables.each do |executable|
-    
     # Main executable should be codesigned with entitlements
     if executable.include?(".app/Contents/MacOS/")
       sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{executable}\"")
     else
       sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" \"#{executable}\"")
     end
-
-    # Filter out executables inside .bundle files, so we codesign the .bundle directly
-    # path_to_codesign = executable
-    # if match = executable.match(%r{(.*\.bundle)/Contents/MacOS/})
-    #  path_to_codesign = match[1]
-    # end    
   end
 end
 
