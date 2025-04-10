@@ -252,7 +252,7 @@ def codesign_app_and_upload
 
   installer_certificate_name = get_installer_certificate_name()
   keychain_name = get_keychain_name()
-  app_pkg_path = prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
+  app_pkg_path = prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_plist_file_path)
 
   app_store_auth_key_path = get_app_store_auth_key_path()
   app_store_issuer_id = get_app_store_issuer_id()
@@ -457,7 +457,7 @@ def codesign_executables_in_app_file(executables, certificate_name, entitlements
   end
 end
 
-def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
+def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_plist_file_path)
   UI.header("Step: prepare_pkg_file_for_upload")
 
   # ZIP TO UPLOAD AND DEBUG
@@ -465,7 +465,7 @@ def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
   sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_zip_path}\"")
 
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
-  sh("productbuild --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" /Applications \"#{app_pkg_path}\"")
+  sh("productbuild --component \"#{app_file_path}\" \"/Applications\" --sign \"#{installer_certificate_name}\" --product \"#{info_plist_file_path}\"  \"#{app_pkg_path}\"")
 
   return app_pkg_path
 end
