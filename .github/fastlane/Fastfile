@@ -319,10 +319,14 @@ end
 def setup_encryption_compliance_in_info_plist(info_plist_file_path)
   UI.header("Step: setup_encryption_compliance_in_info_plist")
 
+  unless File.exist?(info_plist_file_path)
+    UI.user_error!("❌ Info.plist not found at #{info_plist_file_path}")
+  end
+
   update_plist(
     plist_path: info_plist_file_path,
     block: proc do |plist|
-      plist[:ITSAppUsesNonExemptEncryption] = false
+      plist["ITSAppUsesNonExemptEncryption"] = false
     end
   )
 
@@ -334,11 +338,15 @@ end
 def setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
   UI.header("Step: setup_version_and_build_number_in_info_plist")
 
+  unless File.exist?(info_plist_file_path)
+    UI.user_error!("❌ Info.plist not found at #{info_plist_file_path}")
+  end
+
   update_plist(
     plist_path: info_plist_file_path,
     block: proc do |plist|
-      plist[:CFBundleShortVersionString] = "#{app_version}"
-      plist[:CFBundleVersion] = "#{build_number}"
+      plist["CFBundleShortVersionString"] = "#{app_version}"
+      plist["CFBundleVersion"] = "#{build_number}"
     end
   )
 
