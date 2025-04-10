@@ -225,12 +225,12 @@ def codesign_app_and_upload
   sample_project_version = get_sample_project_version()
   unity_version = get_unity_version()
   app_version = get_app_version(sample_project_version, unity_version)
-  set_version_in_app_file(app_version, app_file_path)
 
   github_run_number = get_github_run_number()
   github_run_attempt = get_github_run_attempt()
   build_number = get_build_number(github_run_number, github_run_attempt)
-  set_build_number_in_app_file(build_number, app_file_path)
+
+  set_version_and_build_number_in_app_file(app_version, build_number, app_file_path)
   
   executables = find_executables_in_app_file(app_file_path)
   
@@ -340,28 +340,20 @@ def set_codesign_settings_in_xcodeproj(xcodeproj, target, build_configuration, d
   UI.message("✅ Updated Codesign settings in Xcodeproj")
 end
 
-def set_version_in_app_file(app_version, app_file_path)
-  UI.header("Step: set_version_in_app_file")
+def set_version_and_build_number_in_app_file(app_version, build_number, app_file_path)
+  UI.header("Step: set_version_and_build_number_in_app_file")
   update_plist(
     plist_path: "#{app_file_path}/Contents/Info.plist",
     block: proc do |plist|
-      plist[:CFBundleShortVersionString] = app_version
-    end
-  )
-
-  UI.message("✅ Updated Version in .app file: #{app_version}")
-end
-
-def set_build_number_in_app_file(build_number, app_file_path)
-  UI.header("Step: set_build_number_in_app_file")
-  update_plist(
-    plist_path: "#{app_file_path}/Contents/Info.plist",
-    block: proc do |plist|
+      plist[:CFBundleShortVersionString] = "#{app_version}",
       plist[:CFBundleVersion] = "#{build_number}"
     end
   )
 
+  UI.message("✅ Updated Version in .app file: #{app_version}")
   UI.message("✅ Updated Build Number in .app file: #{build_number}")
+
+  sh("cat #{app_file_path}/Contents/Info.plist")
 end
 
 def find_executables_in_app_file(app_file_path)
