@@ -246,7 +246,7 @@ def codesign_app_and_upload
 
   installer_certificate_name = get_installer_certificate_name()
   keychain_name = get_keychain_name()
-  app_pkg_path = prepare_pkg_file_for_upload(app_file_path, keychain_name, installer_certificate_name)
+  app_pkg_path = prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
 
   app_store_auth_key_path = get_app_store_auth_key_path()
   app_store_issuer_id = get_app_store_issuer_id()
@@ -357,7 +357,7 @@ def set_build_number_in_app_file(build_number, app_file_path)
   update_plist(
     plist_path: "#{app_file_path}/Contents/Info.plist",
     block: proc do |plist|
-      plist[:CFBundleVersion] = build_number
+      plist[:CFBundleVersion] = "#{build_number}"
     end
   )
 
@@ -440,14 +440,13 @@ def codesign_executables_in_app_file(app_file_path, executables, certificate_nam
   sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{app_file_path}\"")
 end
 
-def prepare_pkg_file_for_upload(app_file_path, keychain_name, installer_certificate_name)
+def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
   UI.header("Step: prepare_pkg_file_for_upload")
 
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
   sh("security list-keychains")
   sh("security find-identity -v")
-  keychain_path = "/Users/runner/Library/Keychains/#{keychain_name}"
-  sh("productbuild --keychain \"#{keychain_path}\" --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" \"#{app_pkg_path}\"")
+  sh("productbuild --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" \"#{app_pkg_path}\"")
 
   return app_pkg_path
 end
