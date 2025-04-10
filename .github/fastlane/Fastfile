@@ -329,8 +329,6 @@ def setup_encryption_compliance_in_info_plist(info_plist_file_path)
     value: false)
 
   UI.message("✅ Setup ITSAppUsesNonExemptEncryption=false in #{info_plist_file_path}")
-
-  sh("cat #{info_plist_file_path}")
 end
 
 def setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
@@ -352,8 +350,6 @@ def setup_version_and_build_number_in_info_plist(app_version, build_number, info
 
   UI.message("✅ Setup Version #{app_version} in #{info_plist_file_path}")
   UI.message("✅ Setup Build Number #{build_number} in #{info_plist_file_path}")
-
-  sh("cat #{info_plist_file_path}")
 end
 
 def set_app_version_in_xcodeproj(app_version, xcodeproj)
@@ -459,10 +455,6 @@ end
 
 def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_plist_file_path)
   UI.header("Step: prepare_pkg_file_for_upload")
-
-  # ZIP TO UPLOAD AND DEBUG
-  app_zip_path = app_file_path.sub(/\.app$/, '.zip')
-  sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_zip_path}\"")
 
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
   sh("productbuild --component \"#{app_file_path}\" \"/Applications\" --sign \"#{installer_certificate_name}\" --product \"#{info_plist_file_path}\"  \"#{app_pkg_path}\"")
