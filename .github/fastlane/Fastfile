@@ -171,6 +171,9 @@ def build_xcodeproj_and_upload
   xcodeproj = "Unity-iPhone.xcodeproj"
   target = "Unity-iPhone"
   build_configuration = "Release"
+  info_plist_file_path = "Info.plist"
+
+  setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
   sample_project_version = get_sample_project_version()
   unity_version = get_unity_version()
@@ -221,6 +224,9 @@ end
 def codesign_app_and_upload
   app_file_path = File.expand_path("../StandaloneOSX.app")
   entitlements_file_path = File.expand_path("./StandaloneOSX.entitlements")
+  info_plist_file_path = "#{app_file_path}/Contents/Info.plist"
+  
+  setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
   sample_project_version = get_sample_project_version()
   unity_version = get_unity_version()
@@ -230,7 +236,7 @@ def codesign_app_and_upload
   github_run_attempt = get_github_run_attempt()
   build_number = get_build_number(github_run_number, github_run_attempt)
 
-  set_version_and_build_number_in_app_file(app_version, build_number, app_file_path)
+  setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
   
   executables = find_executables_in_app_file(app_file_path)
   
@@ -310,6 +316,38 @@ def get_build_number(github_run_number, github_run_attempt)
   build_number
 end
 
+def setup_encryption_compliance_in_info_plist(info_plist_file_path)
+  UI.header("Step: setup_encryption_compliance_in_info_plist")
+
+  update_plist(
+    plist_path: info_plist_file_path,
+    block: proc do |plist|
+      plist[:ITSAppUsesNonExemptEncryption] = false
+    end
+  )
+
+  UI.message("✅ Setup ITSAppUsesNonExemptEncryption=false in #{info_plist_file_path}")
+
+  sh("cat #{info_plist_file_path}") // TODO: REMOVE
+end
+
+def setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
+  UI.header("Step: setup_version_and_build_number_in_info_plist")
+
+  update_plist(
+    plist_path: info_plist_file_path,
+    block: proc do |plist|
+      plist[:CFBundleShortVersionString] = "#{app_version}"
+      plist[:CFBundleVersion] = "#{build_number}"
+    end
+  )
+
+  UI.message("✅ Setup Version #{app_version} in #{info_plist_file_path}")
+  UI.message("✅ Setup Build Number #{build_number} in #{info_plist_file_path}")
+
+  sh("cat #{info_plist_file_path}") // TODO: REMOVE
+end
+
 def set_app_version_in_xcodeproj(app_version, xcodeproj)
   increment_version_number(
     version_number: app_version,
@@ -338,23 +376,6 @@ def set_codesign_settings_in_xcodeproj(xcodeproj, target, build_configuration, d
   )
 
   UI.message("✅ Updated Codesign settings in Xcodeproj")
-end
-
-def set_version_and_build_number_in_app_file(app_version, build_number, app_file_path)
-  UI.header("Step: set_version_and_build_number_in_app_file")
-
-  update_plist(
-    plist_path: "#{app_file_path}/Contents/Info.plist",
-    block: proc do |plist|
-      plist[:CFBundleShortVersionString] = "#{app_version}"
-      plist[:CFBundleVersion] = "#{build_number}"
-    end
-  )
-
-  UI.message("✅ Updated Version in .app file: #{app_version}")
-  UI.message("✅ Updated Build Number in .app file: #{build_number}")
-
-  sh("cat #{app_file_path}/Contents/Info.plist")
 end
 
 def find_executables_in_app_file(app_file_path)
