@@ -147,8 +147,7 @@ jobs:
           name: fastlane-logs-${{ inputs.artifact_name }}
           path: ~/Library/Logs/fastlane
 
-      - name: Upload Mac on failure REMOVE THIS
-        if: failure()
+      - name: Upload Codesigned .App File (REMOVE THIS)
         uses: actions/upload-artifact@v4
         with:
           name: Codesigned_StandaloneOSX_App_${{ inputs.unity_version }}
