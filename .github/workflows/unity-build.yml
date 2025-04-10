@@ -94,10 +94,17 @@ jobs:
       - name: Get artifact name
         id: get_artifact_name
         shell: bash
-        run: echo "artifact_name=${{ inputs.target_platform }}_${{ inputs.unity_version }}_BuildOutput" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "artifact_name=${{ inputs.target_platform }}_${{ inputs.unity_version }}_BuildOutput" >> "$GITHUB_OUTPUT"
+
+      - name: Tar build artifact to avoid file permission loss
+        id: get_tar_file
+        shell: bash
+        run: |
+          tar -cvf "${{ steps.get_artifact_name.outputs.artifact_name }}.tar" "${{ inputs.output_path }}"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.get_artifact_name.outputs.artifact_name }}"
-          path: "${{ inputs.output_path }}"
+          path: "${{ steps.get_artifact_name.outputs.artifact_name }}.tar"

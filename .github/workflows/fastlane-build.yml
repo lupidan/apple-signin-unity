@@ -82,11 +82,6 @@ jobs:
           name: ${{ inputs.artifact_name }}
           path: ./Build
 
-      - name: LOG PERMISSIONS AFTER DOWNLOAD
-        shell: bash
-        run: |
-          ls -l ./Build/StandaloneOSX.app/Contents/MacOS
-
       - name: Download certificates, provisioning profile, and App Store Auth Key
         env:
           APPLE_DISTRIBUTION_CERTIFICATE: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE }}
@@ -118,11 +113,6 @@ jobs:
             echo "Failed to decode App Store Auth Key" >&2
             exit 1
           fi
-
-      - name: LOG PERMISSIONS BEFORE FASTLANE
-        shell: bash
-        run: |
-          ls -l ./Build/StandaloneOSX.app/Contents/MacOS
 
       - name: Build and Upload with Fastlane
         env:
