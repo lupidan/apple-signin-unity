@@ -107,7 +107,9 @@ jobs:
       - name: Tar build artifact to avoid file permission loss
         shell: bash
         run: |
-          tar -cvf "${{ steps.get_outputs.outputs.tar_name }}" "${{ inputs.output_path }}"
+          original_dir="$(pwd)"
+          cd ${{ inputs.output_path }}
+          tar -cvf "$original_dir/${{ steps.get_outputs.outputs.tar_name }}" StandaloneOSX 
       
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
