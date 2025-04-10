@@ -146,3 +146,10 @@ jobs:
         with:
           name: fastlane-logs-${{ inputs.artifact_name }}
           path: ~/Library/Logs/fastlane
+
+      - name: Upload Mac on failure REMOVE THIS
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: StandaloneOSX_${{ inputs.unity_version }}
+          path: /Users/runner/work/apple-signin-unity/apple-signin-unity/Build/StandaloneOSX.app
