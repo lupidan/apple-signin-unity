@@ -445,6 +445,7 @@ def prepare_pkg_file_for_upload(app_file_path, keychain_name, installer_certific
 
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
   sh("security list-keychains")
+  sh("security find-identity -v")
   keychain_path = "/Users/runner/Library/Keychains/#{keychain_name}"
   sh("productbuild --keychain \"#{keychain_path}\" --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" \"#{app_pkg_path}\"")
 
