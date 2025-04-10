@@ -226,7 +226,11 @@ def codesign_app_and_upload
   entitlements_file_path = File.expand_path("./StandaloneOSX.entitlements")
   info_plist_file_path = "#{app_file_path}/Contents/Info.plist"
 
+  chown(app_file_path)
+
   setup_encryption_compliance_in_info_plist(info_plist_file_path)
+
+  chown(app_file_path)
 
   sample_project_version = get_sample_project_version()
   unity_version = get_unity_version()
@@ -237,22 +241,36 @@ def codesign_app_and_upload
   build_number = get_build_number(github_run_number, github_run_attempt)
 
   setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
+
+  chown(app_file_path)
   
   executables = find_executables_in_app_file(app_file_path)
+
+  chown(app_file_path)
   
   verify_architectures_in_executables(executables)
+
+  chown(app_file_path)
   
   remove_extended_attributes_in_app_file(app_file_path)
+
+  chown(app_file_path)
 
   distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
   setup_provisioning_profile_in_app_file(app_file_path, distribution_provisioning_profile_path)
 
+  chown(app_file_path)
+
   distribution_certificate_name = get_distribution_certificate_name()
   codesign_executables_in_app_file(executables, distribution_certificate_name, entitlements_file_path)
+
+  chown(app_file_path)
 
   installer_certificate_name = get_installer_certificate_name()
   keychain_name = get_keychain_name()
   app_pkg_path = prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_plist_file_path)
+
+  chown(app_file_path)
 
   app_store_auth_key_path = get_app_store_auth_key_path()
   app_store_issuer_id = get_app_store_issuer_id()
@@ -468,4 +486,8 @@ def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_
   sh("productbuild --component \"#{app_file_path}\" \"Applications\" --sign \"#{installer_certificate_name}\" --product \"#{info_plist_file_path}\"  \"#{app_pkg_path}\"")
 
   return app_pkg_path
+end
+
+def chown(app_file_path)
+  sh("ls -l \"#{app_file_path}/Contents/MacOS\"")
 end
