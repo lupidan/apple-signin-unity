@@ -151,5 +151,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: StandaloneOSX_pkg_${{ inputs.unity_version }}
-          path: /Users/runner/work/apple-signin-unity/apple-signin-unity/Build/StandaloneOSX.pkg
+          name: Codesigned_StandaloneOSX_App_${{ inputs.unity_version }}
+          path: /Users/runner/work/apple-signin-unity/apple-signin-unity/Build/StandaloneOSX.zip

@@ -443,6 +443,10 @@ end
 def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name)
   UI.header("Step: prepare_pkg_file_for_upload")
 
+  # ZIP TO UPLOAD AND DEBUG
+  app_zip_path = app_file_path.sub(/\.app$/, '.zip')
+  sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_zip_path}\"")
+
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
   sh("productbuild --sign \"#{installer_certificate_name}\" --component \"#{app_file_path}\" /Applications \"#{app_pkg_path}\"")
 
