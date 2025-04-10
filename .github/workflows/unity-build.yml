@@ -109,7 +109,7 @@ jobs:
         run: |
           original_dir="$(pwd)"
           cd ${{ inputs.output_path }}
-          tar -cvf "$original_dir/${{ steps.get_outputs.outputs.tar_name }}" 
+          tar -cvf "$original_dir/${{ steps.get_outputs.outputs.tar_name }}" .
       
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
