@@ -325,12 +325,10 @@ def setup_encryption_compliance_in_info_plist(info_plist_file_path)
 
   sh("base64 -i #{info_plist_file_path}")
 
-  update_plist(
-    plist_path: info_plist_file_path,
-    block: proc do |plist|
-      plist["ITSAppUsesNonExemptEncryption"] = false
-    end
-  )
+  set_info_plist_value(
+    path: info_plist_file_path,
+    key: "ITSAppUsesNonExemptEncryption",
+    value: false)
 
   UI.message("✅ Setup ITSAppUsesNonExemptEncryption=false in #{info_plist_file_path}")
 
@@ -346,13 +344,15 @@ def setup_version_and_build_number_in_info_plist(app_version, build_number, info
 
   sh("base64 -i #{info_plist_file_path}")
 
-  update_plist(
-    plist_path: info_plist_file_path,
-    block: proc do |plist|
-      plist["CFBundleShortVersionString"] = "#{app_version}"
-      plist["CFBundleVersion"] = "#{build_number}"
-    end
-  )
+  set_info_plist_value(
+    path: info_plist_file_path,
+    key: "CFBundleShortVersionString",
+    value: "#{app_version}")
+
+  set_info_plist_value(
+    path: info_plist_file_path,
+    key: "CFBundleVersion",
+    value: "#{build_number}")
 
   UI.message("✅ Setup Version #{app_version} in #{info_plist_file_path}")
   UI.message("✅ Setup Build Number #{build_number} in #{info_plist_file_path}")
