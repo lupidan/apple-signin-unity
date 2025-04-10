@@ -465,7 +465,7 @@ def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_
   sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_zip_path}\"")
 
   app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
-  sh("productbuild --component \"#{app_file_path}\" \"/Applications\" --sign \"#{installer_certificate_name}\" --product \"#{info_plist_file_path}\"  \"#{app_pkg_path}\"")
+  sh("productbuild --component \"#{app_file_path}\" \"Applications\" --sign \"#{installer_certificate_name}\" --product \"#{info_plist_file_path}\"  \"#{app_pkg_path}\"")
 
   return app_pkg_path
 end
