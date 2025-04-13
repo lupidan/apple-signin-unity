@@ -20,7 +20,7 @@ jobs:
       matrix:
         unity_version:
           - "6000.0.23f1"
-          - "2022.3.59f1"
+          - "2022.3.61f1"
           - "2021.3.45f1"
 
     name: iOS Builds
@@ -52,7 +52,7 @@ jobs:
       matrix:
         unity_version:
           - "6000.0.23f1"
-          - "2022.3.59f1"
+          - "2022.3.61f1"
           - "2021.3.45f1"
 
     name: tvOS Builds
@@ -84,7 +84,7 @@ jobs:
       matrix:
         unity_version:
           - "6000.0.23f1"
-          - "2022.3.59f1"
+          - "2022.3.61f1"
           - "2021.3.45f1"
 
     name: macOS Builds
