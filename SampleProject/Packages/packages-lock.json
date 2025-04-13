@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.lupidan.apple-signin-unity": {
-      "version": "file:../../",
+      "version": "file:../../Source/",
       "depth": 0,
       "source": "local",
       "dependencies": {}
