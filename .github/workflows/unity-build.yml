@@ -55,7 +55,7 @@ jobs:
 
       - uses: actions/cache@v4
         with:
-          path: ./SampleProject~/Library/
+          path: ./SampleProject/Library/
           key: Library-${{ inputs.target_platform }}-${{ inputs.unity_version }}
 
       - name: Build Unity Project
@@ -65,7 +65,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: ./SampleProject~/
+          projectPath: ./SampleProject/
           targetPlatform: ${{ inputs.target_platform }}
           unityVersion: ${{ inputs.unity_version }}
           versioning: None
