@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="./Img~/SignInWithApple.png" alt="Sign in With Apple"/><img src="./Img~/UnityIcon.png" alt="Unity 3D"/>
+  <img src="./Img/SignInWithApple.png" alt="Sign in With Apple"/><img src="./Img/UnityIcon.png" alt="Unity 3D"/>
 </p>
 
 # Sign in with Apple Unity Plugin
@@ -24,9 +24,9 @@ by **Daniel Lupiañez Casares**
 
 
 <p align="center">
-    <a href="./Img~/SCRN01.png"><img src="./Img~/SCRN01.png" alt="Screenshot1" height="400"/></a>
-    <a href="./Img~/SCRN02.png"><img src="./Img~/SCRN02.png" alt="Screenshot1" height="400"/></a>
-    <a href="./Img~/SCRN03.png"><img src="./Img~/SCRN03.png" alt="Screenshot2" height="400"/></a>
+    <a href="./Img/SCRN01.png"><img src="./Img/SCRN01.png" alt="Screenshot1" height="400"/></a>
+    <a href="./Img/SCRN02.png"><img src="./Img/SCRN02.png" alt="Screenshot1" height="400"/></a>
+    <a href="./Img/SCRN03.png"><img src="./Img/SCRN03.png" alt="Screenshot2" height="400"/></a>
 </p>
 
 
@@ -111,7 +111,7 @@ Just add this line to the `Packages/manifest.json` file of your Unity Project:
 
 ```json
 "dependencies": {
-    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#1.5.0",
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git?path=Source#1.5.0",
 }
 ```
 
@@ -130,7 +130,7 @@ openupm add com.lupidan.apple-signin-unity
 * The `AppleAuth` folder contains the **main plugin**.
 * The `AppleAuthSample` folder contains **sample code** to use as a reference, or to test the plugin.
 
-![Import detail](./Img~/ImportPlugin.png)
+![Import detail](./Img/ImportPlugin.png)
 
 ## Plugin setup (iOS/tvOS)
 
@@ -175,14 +175,14 @@ The other option is to manually setup all the entitlements in our Xcode project.
 1. In your generated Xcode project. Select the main app Unity-iPhone target and select the option *Signing And Capabilities*. You should see there an option to add a capability from a list. Just locate *Sign In With Apple* and add it to your project.
 
 <p align="center">
-    <a href="./Img~/AddEntitlements.png"><img src="./Img~/AddEntitlements.png" alt="Add Entitlements" width="400"/></a>
+    <a href="./Img/AddEntitlements.png"><img src="./Img/AddEntitlements.png" alt="Add Entitlements" width="400"/></a>
 </p>
 
 
 2. This should have added an Entitlements file to your project. Locate it on the project explorer (it should be a file with the extension `.entitlements`). Inside it you should see an entry like this one:
 
 <p align="center">
-    <a href="./Img~/EntitlementsDetail.png"><img src="./Img~/EntitlementsDetail.png"/></a>
+    <a href="./Img/EntitlementsDetail.png"><img src="./Img/EntitlementsDetail.png"/></a>
 </p>
 
 3. You need to import the `AuthenticationServices.framework` library in the Build Phases->Link Binary with Libraries. **If you are targeting older iOS versions**, mark the library as `Optional`.
@@ -192,8 +192,8 @@ The other option is to manually setup all the entitlements in our Xcode project.
     For **previous Unity versions**, add it to the main Unity-iPhone target
 
 <p align="center">
-    <a href="./Img~/AddFramework20193.png"><img src="./Img~/AddFramework20193.png" alt="Add Framework 2019.3" width="400"/></a>
-    <a href="./Img~/AddFrameworkPrevious.png"><img src="./Img~/AddFrameworkPrevious.png" alt="Add Framework Previous versions" width="400"/></a>
+    <a href="./Img/AddFramework20193.png"><img src="./Img/AddFramework20193.png" alt="Add Framework 2019.3" width="400"/></a>
+    <a href="./Img/AddFrameworkPrevious.png"><img src="./Img/AddFrameworkPrevious.png" alt="Add Framework Previous versions" width="400"/></a>
 </p>
 
 ### Enabling Apple capability
@@ -254,7 +254,7 @@ To support the feature, **the app needs to be codesigned correctly**, including 
 
 An overall flow of how the native Sign In With Apple flow could work is presented in this diagram.
 
-![Frameworks detail](./Img~/AppleSignInFlow_v3.png)
+![Frameworks detail](./Img/AppleSignInFlow_v3.png)
 
 ### Initializing
 ```csharp
@@ -345,7 +345,7 @@ If the user has previously authorized the app to login with Apple, this will ope
 
 If the credentials were never given, or they were revoked, the Quick login will fail.
 
-![Frameworks detail](./Img~/QuickLogin.png)
+![Frameworks detail](./Img/QuickLogin.png)
 
 ```csharp
 var quickLoginArgs = new AppleAuthQuickLoginArgs();
