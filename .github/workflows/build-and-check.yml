@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         unity_version:
-          - "6000.0.23f1"
+          - "6000.0.46f1"
           - "2022.3.61f1"
           - "2021.3.45f1"
 
@@ -51,7 +51,7 @@ jobs:
       fail-fast: false
       matrix:
         unity_version:
-          - "6000.0.23f1"
+          - "6000.0.46f1"
           - "2022.3.61f1"
           - "2021.3.45f1"
 
@@ -83,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         unity_version:
-          - "6000.0.23f1"
+          - "6000.0.46f1"
           - "2022.3.61f1"
           - "2021.3.45f1"
 
