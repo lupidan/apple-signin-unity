@@ -1,10 +1,10 @@
 name: Insert VisionOSSdkVersion for VisionOS
-description: Inserts 'VisionOSSdkVersion: 1' before 'uIPrerenderedIcon:' in ProjectSettings.asset
+
 inputs:
   file:
-    description: Path to ProjectSettings.asset
+    description: 'Path to ProjectSettings.asset'
     required: true
-    
+
 runs:
   using: "composite"
   steps:
