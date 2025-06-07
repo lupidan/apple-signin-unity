@@ -59,7 +59,7 @@ jobs:
           key: Library-${{ inputs.target_platform }}-${{ inputs.unity_version }}
 
       - name: Build Unity Project
-        uses: lupidan/unity-builder@feature/remove-windows-limit-for-tvos
+        uses: lupidan/unity-builder@feature/support-visionos
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
