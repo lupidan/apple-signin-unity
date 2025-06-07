@@ -53,13 +53,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Insert VisionOSSdkVersion
+        uses: ./.github/actions/insert-visionos-sdk
+        if: ${{ inputs.target_platform == 'VisionOS' }}
+        with:
+          file: ./SampleProject/ProjectSettings/ProjectSettings.asset
+
       - uses: actions/cache@v4
         with:
           path: ./SampleProject/Library/
           key: Library-${{ inputs.target_platform }}-${{ inputs.unity_version }}
 
       - name: Build Unity Project
-        uses: lupidan/unity-builder@feature/remove-windows-limit-for-tvos
+        uses: lupidan/unity-builder@fork
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}

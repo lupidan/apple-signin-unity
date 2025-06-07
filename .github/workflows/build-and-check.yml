@@ -10,6 +10,7 @@ on:
           - All
           - iOS
           - tvOS
+          - VisionOS
           - macOS
 
 jobs:
@@ -76,6 +77,25 @@ jobs:
       APP_STORE_AUTH_KEY: ${{ secrets.APP_STORE_AUTH_KEY }}
       APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
       APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+
+  visionos-builds:
+      if: ${{ github.event.inputs.name == 'All' || github.event.inputs.name == 'VisionOS' }}
+      strategy:
+        fail-fast: false
+        matrix:
+          unity_version:
+            - "6000.0.46f1"
+            - "2022.3.61f1"
+
+      name: VisionOS Builds
+      uses: ./.github/workflows/build-visionos.yml
+      with:
+        unity_version: ${{ matrix.unity_version }}
+
+      secrets:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
   macos-builds:
     if: ${{ github.event.inputs.name == 'All' || github.event.inputs.name == 'macOS' }}

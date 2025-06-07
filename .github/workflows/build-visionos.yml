@@ -1,0 +1,34 @@
+on:
+  workflow_call:
+    inputs:
+      unity_version:
+        description: "Unity version used for the build"
+        required: true
+        type: string
+
+    secrets:
+      UNITY_LICENSE:
+        description: "Unity license of the account to use"
+        required: true
+
+      UNITY_EMAIL:
+        description: "Unity email of the account to use"
+        required: true
+
+      UNITY_PASSWORD:
+        description: "Unity password of the account to use"
+        required: true
+
+jobs:
+  visionos-unity-build:
+    uses: ./.github/workflows/unity-build.yml
+    with:
+      unity_version: ${{ inputs.unity_version }}
+      runner_image: macos-latest
+      target_platform: VisionOS
+      output_path: ./build/VisionOS/VisionOS/
+
+    secrets:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
