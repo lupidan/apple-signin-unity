@@ -1,0 +1,38 @@
+name: Insert VisionOSSdkVersion for VisionOS
+description: Inserts 'VisionOSSdkVersion: 1' before 'uIPrerenderedIcon:' in ProjectSettings.asset
+inputs:
+  file:
+    description: Path to ProjectSettings.asset
+    required: true
+    
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        FILE="${{ inputs.file }}"
+        LINE_TO_INSERT="  VisionOSSdkVersion: 1"
+
+        if [ ! -f "$FILE" ]; then
+          echo "Error: $FILE not found."
+          exit 1
+        fi
+
+        if grep -q "VisionOSSdkVersion:" "$FILE"; then
+          echo "VisionOSSdkVersion already exists. Skipping insertion."
+        else
+          echo "Inserting VisionOSSdkVersion before 'uIPrerenderedIcon:'..."
+
+          awk -v insert="$LINE_TO_INSERT" '
+          /uIPrerenderedIcon:/ && !inserted {
+            print insert
+            inserted = 1
+          }
+          { print }
+          ' "$FILE" > "${FILE}.tmp" && mv "${FILE}.tmp" "$FILE"
+
+          echo "Insertion complete."
+        fi
+
+        echo "Final file content:"
+        cat "$FILE"

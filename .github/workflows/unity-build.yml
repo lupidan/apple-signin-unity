@@ -53,6 +53,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Insert VisionOSSdkVersion
+        uses: ./.github/actions/insert-visionos-sdk
+        if: ${{ github.event.inputs.target_platform == 'VisionOS' }}
+        with:
+          file: ./SampleProject/ProjectSettings/ProjectSettings.asset
+
       - uses: actions/cache@v4
         with:
           path: ./SampleProject/Library/
