@@ -72,7 +72,7 @@ jobs:
     uses: ./.github/workflows/unity-build.yml
     with:
       unity_version: ${{ inputs.unity_version }}
-      runner_image: macos-latest
+      runner_image: ubuntu-latest
       target_platform: tvOS
       output_path: ./build/tvOS/tvOS/
 
