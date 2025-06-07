@@ -1,0 +1,463 @@
+fastlane_version "2.226.0"
+
+default_platform(:ios)
+
+before_all do
+  keychain_name = get_keychain_name()
+  keychain_password = get_keychain_password()
+  create_keychain(
+    name: keychain_name,
+    password: keychain_password,
+    default_keychain: true,
+    unlock: true,
+    timeout: 3600
+  )
+
+  distribution_certificate_path = get_distribution_certificate_path()
+  distribution_certificate_password = get_distribution_certificate_password()
+  import_certificate(
+    certificate_path: distribution_certificate_path,
+    certificate_password: distribution_certificate_password,
+    keychain_name: keychain_name,
+    keychain_password: keychain_password
+  )
+
+  installer_certificate_path = get_installer_certificate_path()
+  installer_certificate_password = get_installer_certificate_password()
+  import_certificate(
+    certificate_path: installer_certificate_path,
+    certificate_password: installer_certificate_password,
+    keychain_name: keychain_name,
+    keychain_password: keychain_password
+  )
+
+  distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
+  install_provisioning_profile(
+    path: distribution_provisioning_profile_path
+  )
+
+  xcode_select("/Applications/Xcode_16.1.app")
+end
+
+platform :ios do
+  lane :build_and_upload_ios do
+    build_xcodeproj_and_upload()
+  end
+end
+
+platform :tvos do
+  lane :build_and_upload_tvos do
+    build_xcodeproj_and_upload()
+  end
+end
+
+platform :mac do
+  lane :build_and_upload_mac do
+    codesign_app_and_upload()
+  end
+end
+
+after_all do
+  cleanup()
+end
+
+error do
+  cleanup()
+end
+
+def get_keychain_name
+  keychain_name = ENV["KEYCHAIN_NAME"]
+  raise "Missing keychain name" unless keychain_name && !keychain_name.empty?
+  keychain_name
+end
+
+def get_keychain_password
+  keychain_password = ENV["KEYCHAIN_PASSWORD"]
+  raise "Missing keychain password" unless keychain_password && !keychain_password.empty?
+  keychain_password
+end
+
+def get_distribution_certificate_name
+  distribution_certificate_name = ENV["APPLE_DISTRIBUTION_CERTIFICATE_NAME"]
+  raise "Missing Distribution certificate name" unless distribution_certificate_name && !distribution_certificate_name.empty?
+  distribution_certificate_name
+end
+
+def get_distribution_certificate_path
+  distribution_certificate_path = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PATH"]
+  raise "Missing Distribution Certificate path" unless distribution_certificate_path && !distribution_certificate_path.empty?
+  distribution_certificate_path
+end
+
+def get_distribution_certificate_password
+  distribution_certificate_password = ENV["APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD"]
+  raise "Missing Distribution Certificate password" unless distribution_certificate_password && !distribution_certificate_password.empty?
+  distribution_certificate_password
+end
+
+def get_installer_certificate_name
+  installer_certificate_name = ENV["INSTALLER_DISTRIBUTION_CERTIFICATE_NAME"]
+  raise "Missing installer certificate name" unless installer_certificate_name && !installer_certificate_name.empty?
+  installer_certificate_name
+end
+
+def get_installer_certificate_path
+  installer_certificate_path = ENV["INSTALLER_DISTRIBUTION_CERTIFICATE_PATH"]
+  raise "Missing installer certificate path" unless installer_certificate_path && !installer_certificate_path.empty?
+  installer_certificate_path
+end
+
+def get_installer_certificate_password
+  installer_certificate_password = ENV["INSTALLER_DISTRIBUTION_CERTIFICATE_PASSWORD"]
+  raise "Missing installer certificate password" unless installer_certificate_password && !installer_certificate_password.empty?
+  installer_certificate_password
+end
+
+def get_distribution_provisioning_profile_path
+  distribution_provisioning_profile_path = ENV["DISTRIBUTION_PROVISIONING_PROFILE_PATH"]
+  raise "Missing distribution provisioning profile path" unless distribution_provisioning_profile_path && !distribution_provisioning_profile_path.empty?
+  distribution_provisioning_profile_path
+end
+
+def get_app_store_auth_key_path
+  app_store_auth_key_path = ENV["APP_STORE_AUTH_KEY_PATH"]
+  raise "Missing Appstore Auth Key path" unless app_store_auth_key_path && !app_store_auth_key_path.empty?
+  app_store_auth_key_path
+end
+
+def get_app_store_issuer_id
+  app_store_issuer_id = ENV["APP_STORE_ISSUER_ID"]
+  raise "Missing Appstore Issuer ID" unless app_store_issuer_id && !app_store_issuer_id.empty?
+  app_store_issuer_id
+end
+
+def get_app_store_key_id
+  app_store_key_id = ENV["APP_STORE_KEY_ID"]
+  raise "Missing Appstore Key ID" unless app_store_key_id && !app_store_key_id.empty?
+  app_store_key_id
+end
+
+def get_sample_project_version
+  sample_project_version = ENV["SAMPLE_PROJECT_VERSION"]
+  raise "Missing sample project version" unless sample_project_version && !sample_project_version.empty?
+  sample_project_version
+end
+
+def get_unity_version
+  unity_version = ENV["UNITY_VERSION"]
+  raise "Missing unity version" unless unity_version && !unity_version.empty?
+  unity_version
+end
+
+def get_github_run_number
+  github_run_number = ENV["GITHUB_RUN_NUMBER"]
+  raise "Missing github run number" unless github_run_number && !github_run_number.empty?
+  github_run_number.to_i
+end
+
+def get_github_run_attempt
+  github_run_attempt = ENV["GITHUB_RUN_ATTEMPT"]
+  raise "Missing github run attempt" unless github_run_attempt && !github_run_attempt.empty?
+  github_run_attempt.to_i
+end
+
+def get_xcode_ouput_name
+  xcode_output_name = ENV["XCODE_OUTPUT_NAME"]
+  raise "Missing Xcode output name" unless xcode_output_name && !xcode_output_name.empty?
+  xcode_output_name
+end
+
+def build_xcodeproj_and_upload
+  xcodeproj = "Unity-iPhone.xcodeproj"
+  target = "Unity-iPhone"
+  build_configuration = "Release"
+  info_plist_file_path = File.expand_path("../Info.plist")
+
+  setup_encryption_compliance_in_info_plist(info_plist_file_path)
+
+  sample_project_version = get_sample_project_version()
+  unity_version = get_unity_version()
+  app_version = get_app_version(sample_project_version, unity_version)
+  set_app_version_in_xcodeproj(app_version, xcodeproj)
+
+  github_run_number = get_github_run_number()
+  github_run_attempt = get_github_run_attempt()
+  build_number = get_build_number(github_run_number, github_run_attempt)
+  set_app_build_number_in_xcodeproj(build_number, xcodeproj)
+
+  distribution_certificate_name = get_distribution_certificate_name()
+  distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
+  set_codesign_settings_in_xcodeproj(
+    xcodeproj,
+    target,
+    build_configuration,
+    distribution_provisioning_profile_path,
+    distribution_certificate_name)
+
+  xcode_ouput_name = get_xcode_ouput_name()
+  gym(
+    project: xcodeproj,
+    scheme: target,
+    clean: true,
+    output_name: xcode_ouput_name,
+    export_method: "app-store",
+    codesigning_identity: distribution_certificate_name
+  )
+
+  app_store_auth_key_path = get_app_store_auth_key_path()
+  app_store_issuer_id = get_app_store_issuer_id()
+  app_store_key_id = get_app_store_key_id()
+  api_key = app_store_connect_api_key(
+    key_filepath: app_store_auth_key_path,
+    issuer_id: app_store_issuer_id,
+    key_id: app_store_key_id,
+    duration: 1200,
+  )
+  
+  upload_to_testflight(
+    api_key: api_key,
+    ipa: xcode_ouput_name,
+    skip_waiting_for_build_processing: true
+  )
+end
+
+def codesign_app_and_upload
+  app_file_path = File.expand_path("../StandaloneOSX.app")
+  entitlements_file_path = File.expand_path("./StandaloneOSX.entitlements")
+  info_plist_file_path = "#{app_file_path}/Contents/Info.plist"
+
+  setup_encryption_compliance_in_info_plist(info_plist_file_path)
+
+  sample_project_version = get_sample_project_version()
+  unity_version = get_unity_version()
+  app_version = get_app_version(sample_project_version, unity_version)
+
+  github_run_number = get_github_run_number()
+  github_run_attempt = get_github_run_attempt()
+  build_number = get_build_number(github_run_number, github_run_attempt)
+
+  setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
+
+  executables = find_executables_in_app_file(app_file_path)
+
+  verify_architectures_in_executables(executables)
+
+  remove_extended_attributes_in_app_file(app_file_path)
+
+  distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
+  setup_provisioning_profile_in_app_file(app_file_path, distribution_provisioning_profile_path)
+
+  distribution_certificate_name = get_distribution_certificate_name()
+  codesign_executables_in_app_file(executables, distribution_certificate_name, entitlements_file_path)
+
+  installer_certificate_name = get_installer_certificate_name()
+  keychain_name = get_keychain_name()
+  app_pkg_path = prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_plist_file_path)
+
+  app_store_auth_key_path = get_app_store_auth_key_path()
+  app_store_issuer_id = get_app_store_issuer_id()
+  app_store_key_id = get_app_store_key_id()
+  api_key = app_store_connect_api_key(
+    key_id: app_store_key_id,
+    issuer_id: app_store_issuer_id,
+    key_filepath: app_store_auth_key_path,
+    duration: 1200,
+  )
+
+  upload_to_testflight(
+    api_key: api_key,
+    pkg: app_pkg_path,
+    skip_waiting_for_build_processing: true
+  )
+
+  # This would be steps used for Developer ID notarizing and stapling
+  # Sign in with Apple is only supported in Development and Production signed builds, 
+  # Leaving it here for reference in the future
+  # sh("ditto -c -k --sequesterRsrc --keepParent \"#{app_file_path}\" \"#{app_file_path}.zip\"")
+  # sh("xcrun notarytool submit \"#{app_file_path}.zip\" --apple-id \"#{apple_username}\" --password \"#{apple_password}\" --team-id \"#{apple_team}\" --wait")
+  # sh("xcrun stapler staple \"#{app_file_path}\"")
+end
+
+def cleanup
+  distribution_provisioning_profile_path = get_distribution_provisioning_profile_path()
+  sh "rm -f #{distribution_provisioning_profile_path}"
+
+  keychain_name = get_keychain_name()
+  delete_keychain(name: keychain_name)
+end
+
+def get_app_version(sample_project_version, unity_version)
+  UI.header("Step: get_app_version")
+  UI.message("✅ Sample Project version: #{sample_project_version}")
+  UI.message("✅ Unity Version: #{unity_version}")
+
+  # Sets an app_version combining both sample app version, and unity version
+  # f.ex. original_version="1.4.5", unity_version="2021.3.45f1" => app_version="1.4.2021345"
+  original_major_minor_version = sample_project_version.match(/^\d+\.\d+/)[0] 
+  unity_version_numeric = unity_version.match(/\d+\.\d+\.\d+/)[0].gsub(".", "")
+  app_version = "#{original_major_minor_version}.#{unity_version_numeric}"
+  UI.message("✅ App Version: #{app_version}")
+
+  app_version
+end
+
+def get_build_number(github_run_number, github_run_attempt)
+  UI.header("Step: get_build_number")
+  UI.message("✅ Github Run Number: #{github_run_number}")
+  UI.message("✅ Github Run Attempt: #{github_run_attempt}")
+
+  if github_run_attempt < 1 || github_run_attempt > 99
+    UI.user_error!("ERROR: Attempt number #{github_run_attempt} is out of range (must be between 1 and 99 in GitHub Actions).")
+  end
+
+  build_number = (github_run_number * 100) + github_run_attempt
+  UI.message("✅ Build Number: #{build_number}")
+
+  build_number
+end
+
+def setup_encryption_compliance_in_info_plist(info_plist_file_path)
+  UI.header("Step: setup_encryption_compliance_in_info_plist")
+
+  unless File.exist?(info_plist_file_path)
+    UI.user_error!("❌ Info.plist not found at #{info_plist_file_path}")
+  end
+
+  set_info_plist_value(
+    path: info_plist_file_path,
+    key: "ITSAppUsesNonExemptEncryption",
+    value: false)
+
+  UI.message("✅ Setup ITSAppUsesNonExemptEncryption=false in #{info_plist_file_path}")
+end
+
+def setup_version_and_build_number_in_info_plist(app_version, build_number, info_plist_file_path)
+  UI.header("Step: setup_version_and_build_number_in_info_plist")
+
+  unless File.exist?(info_plist_file_path)
+    UI.user_error!("❌ Info.plist not found at #{info_plist_file_path}")
+  end
+
+  set_info_plist_value(
+    path: info_plist_file_path,
+    key: "CFBundleShortVersionString",
+    value: "#{app_version}")
+
+  set_info_plist_value(
+    path: info_plist_file_path,
+    key: "CFBundleVersion",
+    value: "#{build_number}")
+
+  UI.message("✅ Setup Version #{app_version} in #{info_plist_file_path}")
+  UI.message("✅ Setup Build Number #{build_number} in #{info_plist_file_path}")
+end
+
+def set_app_version_in_xcodeproj(app_version, xcodeproj)
+  increment_version_number(
+    version_number: app_version,
+    xcodeproj: xcodeproj
+  )
+
+  UI.message("✅ Updated App Version in Xcodeproj: #{app_version}")
+end
+
+def set_app_build_number_in_xcodeproj(build_number, xcodeproj)
+  increment_build_number(
+    build_number: build_number,
+    xcodeproj: xcodeproj
+  )
+
+  UI.message("✅ Updated Build Number in Xcodeproj: #{build_number}")
+end
+
+def set_codesign_settings_in_xcodeproj(xcodeproj, target, build_configuration, distribution_provisioning_profile_path, distribution_certificate_name)
+  update_project_provisioning(
+    xcodeproj: xcodeproj,
+    target_filter: target,
+    build_configuration: build_configuration,
+    profile: distribution_provisioning_profile_path,
+    code_signing_identity: distribution_certificate_name
+  )
+
+  UI.message("✅ Updated Codesign settings in Xcodeproj")
+end
+
+def find_executables_in_app_file(app_file_path)
+  UI.header("Step: find_executables_in_app_file")
+  executables = sh("find #{app_file_path} -type f \\( -name \"*.dylib\" \\)").split("\n")
+  executables << "#{app_file_path}/Contents/PlugIns/MacOSAppleAuthManager.bundle/Contents/MacOS/MacOSAppleAuthManager"
+  executables << "#{app_file_path}/Contents/MacOS/AppleSignInForUnity" # Last one should be the main executable
+  UI.success("✅ Located #{executables.size} executable(s):")
+
+  executables.each do |executable|
+    if File.exist?(executable)
+      UI.message(" - #{executable}")
+    else
+      UI.important(" - #{executable} ⚠️ Not found!!!")
+    end
+  end
+
+  return executables
+end
+
+def verify_architectures_in_executables(executables)
+  UI.header("Step: verify_architectures_in_executables")
+
+  executables.each do |executable|
+    missing_architectures = []
+
+    unless system("lipo \"#{executable}\" -verify_arch x86_64 > /dev/null 2>&1")
+      missing_architectures << "x86_64"
+    end
+
+    unless system("lipo \"#{executable}\" -verify_arch arm64 > /dev/null 2>&1")
+      missing_architectures << "arm64"
+    end
+
+    if missing_architectures.empty?
+      UI.message("✅ All required architectures are present in #{executable}")
+    else
+      UI.error("❌ Missing architectures in #{executable}: #{missing_architectures.join(', ')}")
+    end
+  end
+end
+
+def remove_extended_attributes_in_app_file(app_file_path)
+  UI.header("Step: remove_extended_attributes_in_app_file")
+  sh("xattr -crs #{app_file_path}")
+  UI.message("🧹 Removed extended attributes from #{app_file_path}")
+end
+
+def setup_provisioning_profile_in_app_file(app_file_path, provisioning_profile_source_path)
+  UI.header("Step: setup_provisioning_profile_in_app_file")
+
+  provisioning_profile_destination_path = File.expand_path("#{app_file_path}/Contents/embedded.provisionprofile")
+  if File.exist?(provisioning_profile_source_path)
+    FileUtils.cp(provisioning_profile_source_path, provisioning_profile_destination_path)
+    UI.message("📄 Provisioning profile copied to #{provisioning_profile_destination_path}")
+  else
+    UI.error("❌ Provisioning profile not found at #{provisioning_profile_source_path}")
+  end
+end
+
+def codesign_executables_in_app_file(executables, certificate_name, entitlements_file_path)
+  UI.header("Step: codesign_executables_in_app_file")
+
+  executables.each do |executable|
+    # Main executable should be codesigned with entitlements
+    if executable.include?(".app/Contents/MacOS/")
+      sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" --entitlements \"#{entitlements_file_path}\" \"#{executable}\"")
+    else
+      sh("codesign -vvv --force --timestamp --options runtime -s \"#{certificate_name}\" \"#{executable}\"")
+    end
+  end
+end
+
+def prepare_pkg_file_for_upload(app_file_path, installer_certificate_name, info_plist_file_path)
+  UI.header("Step: prepare_pkg_file_for_upload")
+
+  app_pkg_path = app_file_path.sub(/\.app$/, '.pkg')
+  sh("productbuild --component \"#{app_file_path}\" \"/Applications\" --sign \"#{installer_certificate_name}\" --product \"#{info_plist_file_path}\"  \"#{app_pkg_path}\"")
+
+  return app_pkg_path
+end
