@@ -55,7 +55,7 @@ jobs:
 
       - name: Insert VisionOSSdkVersion
         uses: ./.github/actions/insert-visionos-sdk
-        if: ${{ github.event.inputs.target_platform == 'VisionOS' }}
+        if: ${{ inputs.target_platform == 'VisionOS' }}
         with:
           file: ./SampleProject/ProjectSettings/ProjectSettings.asset
 
