@@ -18,14 +18,14 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
             
             var entries = new[]
             {
-                (Filepath: Path.Combine(RootFolder, "Source", "package.json"), Regex: new Regex(@"\""version\""\s*:\s*\""([0-9.]*)\""")),
-                (Filepath: Path.Combine(RootFolder, "Source", "README.md"), Regex: new Regex(@"Current stable version is (v?[0-9.]*)")),
-                (Filepath: Path.Combine(RootFolder, "Source", "README.md"), Regex: new Regex(@"apple-signin-unity\.git#(v?[0-9.]*)")),
+                (Filepath: Path.Combine(PackageFolder, "package.json"), Regex: new Regex(@"\""version\""\s*:\s*\""([0-9.]*)\""")),
+                (Filepath: Path.Combine(PackageFolder, "README.md"), Regex: new Regex(@"Current stable version is (v?[0-9.]*)")),
+                (Filepath: Path.Combine(PackageFolder, "README.md"), Regex: new Regex(@"apple-signin-unity\.git\?path=Source#(v?[0-9.]*)")),
                 (Filepath: Path.Combine(RootFolder, ".github", "workflows", "fastlane-build.yml"), Regex: new Regex(@"SAMPLE_PROJECT_VERSION:\s*\""([0-9.]*)\""")),
-                (Filepath: Path.Combine(RootFolder, "Source", "CHANGELOG.md"), Regex: new Regex(@"## \[(Unreleased)\]")),
+                (Filepath: Path.Combine(PackageFolder, "CHANGELOG.md"), Regex: new Regex(@"## \[(Unreleased)\]")),
                 (Filepath: Path.Combine(RootFolder, "SampleProject", "ProjectSettings", "ProjectSettings.asset"), Regex: new Regex(@"bundleVersion:\s*([0-9.]*)")),
                 (Filepath: Path.Combine(RootFolder, "Xcode", "MacOSAppleAuthManager.xcodeproj", "project.pbxproj"), Regex: new Regex(@"MARKETING_VERSION = ([0-9.]*);")),
-                (Filepath: Path.Combine(PackageFolder, "Source", "Runtime", "AppleAuthManager.cs"), Regex: new Regex(@"Using Sign in with Apple Unity Plugin - (v?[0-9.]*)")),
+                (Filepath: Path.Combine(PackageFolder, "Runtime", "AppleAuthManager.cs"), Regex: new Regex(@"Using Sign in with Apple Unity Plugin - (v?[0-9.]*)")),
             };
             
             foreach (var entry in entries)
@@ -57,35 +57,31 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
         {
             var originalFolder = PackageFolder;
             var destinationFolder = Path.Combine("Assets", "AppleAuth");
-            var assetsToMove = new[] {"docs", "Editor", "Runtime"};
             var unityPackagePath = Path.GetFullPath(
                 Path.Combine(
                     Application.dataPath,
                     "..",
                     "..",
                     "AppleSignInUnity.unitypackage"));
-
-            using (PackageAssetMover.MoveFiles(originalFolder, destinationFolder, assetsToMove))
+            
+            if (Directory.Exists(destinationFolder))
+                Directory.Delete(destinationFolder, true);
+        
+            FileUtil.CopyFileOrDirectoryFollowSymlinks(originalFolder, destinationFolder);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+            
+            var assetPathNames = new[]
             {
-                var assetPathNames = new[]
-                {
-                    Path.Combine("Assets", "AppleAuth"),
-                    Path.Combine("Assets", "AppleAuthSample")
-                };
+                Path.Combine("Assets", "AppleAuth"),
+                Path.Combine("Assets", "AppleAuthSample")
+            };
+            
+            AssetDatabase.ExportPackage(
+                assetPathNames,
+                unityPackagePath, 
+                flags: ExportPackageOptions.Recurse);
 
-                var flags = ExportPackageOptions.Recurse;
-                
-                AssetDatabase.ExportPackage(
-                    assetPathNames,
-                    unityPackagePath, 
-                    flags);
-            }
-
-            var deleted = AssetDatabase.DeleteAsset(destinationFolder);
-            if (!deleted)
-            {
-                throw new Exception($"[{nameof(CreateUnityPackage)}] Couldn't delete {destinationFolder}");
-            }
+            AssetDatabase.DeleteAsset(destinationFolder);
 
             EditorUtility.DisplayDialog(
                 "Unity package generated",
