@@ -5,11 +5,28 @@
 ### Removed
 
 ## [1.5.0] - TBD
+### Breaking ⚠️⚠️⚠️
+- **GitHub import URL updated.** The package must now be imported using a `?path=Source` URL suffix, and tags no longer include a `v` prefix. This is a breaking change for users importing directly from GitHub.
+
+#### Previous GitHub import (before 1.5.0):
+```jsonc
+"dependencies": {
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git#v1.4.4"
+}
+```
+
+#### Updated GitHub import (starting from 1.5.0):
+```jsonc
+"dependencies": {
+    "com.lupidan.apple-signin-unity": "https://github.com/lupidan/apple-signin-unity.git?path=Source#1.5.0"
+}
+```
+
 ### Changed
 - Fixed issue with native files not being included in visionOS builds.
 - Fixed issue with header files not being included in tvOS builds.
-- Reworked package structure and folders to more closely resemble Unity guidelines for packages.
-- Updated macOS helper method in `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` to easier locate the bundle for both `.app` and `xcodeproj` generation.
+- Reworked package structure and folders to more closely follow Unity's package layout guidelines.
+- Updated macOS helper method in `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` to better locate the `.app` or `.xcodeproj` bundle.
 
 ### Removed
 - Removes `.meta` files inside the `MacOSAppleAuthManager.bundle`.
