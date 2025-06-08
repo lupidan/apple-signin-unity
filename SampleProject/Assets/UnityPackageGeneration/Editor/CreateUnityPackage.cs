@@ -57,35 +57,31 @@ namespace AppleAuthSample.UnityPackageGeneration.Editor
         {
             var originalFolder = PackageFolder;
             var destinationFolder = Path.Combine("Assets", "AppleAuth");
-            var assetsToMove = new[] {"docs", "Editor", "Runtime"};
             var unityPackagePath = Path.GetFullPath(
                 Path.Combine(
                     Application.dataPath,
                     "..",
                     "..",
                     "AppleSignInUnity.unitypackage"));
-
-            using (PackageAssetMover.MoveFiles(originalFolder, destinationFolder, assetsToMove))
+            
+            if (Directory.Exists(destinationFolder))
+                Directory.Delete(destinationFolder, true);
+        
+            FileUtil.CopyFileOrDirectoryFollowSymlinks(originalFolder, destinationFolder);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+            
+            var assetPathNames = new[]
             {
-                var assetPathNames = new[]
-                {
-                    Path.Combine("Assets", "AppleAuth"),
-                    Path.Combine("Assets", "AppleAuthSample")
-                };
+                Path.Combine("Assets", "AppleAuth"),
+                Path.Combine("Assets", "AppleAuthSample")
+            };
+            
+            AssetDatabase.ExportPackage(
+                assetPathNames,
+                unityPackagePath, 
+                flags: ExportPackageOptions.Recurse);
 
-                var flags = ExportPackageOptions.Recurse;
-                
-                AssetDatabase.ExportPackage(
-                    assetPathNames,
-                    unityPackagePath, 
-                    flags);
-            }
-
-            var deleted = AssetDatabase.DeleteAsset(destinationFolder);
-            if (!deleted)
-            {
-                throw new Exception($"[{nameof(CreateUnityPackage)}] Couldn't delete {destinationFolder}");
-            }
+            AssetDatabase.DeleteAsset(destinationFolder);
 
             EditorUtility.DisplayDialog(
                 "Unity package generated",
