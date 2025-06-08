@@ -1,0 +1,125 @@
+on:
+  workflow_call:
+    inputs:
+      unity_version:
+        description: "Unity version to use"
+        required: true
+        type: string
+
+      runner_image:
+        description: "Runner image to use"
+        required: true
+        type: string
+
+      target_platform:
+        description: "Target platform to build"
+        required: true
+        type: string
+
+      output_path:
+        description: "The expected output path"
+        required: true
+        type: string
+
+    outputs:
+      artifact_name:
+        value: ${{ jobs.unity-build.outputs.artifact_name }}
+
+      tar_name:
+        value: ${{ jobs.unity-build.outputs.tar_name }}
+
+    secrets:
+      UNITY_LICENSE:
+        description: "Unity license of the account to use"
+        required: true
+
+      UNITY_EMAIL:
+        description: "Unity email of the account to use"
+        required: true
+
+      UNITY_PASSWORD:
+        description: "Unity password of the account to use"
+        required: true
+
+jobs:
+  unity-build:
+    name: Build ${{ inputs.target_platform }} with Unity
+    runs-on: ${{ inputs.runner_image }}
+    outputs:
+      artifact_name: ${{ steps.get_outputs.outputs.artifact_name }}
+      tar_name: ${{ steps.get_outputs.outputs.tar_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Insert VisionOSSdkVersion
+        uses: ./.github/actions/insert-visionos-sdk
+        if: ${{ inputs.target_platform == 'VisionOS' }}
+        with:
+          file: ./SampleProject/ProjectSettings/ProjectSettings.asset
+
+      - uses: actions/cache@v4
+        with:
+          path: ./SampleProject/Library/
+          key: Library-${{ inputs.target_platform }}-${{ inputs.unity_version }}
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@main
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ./SampleProject/
+          targetPlatform: ${{ inputs.target_platform }}
+          unityVersion: ${{ inputs.unity_version }}
+          versioning: None
+          runAsHostUser: true
+
+      - name: Recursively list all files and folders
+        shell: bash
+        run: |
+          if [ -d "build" ]; then
+            ls -laR build
+          else
+            echo "Directory 'build' does not exist."
+          fi
+
+      - name: Setup fastlane files
+        shell: bash
+        run: |
+          if [ ! -d "${{ inputs.output_path }}" ]; then
+            echo "Error: Destination directory ${{ inputs.output_path }} does not exist!" >&2
+            exit 1
+          fi
+  
+          if [ -d "${{ inputs.output_path }}/fastlane" ]; then
+            echo "Error: fastlane directory already exists in ${{ inputs.output_path }}!" >&2
+            exit 1
+          fi
+            
+          cp -r ./.github/fastlane ${{ inputs.output_path }}/fastlane
+
+      - name: Get Outputs
+        id: get_outputs
+        shell: bash
+        run: |
+          artifact_name="${{ inputs.target_platform }}_${{ inputs.unity_version }}_BuildOutput"
+          tar_name="$artifact_name.tar"
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+          echo "tar_name=$tar_name" >> "$GITHUB_OUTPUT"
+      
+      - name: Tar build artifact to avoid file permission loss
+        shell: bash
+        run: |
+          original_dir="$(pwd)"
+          cd ${{ inputs.output_path }}
+          tar -cvf "$original_dir/${{ steps.get_outputs.outputs.tar_name }}" .
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ steps.get_outputs.outputs.artifact_name }}"
+          path: "${{ steps.get_outputs.outputs.tar_name }}"
+        
