@@ -4,7 +4,7 @@
 ### Changed
 ### Removed
 
-## [1.5.0] - TBD
+## [1.5.0] - 2025-06-08
 ### Breaking ⚠️⚠️⚠️
 - **GitHub import URL updated.** The package must now be imported using a `?path=Source` URL suffix, and tags no longer include a `v` prefix. This is a breaking change for users importing directly from GitHub.
 
@@ -29,7 +29,7 @@
 - Updated macOS helper method in `AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier` to better locate the `.app` or `.xcodeproj` bundle.
 
 ### Removed
-- Removes `.meta` files inside the `MacOSAppleAuthManager.bundle`.
+- Removed unnecessary `.meta` files inside the `MacOSAppleAuthManager.bundle` to avoid unintended asset import or warnings in Unity.
 
 ## [1.4.4] - 2024-11-03
 ### Changed
