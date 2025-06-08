@@ -12,7 +12,7 @@ by **Daniel Lupiañez Casares**
 
 [![Release](https://img.shields.io/github/v/release/lupidan/apple-signin-unity?style=for-the-badge!)](https://github.com/lupidan/apple-signin-unity/releases)
 [![License](https://img.shields.io/github/license/lupidan/apple-signin-unity.svg)](https://github.com/lupidan/apple-signin-unity/blob/master/LICENSE.md)
-[![CHANGELOG](https://img.shields.io/badge/-CHANGELOG-informational)](https://github.com/lupidan/apple-signin-unity/blob/master/CHANGELOG.md)
+[![CHANGELOG](https://img.shields.io/badge/-CHANGELOG-informational)](https://github.com/lupidan/apple-signin-unity/blob/master/Source/CHANGELOG.md)
 
 
 [![openupm](https://img.shields.io/npm/v/com.lupidan.apple-signin-unity?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.lupidan.apple-signin-unity/)
