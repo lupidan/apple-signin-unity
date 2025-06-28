@@ -67,7 +67,7 @@ Sign in with Apple plugin to use with Unity 3D game engine.
 
 This plugin supports the following platforms:
 * **iOS**
-* **macOS** Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
+* **macOS** Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](https://github.com/lupidan/apple-signin-unity/blob/master/Source/docs/macOS_NOTES.md))
 * **tvOS** (Experimental)
 * **visionOS** (Experimental)
 
@@ -80,7 +80,7 @@ Sign in with Apple in order to get approved for the App Store, making it **manda
 ## Features
 ### Native Sign in with Apple
 - Support for iOS
-- Support for macOS: Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](./docs/macOS_NOTES.md))
+- Support for macOS: Intel `x86_64` AND Apple Silicon `arm64`(Experimental) ([NOTES](https://github.com/lupidan/apple-signin-unity/blob/master/Source/docs/macOS_NOTES.md))
 - Support for tvOS (Experimental)
 - Support for visionOS (Experimental)
 - Supports Sign in with Apple, with customizable scopes (Email and Full name).
@@ -245,7 +245,7 @@ public static class SignInWithApplePostprocessor
 
 The Xcode project with the source code to generate a new bundle file is available at `MacOSAppleAuthManager/MacOSAppleAuthManager.xcodeproj`
 
-To support the feature, **the app needs to be codesigned correctly**, including the required entitlements. For more information regarding macOS codesign, please follow this [link](./docs/macOS_NOTES.md).
+To support the feature, **the app needs to be codesigned correctly**, including the required entitlements. For more information regarding macOS codesign, please follow this [link](https://github.com/lupidan/apple-signin-unity/blob/master/Source/docs/macOS_NOTES.md).
 
 ## Implement Sign in With Apple
 
@@ -452,7 +452,7 @@ The `State` is returned later in the received Apple ID credential, allowing you 
 
 The `Nonce` is embedded in the IdentityToken, included in the received Apple ID credential. It is important to generate a new random `Nonce` for every request. This is useful for services that provide a built in solution for **Sign In With Apple**, like [Firebase](https://firebase.google.com/docs/auth/ios/apple?authuser=0)
 
-Some tentative guide is available for Firebase integration [here](./docs/Firebase_NOTES.md)
+Some tentative guide is available for Firebase integration [here](https://github.com/lupidan/apple-signin-unity/blob/master/Source/docs/Firebase_NOTES.md)
 
 More info about State and Nonce can be found in [this WWDC 2020 session](https://developer.apple.com/videos/play/wwdc2020/10173/) (check at 2m35s)
 
