@@ -12,6 +12,7 @@ on:
           - tvOS
           - VisionOS
           - macOS
+          - Windows
 
 jobs:
   ios-builds:
@@ -89,6 +90,25 @@ jobs:
 
       name: VisionOS Builds
       uses: ./.github/workflows/build-visionos.yml
+      with:
+        unity_version: ${{ matrix.unity_version }}
+
+      secrets:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+    windows-builds:
+      if: ${{ github.event.inputs.name == 'All' || github.event.inputs.name == 'Windows' }}
+      strategy:
+        fail-fast: false
+        matrix:
+          unity_version:
+            - "2021.3.45f2"
+            - "2022.3.62f2"
+
+      name: Windows Builds
+      uses: ./.github/workflows/build-windows.yml
       with:
         unity_version: ${{ matrix.unity_version }}
 
