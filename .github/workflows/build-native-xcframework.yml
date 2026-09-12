@@ -1,0 +1,35 @@
+name: Build Native XCFramework
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build AppleAuthNative XCFramework
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Ensure visionOS platform is installed
+        run: xcodebuild -downloadPlatform visionOS
+
+      - name: Build XCFramework and dynamic framework
+        working-directory: Xcode/AppleAuthNative
+        run: ./build_xcframework.sh
+
+      - name: Upload AppleAuthNative.xcframework
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: AppleAuthNative.xcframework
+          path: Xcode/AppleAuthNative/build/output/AppleAuthNative.xcframework.tar.gz
+
+      - name: Upload AppleAuthNative-dynamic.framework
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: AppleAuthNative-dynamic.framework
+          path: Xcode/AppleAuthNative/build/output/AppleAuthNative-dynamic.framework.tar.gz
