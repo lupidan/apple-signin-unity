@@ -1,0 +1,26 @@
+# Xcode
+
+## User settings (machine/user-specific, never shared)
+xcuserdata/
+
+## Build products and intermediates
+build/
+DerivedData/
+
+## Legacy compatibility (Xcode 8 and earlier)
+*.xcscmblueprint
+*.xccheckout
+
+## Legacy compatibility (Xcode 3 and earlier)
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## macOS
+.DS_Store
