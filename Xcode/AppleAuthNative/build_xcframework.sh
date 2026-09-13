@@ -7,6 +7,9 @@ PROJECT="AppleAuthNative.xcodeproj"
 ARCHIVE_DIR="build/archives"
 OUTPUT_DIR="build/output"
 FRAMEWORK_IN_ARCHIVE="Products/Library/Frameworks/AppleAuthNative.framework"
+VERSION=$(plutil -extract version raw -o - ../../Source/package.json)
+
+echo "Building version $VERSION (from Source/package.json)"
 
 rm -rf "$ARCHIVE_DIR" "$OUTPUT_DIR"
 mkdir -p "$ARCHIVE_DIR" "$OUTPUT_DIR"
@@ -24,6 +27,7 @@ archive() {
         -archivePath "$ARCHIVE_DIR/$archive_name" \
         -configuration Release \
         SKIP_INSTALL=NO \
+        MARKETING_VERSION="$VERSION" \
         2>&1 | tail -20
 }
 
