@@ -80,7 +80,7 @@ namespace AppleAuth.Extensions
 #if UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS
             private const string DllName = "__Internal";
 #elif UNITY_STANDALONE_OSX
-            private const string DllName = "MacOSAppleAuthManager";
+            private const string DllName = "AppleAuthNative-dynamic";
 #endif
 
             [System.Runtime.InteropServices.DllImport(DllName)]
