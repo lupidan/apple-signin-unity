@@ -15,6 +15,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
+      - name: Setup
+        id: setup
+        working-directory: Xcode/AppleAuthNative
+        run: |
+          VERSION=$(plutil -extract version raw -o - ../../Source/package.json)
+          BUILD_NUMBER="${{ github.run_number }}"
+          PROJECT="AppleAuthNative.xcodeproj"
+          ARCHIVE_DIR="build/archives"
+          OUTPUT_DIR="build/output"
+          SOURCE_OUTPUT_DIR="Xcode/AppleAuthNative/$OUTPUT_DIR"
+          XCFRAMEWORK_TAR_NAME="AppleAuthNative-$VERSION.xcframework.tar.gz"
+          DYNAMIC_FRAMEWORK_TAR_NAME="AppleAuthNative-dynamic-$VERSION.framework.tar.gz"
+          PLUGINS_DIR="Source/Plugins/Apple"
+
+          echo "VERSION=$VERSION"
+          echo "BUILD_NUMBER=$BUILD_NUMBER"
+          echo "PROJECT=$PROJECT"
+          echo "ARCHIVE_DIR=$ARCHIVE_DIR"
+          echo "OUTPUT_DIR=$OUTPUT_DIR"
+          echo "SOURCE_OUTPUT_DIR=$SOURCE_OUTPUT_DIR"
+          echo "XCFRAMEWORK_TAR_NAME=$XCFRAMEWORK_TAR_NAME"
+          echo "DYNAMIC_FRAMEWORK_TAR_NAME=$DYNAMIC_FRAMEWORK_TAR_NAME"
+          echo "PLUGINS_DIR=$PLUGINS_DIR"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "project=$PROJECT" >> "$GITHUB_OUTPUT"
+          echo "archive_dir=$ARCHIVE_DIR" >> "$GITHUB_OUTPUT"
+          echo "output_dir=$OUTPUT_DIR" >> "$GITHUB_OUTPUT"
+          echo "source_output_dir=$SOURCE_OUTPUT_DIR" >> "$GITHUB_OUTPUT"
+          echo "xcframework_tar_name=$XCFRAMEWORK_TAR_NAME" >> "$GITHUB_OUTPUT"
+          echo "dynamic_framework_tar_name=$DYNAMIC_FRAMEWORK_TAR_NAME" >> "$GITHUB_OUTPUT"
+          echo "plugins_dir=$PLUGINS_DIR" >> "$GITHUB_OUTPUT"
+
       - name: Show Xcode version
         run: xcodebuild -version
 
@@ -24,57 +58,51 @@ jobs:
       - name: Build XCFramework and dynamic framework
         working-directory: Xcode/AppleAuthNative
         run: |
-          VERSION=$(plutil -extract version raw -o - ../../Source/package.json)
-          BUILD_NUMBER="$GITHUB_RUN_NUMBER"
-          PROJECT="AppleAuthNative.xcodeproj"
-          ARCHIVE_DIR="build/archives"
-          OUTPUT_DIR="build/output"
-
           ./build_xcframework.sh \
-            --version "$VERSION" \
-            --build-number "$BUILD_NUMBER" \
-            --project "$PROJECT" \
-            --archive-dir "$ARCHIVE_DIR" \
-            --output-dir "$OUTPUT_DIR"
-
-          echo "NATIVE_VERSION=$VERSION" >> "$GITHUB_ENV"
-          echo "NATIVE_BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
-          echo "XCFRAMEWORK_TAR_NAME=AppleAuthNative-$VERSION.xcframework.tar.gz" >> "$GITHUB_ENV"
-          echo "DYNAMIC_FRAMEWORK_TAR_NAME=AppleAuthNative-dynamic-$VERSION.framework.tar.gz" >> "$GITHUB_ENV"
+            --version "${{ steps.setup.outputs.version }}" \
+            --build-number "${{ steps.setup.outputs.build_number }}" \
+            --project "${{ steps.setup.outputs.project }}" \
+            --archive-dir "${{ steps.setup.outputs.archive_dir }}" \
+            --output-dir "${{ steps.setup.outputs.output_dir }}"
 
       - name: Upload AppleAuthNative.xcframework
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ${{ env.XCFRAMEWORK_TAR_NAME }}
-          path: Xcode/AppleAuthNative/build/output/${{ env.XCFRAMEWORK_TAR_NAME }}
+          name: ${{ steps.setup.outputs.xcframework_tar_name }}
+          path: ${{ steps.setup.outputs.source_output_dir }}/${{ steps.setup.outputs.xcframework_tar_name }}
 
       - name: Upload AppleAuthNative-dynamic.framework
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: ${{ env.DYNAMIC_FRAMEWORK_TAR_NAME }}
-          path: Xcode/AppleAuthNative/build/output/${{ env.DYNAMIC_FRAMEWORK_TAR_NAME }}
+          name: ${{ steps.setup.outputs.dynamic_framework_tar_name }}
+          path: ${{ steps.setup.outputs.source_output_dir }}/${{ steps.setup.outputs.dynamic_framework_tar_name }}
 
       - name: Copy build outputs into Source/Plugins/Apple
         run: |
-          mkdir -p Source/Plugins/Apple
+          SOURCE_OUTPUT_DIR="${{ steps.setup.outputs.source_output_dir }}"
+          XCFRAMEWORK_TAR_NAME="${{ steps.setup.outputs.xcframework_tar_name }}"
+          DYNAMIC_FRAMEWORK_TAR_NAME="${{ steps.setup.outputs.dynamic_framework_tar_name }}"
+          PLUGINS_DIR="${{ steps.setup.outputs.plugins_dir }}"
+
+          mkdir -p "$PLUGINS_DIR"
 
           # Remove any previously committed version so old ones don't accumulate
-          rm -f Source/Plugins/Apple/AppleAuthNative-*.xcframework.tar.gz
-          rm -f Source/Plugins/Apple/AppleAuthNative-dynamic-*.framework.tar.gz
+          rm -f "$PLUGINS_DIR"/AppleAuthNative-*.xcframework.tar.gz
+          rm -f "$PLUGINS_DIR"/AppleAuthNative-dynamic-*.framework.tar.gz
 
-          cp "Xcode/AppleAuthNative/build/output/${XCFRAMEWORK_TAR_NAME}" "Source/Plugins/Apple/${XCFRAMEWORK_TAR_NAME}"
-          cp "Xcode/AppleAuthNative/build/output/${DYNAMIC_FRAMEWORK_TAR_NAME}" "Source/Plugins/Apple/${DYNAMIC_FRAMEWORK_TAR_NAME}"
+          cp "$SOURCE_OUTPUT_DIR/$XCFRAMEWORK_TAR_NAME" "$PLUGINS_DIR/$XCFRAMEWORK_TAR_NAME"
+          cp "$SOURCE_OUTPUT_DIR/$DYNAMIC_FRAMEWORK_TAR_NAME" "$PLUGINS_DIR/$DYNAMIC_FRAMEWORK_TAR_NAME"
 
       - name: Commit and push build outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add -A Source/Plugins/Apple/
+          git add -A "${{ steps.setup.outputs.plugins_dir }}/"
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update native AppleAuthNative artifacts to v${NATIVE_VERSION} (build ${NATIVE_BUILD_NUMBER})"
+            git commit -m "Update native AppleAuthNative artifacts to v${{ steps.setup.outputs.version }} (build ${{ steps.setup.outputs.build_number }})"
             git push origin "HEAD:${{ github.ref_name }}"
           fi
