@@ -106,7 +106,11 @@ echo "Copying standalone dynamic macOS framework..."
 cp -R "$ARCHIVE_DIR/macos-dynamic.xcarchive/Products/Library/Frameworks/AppleAuthNative-dynamic.framework" "$OUTPUT_DIR/AppleAuthNative-dynamic.framework"
 
 echo "Packaging tar.gz archives (preserves symlinks, unlike zip)..."
-tar czf "$OUTPUT_DIR/AppleAuthNative.xcframework.tar.gz" -C "$OUTPUT_DIR" AppleAuthNative.xcframework
-tar czf "$OUTPUT_DIR/AppleAuthNative-dynamic.framework.tar.gz" -C "$OUTPUT_DIR" AppleAuthNative-dynamic.framework
+XCFRAMEWORK_TAR_NAME="AppleAuthNative-$VERSION.xcframework.tar.gz"
+DYNAMIC_FRAMEWORK_TAR_NAME="AppleAuthNative-dynamic-$VERSION.framework.tar.gz"
+tar czf "$OUTPUT_DIR/$XCFRAMEWORK_TAR_NAME" -C "$OUTPUT_DIR" AppleAuthNative.xcframework
+tar czf "$OUTPUT_DIR/$DYNAMIC_FRAMEWORK_TAR_NAME" -C "$OUTPUT_DIR" AppleAuthNative-dynamic.framework
 
 echo "Done. Output in $OUTPUT_DIR"
+echo "XCFRAMEWORK_TAR_NAME=$XCFRAMEWORK_TAR_NAME"
+echo "DYNAMIC_FRAMEWORK_TAR_NAME=$DYNAMIC_FRAMEWORK_TAR_NAME"

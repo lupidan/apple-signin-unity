@@ -3,6 +3,9 @@ name: Build Native XCFramework
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build AppleAuthNative XCFramework
@@ -34,14 +37,44 @@ jobs:
             --archive-dir "$ARCHIVE_DIR" \
             --output-dir "$OUTPUT_DIR"
 
+          echo "NATIVE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "NATIVE_BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+          echo "XCFRAMEWORK_TAR_NAME=AppleAuthNative-$VERSION.xcframework.tar.gz" >> "$GITHUB_ENV"
+          echo "DYNAMIC_FRAMEWORK_TAR_NAME=AppleAuthNative-dynamic-$VERSION.framework.tar.gz" >> "$GITHUB_ENV"
+
       - name: Upload AppleAuthNative.xcframework
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: AppleAuthNative.xcframework
-          path: Xcode/AppleAuthNative/build/output/AppleAuthNative.xcframework.tar.gz
+          name: ${{ env.XCFRAMEWORK_TAR_NAME }}
+          path: Xcode/AppleAuthNative/build/output/${{ env.XCFRAMEWORK_TAR_NAME }}
 
       - name: Upload AppleAuthNative-dynamic.framework
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: AppleAuthNative-dynamic.framework
-          path: Xcode/AppleAuthNative/build/output/AppleAuthNative-dynamic.framework.tar.gz
+          name: ${{ env.DYNAMIC_FRAMEWORK_TAR_NAME }}
+          path: Xcode/AppleAuthNative/build/output/${{ env.DYNAMIC_FRAMEWORK_TAR_NAME }}
+
+      - name: Copy build outputs into Source/Plugins/Apple
+        run: |
+          mkdir -p Source/Plugins/Apple
+
+          # Remove any previously committed version so old ones don't accumulate
+          rm -f Source/Plugins/Apple/AppleAuthNative-*.xcframework.tar.gz
+          rm -f Source/Plugins/Apple/AppleAuthNative-dynamic-*.framework.tar.gz
+
+          cp "Xcode/AppleAuthNative/build/output/${XCFRAMEWORK_TAR_NAME}" "Source/Plugins/Apple/${XCFRAMEWORK_TAR_NAME}"
+          cp "Xcode/AppleAuthNative/build/output/${DYNAMIC_FRAMEWORK_TAR_NAME}" "Source/Plugins/Apple/${DYNAMIC_FRAMEWORK_TAR_NAME}"
+
+      - name: Commit and push build outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A Source/Plugins/Apple/
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update native AppleAuthNative artifacts to v${NATIVE_VERSION} (build ${NATIVE_BUILD_NUMBER})"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
