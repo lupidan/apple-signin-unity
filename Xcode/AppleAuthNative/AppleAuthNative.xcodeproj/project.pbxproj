@@ -44,7 +44,7 @@
 		C2582826305571D0009272BB /* AppleAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2582833305571E7009272BB /* AppleAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C258284030557204009272BB /* AppleAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C258284D3055722C009272BB /* AppleAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppleAuthNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C258284D3055722C009272BB /* AppleAuthNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AppleAuthNative.framework; path = "AppleAuthNative-dynamic.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C25828783055745C009272BB /* AppleAuthManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppleAuthManager.h; sourceTree = "<group>"; };
 		C25828793055745C009272BB /* AppleAuthManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppleAuthManager.m; sourceTree = "<group>"; };
 		C258287A3055745C009272BB /* AppleAuthSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppleAuthSerializer.h; sourceTree = "<group>"; };
@@ -539,9 +539,9 @@
 				PRODUCT_NAME = AppleAuthNative;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				SUPPORTS_MACCATALYST = YES;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -631,9 +631,9 @@
 				PRODUCT_NAME = AppleAuthNative;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				SUPPORTS_MACCATALYST = YES;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1039,6 +1039,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1075,7 +1076,7 @@
 					"@loader_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
@@ -1086,7 +1087,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lupidan.AppleAuthNative;
 				PRODUCT_NAME = AppleAuthNative;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1133,6 +1133,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1163,7 +1164,7 @@
 					"@loader_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
@@ -1173,7 +1174,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lupidan.AppleAuthNative;
 				PRODUCT_NAME = AppleAuthNative;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1220,6 +1220,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1264,7 +1265,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.lupidan.AppleAuthNative-macOS-Dynamic";
 				PRODUCT_NAME = "AppleAuthNative-dynamic";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -1311,6 +1311,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1348,7 +1349,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.lupidan.AppleAuthNative-macOS-Dynamic";
 				PRODUCT_NAME = "AppleAuthNative-dynamic";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
