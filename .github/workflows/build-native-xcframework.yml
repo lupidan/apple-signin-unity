@@ -26,12 +26,9 @@ jobs:
           OUTPUT_DIR="build/output"
           SOURCE_OUTPUT_DIR="Xcode/AppleAuthNative/$OUTPUT_DIR"
           XCFRAMEWORK_TAR_NAME="AppleAuthNative-$VERSION.xcframework.tar.gz"
-          DYNAMIC_FRAMEWORK_TAR_NAME="AppleAuthNative-dynamic-$VERSION.framework.tar.gz"
           PLUGINS_DIR="Source/Plugins/Apple"
           XCFRAMEWORK_SOURCE_PATH="$SOURCE_OUTPUT_DIR/$XCFRAMEWORK_TAR_NAME"
-          DYNAMIC_FRAMEWORK_SOURCE_PATH="$SOURCE_OUTPUT_DIR/$DYNAMIC_FRAMEWORK_TAR_NAME"
           XCFRAMEWORK_DEST_PATH="$PLUGINS_DIR/$XCFRAMEWORK_TAR_NAME"
-          DYNAMIC_FRAMEWORK_DEST_PATH="$PLUGINS_DIR/$DYNAMIC_FRAMEWORK_TAR_NAME"
 
           echo "VERSION=$VERSION"
           echo "BUILD_NUMBER=$BUILD_NUMBER"
@@ -40,12 +37,9 @@ jobs:
           echo "OUTPUT_DIR=$OUTPUT_DIR"
           echo "SOURCE_OUTPUT_DIR=$SOURCE_OUTPUT_DIR"
           echo "XCFRAMEWORK_TAR_NAME=$XCFRAMEWORK_TAR_NAME"
-          echo "DYNAMIC_FRAMEWORK_TAR_NAME=$DYNAMIC_FRAMEWORK_TAR_NAME"
           echo "PLUGINS_DIR=$PLUGINS_DIR"
           echo "XCFRAMEWORK_SOURCE_PATH=$XCFRAMEWORK_SOURCE_PATH"
-          echo "DYNAMIC_FRAMEWORK_SOURCE_PATH=$DYNAMIC_FRAMEWORK_SOURCE_PATH"
           echo "XCFRAMEWORK_DEST_PATH=$XCFRAMEWORK_DEST_PATH"
-          echo "DYNAMIC_FRAMEWORK_DEST_PATH=$DYNAMIC_FRAMEWORK_DEST_PATH"
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
@@ -54,12 +48,9 @@ jobs:
           echo "output_dir=$OUTPUT_DIR" >> "$GITHUB_OUTPUT"
           echo "source_output_dir=$SOURCE_OUTPUT_DIR" >> "$GITHUB_OUTPUT"
           echo "xcframework_tar_name=$XCFRAMEWORK_TAR_NAME" >> "$GITHUB_OUTPUT"
-          echo "dynamic_framework_tar_name=$DYNAMIC_FRAMEWORK_TAR_NAME" >> "$GITHUB_OUTPUT"
           echo "plugins_dir=$PLUGINS_DIR" >> "$GITHUB_OUTPUT"
           echo "xcframework_source_path=$XCFRAMEWORK_SOURCE_PATH" >> "$GITHUB_OUTPUT"
-          echo "dynamic_framework_source_path=$DYNAMIC_FRAMEWORK_SOURCE_PATH" >> "$GITHUB_OUTPUT"
           echo "xcframework_dest_path=$XCFRAMEWORK_DEST_PATH" >> "$GITHUB_OUTPUT"
-          echo "dynamic_framework_dest_path=$DYNAMIC_FRAMEWORK_DEST_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -67,7 +58,7 @@ jobs:
       - name: Ensure visionOS platform is installed
         run: xcodebuild -downloadPlatform visionOS
 
-      - name: Build XCFramework and dynamic framework
+      - name: Build XCFramework
         working-directory: Xcode/AppleAuthNative
         run: |
           ./build_xcframework.sh \
@@ -83,19 +74,11 @@ jobs:
           name: ${{ steps.setup.outputs.xcframework_tar_name }}
           path: ${{ steps.setup.outputs.xcframework_source_path }}
 
-      - name: Upload AppleAuthNative-dynamic.framework
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: ${{ steps.setup.outputs.dynamic_framework_tar_name }}
-          path: ${{ steps.setup.outputs.dynamic_framework_source_path }}
-
-      - name: Copy build outputs into Source/Plugins/Apple
+      - name: Copy build output into Source/Plugins/Apple
         run: |
           mkdir -p "${{ steps.setup.outputs.plugins_dir }}"
-          rm -f "${{ steps.setup.outputs.plugins_dir }}"/AppleAuthNative-*.xcframework.tar.gz
-          rm -f "${{ steps.setup.outputs.plugins_dir }}"/AppleAuthNative-dynamic-*.framework.tar.gz
+          rm -f "${{ steps.setup.outputs.plugins_dir }}/AppleAuthNative-*.xcframework.tar.gz"
           cp "${{ steps.setup.outputs.xcframework_source_path }}" "${{ steps.setup.outputs.xcframework_dest_path }}"
-          cp "${{ steps.setup.outputs.dynamic_framework_source_path }}" "${{ steps.setup.outputs.dynamic_framework_dest_path }}"
 
       - name: Commit and push build outputs
         run: |

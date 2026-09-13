@@ -74,7 +74,7 @@ archive() {
         2>&1 | tail -20
 }
 
-# Static slices that go into the xcframework
+# Slices that go into the single xcframework (iOS/tvOS/visionOS static, macOS dynamic)
 archive "AppleAuthNative-iOS" "generic/platform=iOS" "ios"
 archive "AppleAuthNative-iOS" "generic/platform=iOS Simulator" "ios-sim"
 archive "AppleAuthNative-iOS" "generic/platform=macOS,variant=Mac Catalyst" "ios-maccatalyst"
@@ -85,10 +85,7 @@ archive "AppleAuthNative-tvOS" "generic/platform=tvOS Simulator" "tvos-sim"
 # Not runnable on Intel Macs at all -- the visionOS Simulator doesn't ship for them.
 archive "AppleAuthNative-visionOS" "generic/platform=visionOS" "visionos"
 archive "AppleAuthNative-visionOS" "generic/platform=visionOS Simulator" "visionos-sim"
-archive "AppleAuthNative-macOS" "generic/platform=macOS" "macos-static"
-
-# Standalone dynamic macOS framework (not part of the xcframework)
-archive "AppleAuthNative-macOS-Dynamic" "generic/platform=macOS" "macos-dynamic"
+archive "AppleAuthNative-macOS" "generic/platform=macOS" "macos"
 
 echo "Creating AppleAuthNative.xcframework..."
 xcodebuild -create-xcframework \
@@ -99,18 +96,12 @@ xcodebuild -create-xcframework \
     -framework "$ARCHIVE_DIR/tvos-sim.xcarchive/$FRAMEWORK_IN_ARCHIVE" \
     -framework "$ARCHIVE_DIR/visionos.xcarchive/$FRAMEWORK_IN_ARCHIVE" \
     -framework "$ARCHIVE_DIR/visionos-sim.xcarchive/$FRAMEWORK_IN_ARCHIVE" \
-    -framework "$ARCHIVE_DIR/macos-static.xcarchive/$FRAMEWORK_IN_ARCHIVE" \
+    -framework "$ARCHIVE_DIR/macos.xcarchive/$FRAMEWORK_IN_ARCHIVE" \
     -output "$OUTPUT_DIR/AppleAuthNative.xcframework"
 
-echo "Copying standalone dynamic macOS framework..."
-cp -R "$ARCHIVE_DIR/macos-dynamic.xcarchive/Products/Library/Frameworks/AppleAuthNative-dynamic.framework" "$OUTPUT_DIR/AppleAuthNative-dynamic.framework"
-
-echo "Packaging tar.gz archives (preserves symlinks, unlike zip)..."
+echo "Packaging tar.gz archive (preserves symlinks, unlike zip)..."
 XCFRAMEWORK_TAR_NAME="AppleAuthNative-$VERSION.xcframework.tar.gz"
-DYNAMIC_FRAMEWORK_TAR_NAME="AppleAuthNative-dynamic-$VERSION.framework.tar.gz"
 tar czf "$OUTPUT_DIR/$XCFRAMEWORK_TAR_NAME" -C "$OUTPUT_DIR" AppleAuthNative.xcframework
-tar czf "$OUTPUT_DIR/$DYNAMIC_FRAMEWORK_TAR_NAME" -C "$OUTPUT_DIR" AppleAuthNative-dynamic.framework
 
 echo "Done. Output in $OUTPUT_DIR"
 echo "XCFRAMEWORK_TAR_NAME=$XCFRAMEWORK_TAR_NAME"
-echo "DYNAMIC_FRAMEWORK_TAR_NAME=$DYNAMIC_FRAMEWORK_TAR_NAME"
