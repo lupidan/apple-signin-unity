@@ -20,7 +20,19 @@ jobs:
 
       - name: Build XCFramework and dynamic framework
         working-directory: Xcode/AppleAuthNative
-        run: ./build_xcframework.sh
+        run: |
+          VERSION=$(plutil -extract version raw -o - ../../Source/package.json)
+          BUILD_NUMBER="$GITHUB_RUN_NUMBER"
+          PROJECT="AppleAuthNative.xcodeproj"
+          ARCHIVE_DIR="build/archives"
+          OUTPUT_DIR="build/output"
+
+          ./build_xcframework.sh \
+            --version "$VERSION" \
+            --build-number "$BUILD_NUMBER" \
+            --project "$PROJECT" \
+            --archive-dir "$ARCHIVE_DIR" \
+            --output-dir "$OUTPUT_DIR"
 
       - name: Upload AppleAuthNative.xcframework
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

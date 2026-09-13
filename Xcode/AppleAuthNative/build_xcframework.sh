@@ -3,13 +3,55 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-PROJECT="AppleAuthNative.xcodeproj"
-ARCHIVE_DIR="build/archives"
-OUTPUT_DIR="build/output"
-FRAMEWORK_IN_ARCHIVE="Products/Library/Frameworks/AppleAuthNative.framework"
-VERSION=$(plutil -extract version raw -o - ../../Source/package.json)
+usage() {
+    echo "Usage: $0 --version <version> --build-number <number> --project <path.xcodeproj> --archive-dir <dir> --output-dir <dir>"
+    exit 1
+}
 
-echo "Building version $VERSION (from Source/package.json)"
+VERSION=""
+BUILD_NUMBER=""
+PROJECT=""
+ARCHIVE_DIR=""
+OUTPUT_DIR=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --version)
+            VERSION="$2"
+            shift 2
+            ;;
+        --build-number)
+            BUILD_NUMBER="$2"
+            shift 2
+            ;;
+        --project)
+            PROJECT="$2"
+            shift 2
+            ;;
+        --archive-dir)
+            ARCHIVE_DIR="$2"
+            shift 2
+            ;;
+        --output-dir)
+            OUTPUT_DIR="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            usage
+            ;;
+    esac
+done
+
+[[ -z "$VERSION" ]] && echo "Missing required --version" && usage
+[[ -z "$BUILD_NUMBER" ]] && echo "Missing required --build-number" && usage
+[[ -z "$PROJECT" ]] && echo "Missing required --project" && usage
+[[ -z "$ARCHIVE_DIR" ]] && echo "Missing required --archive-dir" && usage
+[[ -z "$OUTPUT_DIR" ]] && echo "Missing required --output-dir" && usage
+
+FRAMEWORK_IN_ARCHIVE="Products/Library/Frameworks/AppleAuthNative.framework"
+
+echo "Building version $VERSION build $BUILD_NUMBER"
 
 rm -rf "$ARCHIVE_DIR" "$OUTPUT_DIR"
 mkdir -p "$ARCHIVE_DIR" "$OUTPUT_DIR"
@@ -28,6 +70,7 @@ archive() {
         -configuration Release \
         SKIP_INSTALL=NO \
         MARKETING_VERSION="$VERSION" \
+        CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
         2>&1 | tail -20
 }
 
